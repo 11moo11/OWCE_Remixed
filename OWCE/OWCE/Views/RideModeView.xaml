@@ -72,15 +72,36 @@
                 </ScrollView>
                
 
-                <Button Grid.Row="2" Text="Set Custom Shaping" Style="{StaticResource RoundButtonStyle}" Margin="0,16" Clicked="SetCustomShaping_Clicked">
-                    <Button.IsVisible>
-                        <MultiBinding Converter="{StaticResource AnyTrueConverter}">
-                            <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="Plus" />
-                            <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="XR" />
-                            <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="GT" />
-                        </MultiBinding>
-                    </Button.IsVisible>
-                </Button>
+                <!-- Custom shaping. Only shown when the board supports it and is in Custom ride mode. -->
+                <VerticalStackLayout x:Name="CustomShapingPanel" Grid.Row="2" IsVisible="False" Padding="20,16,20,20" Spacing="14" BackgroundColor="White">
+                    <Label x:Name="CustomShapingStatusLabel" FontFamily="SairaExtraCondensed-SemiBold" TextColor="#7F7F7F" FontSize="16" />
+
+                    <VerticalStackLayout x:Name="CustomShapingSliders" Spacing="12">
+                    <VerticalStackLayout Spacing="0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Aggressiveness" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
+                            <Label x:Name="AggressivenessValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
+                        </Grid>
+                        <Slider x:Name="AggressivenessSlider" Minimum="0" Maximum="10" MinimumTrackColor="Black" MaximumTrackColor="#D0D0D0" ThumbColor="Black" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Turn compensation" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
+                            <Label x:Name="TurnCompensationValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
+                        </Grid>
+                        <Slider x:Name="TurnCompensationSlider" Minimum="0" Maximum="10" MinimumTrackColor="Black" MaximumTrackColor="#D0D0D0" ThumbColor="Black" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Angle offset" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
+                            <Label x:Name="AngleOffsetValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
+                        </Grid>
+                        <Slider x:Name="AngleOffsetSlider" Minimum="-1.5" Maximum="3" MinimumTrackColor="Black" MaximumTrackColor="#D0D0D0" ThumbColor="Black" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
+                    </VerticalStackLayout>
+                    </VerticalStackLayout>
+
+                    <Button Text="Reload from board" Style="{StaticResource RoundButtonStyle}" HorizontalOptions="Center" Margin="0,4,0,0" Clicked="ReloadCustomShaping_Clicked" />
+                </VerticalStackLayout>
             </Grid>
         </toolkit:Expander>
     </Border>

@@ -51,6 +51,7 @@ namespace OWCE
         public const int Pint_Pacific = 6;
         public const int Pint_Elevated = 7;
         public const int Pint_Skyline = 8;
+        public const int Pint_Custom = 9; // Only works on boards patched with Rewheel.
 
         public const int GT_Bay = 3;
         public const int GT_Roam = 4;
@@ -97,7 +98,7 @@ namespace OWCE
         public const string SerialReadUUID = "E659F3FE-EA98-11E3-AC10-0800200C9A66";
         public const string SerialWriteUUID = "E659F3FF-EA98-11E3-AC10-0800200C9A66";
         public const string UNKNOWN1UUID = "E659F31D-EA98-11E3-AC10-0800200C9A66";
-        public const string UNKNOWN2UUID = "E659F31E-EA98-11E3-AC10-0800200C9A66";
+        public const string RideTraitsUUID = "E659F31E-EA98-11E3-AC10-0800200C9A66";
         public const string UNKNOWN3UUID = "E659F31F-EA98-11E3-AC10-0800200C9A66";
         public const string UNKNOWN4UUID = "E659F320-EA98-11E3-AC10-0800200C9A66";
 
@@ -359,6 +360,7 @@ namespace OWCE
                         6 => "Pacific",
                         7 => "Elevated",
                         8 => "Skyline",
+                        9 when _boardType == OWBoardType.Pint => "Custom",
                         _ => "Unknown",
                     };
                 }
@@ -379,6 +381,138 @@ namespace OWCE
 
                 return "Unknown";
             }
+        }
+
+        // Custom shaping ("ride traits"). Values are the raw signed values from the board, null until the board has reported them.
+        // See CustomShaping.cs / Documentation/CustomShaping.md.
+        public const int CustomShapingRideMode = 9;
+
+        private bool _canCustomShape;
+        /// <summary>True for boards that can have custom shaping (Plus, XR, GT and Rewheel patched Pints).</summary>
+        public bool CanCustomShape
+        {
+            get { return _canCustomShape; }
+            set { if (_canCustomShape != value) { _canCustomShape = value; OnPropertyChanged(); } }
+        }
+
+        public bool IsInCustomRideMode => _rideMode == CustomShapingRideMode;
+
+        private int? _angleOffset;
+        public int? AngleOffset
+        {
+            get { return _angleOffset; }
+            private set { if (_angleOffset != value) { _angleOffset = value; OnPropertyChanged(); } }
+        }
+
+        private int? _turnCompensation;
+        public int? TurnCompensation
+        {
+            get { return _turnCompensation; }
+            private set { if (_turnCompensation != value) { _turnCompensation = value; OnPropertyChanged(); } }
+        }
+
+        private int? _aggressiveness;
+        public int? Aggressiveness
+        {
+            get { return _aggressiveness; }
+            private set { if (_aggressiveness != value) { _aggressiveness = value; OnPropertyChanged(); } }
+        }
+
+        public bool HasCustomShapingValues => _angleOffset != null && _turnCompensation != null && _aggressiveness != null;
+
+        public int? GetCustomShapingValue(RideTrait trait) => trait switch
+        {
+            RideTrait.AngleOffset => _angleOffset,
+            RideTrait.TurnCompensation => _turnCompensation,
+            RideTrait.Aggressiveness => _aggressiveness,
+            _ => null,
+        };
+
+        void SetCustomShapingValue(RideTrait trait, int raw)
+        {
+            switch (trait)
+            {
+                case RideTrait.AngleOffset:
+                    AngleOffset = raw;
+                    break;
+                case RideTrait.TurnCompensation:
+                    TurnCompensation = raw;
+                    break;
+                case RideTrait.Aggressiveness:
+                    Aggressiveness = raw;
+                    break;
+            }
+
+            OnPropertyChanged(nameof(HasCustomShapingValues));
+        }
+
+        /// <summary>
+        /// Asks the board to (re)send its current custom shaping values. The board reports each trait as a
+        /// notification when we subscribe to the characteristic.
+        /// </summary>
+        public async Task RequestCustomShapingValuesAsync()
+        {
+            if (CanCustomShape == false)
+            {
+                return;
+            }
+
+            try
+            {
+                await _owble.UnsubscribeValue(RideTraitsUUID, true);
+            }
+            catch (Exception err)
+            {
+                // Not subscribed yet, that is fine.
+                Debug.WriteLine("RequestCustomShapingValuesAsync unsubscribe: " + err.Message);
+            }
+
+            await _owble.SubscribeValue(RideTraitsUUID, true);
+        }
+
+        /// <summary>
+        /// Writes one custom shaping value. Returns null on success, or a message explaining why it was not written.
+        /// The value is clamped to the supported range and nothing is sent unless the board is in Custom ride mode
+        /// and standing still.
+        /// </summary>
+        public async Task<string> SetCustomShapingValueAsync(RideTrait trait, double displayValue)
+        {
+            if (CustomShaping.IsShapingTrait(trait) == false)
+            {
+                return "That setting can not be changed here.";
+            }
+
+            if (CanCustomShape == false)
+            {
+                return "This board does not support custom shaping.";
+            }
+
+            if (IsInCustomRideMode == false)
+            {
+                return "Switch the board to Custom ride mode first.";
+            }
+
+            // The board is expected to be stationary. Refuse to change how it rides while it is moving.
+            if (Math.Abs(RPM) > 2)
+            {
+                return "Stop the board before changing custom shaping.";
+            }
+
+            var raw = CustomShaping.DisplayToRaw(trait, displayValue);
+            var frame = CustomShaping.BuildFrame(trait, raw);
+
+            try
+            {
+                await _owble.WriteValue(RideTraitsUUID, frame, true);
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine("SetCustomShapingValueAsync: " + err.Message);
+                return "Could not send the change to the board.";
+            }
+
+            SetCustomShapingValue(trait, raw);
+            return null;
         }
 
         private bool? _simpleStopEnabled = null;
@@ -508,12 +642,6 @@ namespace OWCE
             set { if (_UNKNOWN1.AlmostEqualTo(value) == false) { _UNKNOWN1 = value; OnPropertyChanged(); } }
         }
 
-        private float _UNKNOWN2 = 0;
-        public float UNKNOWN2
-        {
-            get { return _UNKNOWN2; }
-            set { if (_UNKNOWN2.AlmostEqualTo(value) == false) { _UNKNOWN2 = value; OnPropertyChanged(); } }
-        }
 
         private float _UNKNOWN3 = 0;
         public float UNKNOWN3
@@ -713,7 +841,7 @@ namespace OWCE
                 //SerialRead,
                 //SerialWrite,
                 //UNKNOWN1UUID,
-                //UNKNOWN2UUID,
+                //RideTraitsUUID,
                 //UNKNOWN3UUID,
                 //UNKNOWN4UUID,
             };
@@ -752,7 +880,7 @@ namespace OWCE
                 //SerialRead,
                 //SerialWrite,
                 //UNKNOWN1UUID,
-                //UNKNOWN2UUID,
+                //RideTraitsUUID,
                 //UNKNOWN3UUID,
                 //UNKNOWN4UUID,
             };
@@ -826,6 +954,12 @@ namespace OWCE
                         return _keepHandshakeBackgroundRunning;
                     });
                 }
+            }
+
+            if (CanCustomShape)
+            {
+                // The board reports its custom shaping values when we subscribe. This is released again once we have them all.
+                characteristicsToSubscribeTo.Add(RideTraitsUUID);
             }
 
             foreach (var characteristic in characteristicsToSubscribeTo)
@@ -1134,6 +1268,26 @@ namespace OWCE
             }
 
 
+            if (uuid == RideTraitsUUID)
+            {
+                if (CustomShaping.TryParseFrame(data, out var rideTrait, out var rideTraitValue))
+                {
+                    if (CustomShaping.IsShapingTrait(rideTrait))
+                    {
+                        // Outside of range values are kept as the board reports them, but are clamped when shown.
+                        SetCustomShapingValue(rideTrait, rideTraitValue);
+                    }
+
+                    if (HasCustomShapingValues)
+                    {
+                        // We have everything we need, free up the notification slot (Android limits how many we can hold).
+                        _owble.UnsubscribeValue(RideTraitsUUID, true).SafeFireAndForget();
+                    }
+                }
+
+                return;
+            }
+
             var value = BitConverter.ToUInt16(data, 0);
 
 
@@ -1239,6 +1393,7 @@ namespace OWCE
                     if (value >= 1 && value <= 2999)
                     {
                         BoardType = OWBoardType.V1;
+                        CanCustomShape = false;
                         SimpleStopEnabled = null;
 
                         BatteryCells.CellCount = 16;
@@ -1246,6 +1401,7 @@ namespace OWCE
                     else if (value >= 3000 && value <= 3999)
                     {
                         BoardType = OWBoardType.Plus;
+                        CanCustomShape = true;
                         SimpleStopEnabled = null;
 
                         BatteryCells.CellCount = 16;
@@ -1253,6 +1409,7 @@ namespace OWCE
                     else if (value >= 4000 && value <= 4999)
                     {
                         BoardType = OWBoardType.XR;
+                        CanCustomShape = true;
                         SimpleStopEnabled = null;
 
                         BatteryCells.CellCount = 15;
@@ -1262,6 +1419,7 @@ namespace OWCE
                     else if (value >= 5000 && value <= 5999)
                     {
                         BoardType = OWBoardType.Pint;
+                        CanCustomShape = true; // Only works on boards patched with Rewheel.
                         if (SimpleStopEnabled == null)
                         {
                             SimpleStopEnabled = false;
@@ -1274,6 +1432,7 @@ namespace OWCE
                     else if (value >= 7000 && value <= 7999)
                     {
                         BoardType = OWBoardType.PintX;
+                        CanCustomShape = false;
                         if (SimpleStopEnabled == null)
                         {
                             SimpleStopEnabled = false;
@@ -1286,6 +1445,7 @@ namespace OWCE
                     else if (value >= 6000 && value <= 6999)
                     {
                         BoardType = OWBoardType.GT;
+                        CanCustomShape = true;
                         if (SimpleStopEnabled == null)
                         {
                             SimpleStopEnabled = false;
@@ -1325,9 +1485,6 @@ namespace OWCE
                     break;
                 case UNKNOWN1UUID:
                     UNKNOWN1 = value;
-                    break;
-                case UNKNOWN2UUID:
-                    UNKNOWN2 = value;
                     break;
                 case UNKNOWN3UUID:
                     UNKNOWN3 = value;
@@ -1578,8 +1735,8 @@ namespace OWCE
                     return "SerialWrite";
                 case UNKNOWN1UUID:
                     return "UNKNOWN1";
-                case UNKNOWN2UUID:
-                    return "UNKNOWN2";
+                case RideTraitsUUID:
+                    return "RideTraits";
                 case UNKNOWN3UUID:
                     return "UNKNOWN3";
                 case UNKNOWN4UUID:

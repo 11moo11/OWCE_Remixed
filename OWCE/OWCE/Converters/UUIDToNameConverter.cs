@@ -50,7 +50,7 @@ namespace OWCE.Converters
                     OWBoard.SerialReadUUID => "SerialRead",
                     OWBoard.SerialWriteUUID => "SerialWrite",
                     OWBoard.UNKNOWN1UUID => "UNKNOWN1",
-                    OWBoard.UNKNOWN2UUID => "UNKNOWN2",
+                    OWBoard.RideTraitsUUID => "RideTraits",
                     OWBoard.UNKNOWN3UUID => "UNKNOWN3",
                     OWBoard.UNKNOWN4UUID => "UNKNOWN4",
                     _ => "Unknown",

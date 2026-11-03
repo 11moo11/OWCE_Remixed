@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.Maui.Views;
+using OWCE.Extensions;
 
 namespace OWCE.Views
 {
@@ -81,6 +82,13 @@ namespace OWCE.Views
         public RideModeView()
         {
             InitializeComponent();
+
+            _customShapingControls = new[]
+            {
+                new CustomShapingControl(RideTrait.Aggressiveness, AggressivenessSlider, AggressivenessValueLabel, "F1", ""),
+                new CustomShapingControl(RideTrait.TurnCompensation, TurnCompensationSlider, TurnCompensationValueLabel, "F1", ""),
+                new CustomShapingControl(RideTrait.AngleOffset, AngleOffsetSlider, AngleOffsetValueLabel, "F1", "°"),
+            };
         }
 
         void ExpanderView_PropertyChanged(System.Object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -107,14 +115,11 @@ namespace OWCE.Views
                 _availableRideModes = board.GetAvailableRideModes();
                 SetupRideModeButtons();
             }
+
+            HookBoard();
         }
 
         List<(string, ushort)> _availableRideModes = null;
-
-        async void SetCustomShaping_Clicked(System.Object sender, System.EventArgs e)
-        {
-            await App.Current.RootPage.DisplayAlertAsync(null, "Under Construction", "OK");
-        }
 
         protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -148,6 +153,177 @@ namespace OWCE.Views
             //RideModesCollectionView.ItemsSource = _rideModesList;
             BindableLayout.SetItemsSource(RideModesStackLayout, null);
             BindableLayout.SetItemsSource(RideModesStackLayout, _rideModesList);
+        }
+
+        // ---- Custom shaping ----
+
+        const string CustomShapingWarningAcceptedKey = "custom_shaping_warning_accepted";
+
+        record CustomShapingControl(RideTrait Trait, Slider Slider, Label ValueLabel, string Format, string Suffix);
+
+        readonly CustomShapingControl[] _customShapingControls;
+        OWBoard _board;
+
+        void HookBoard()
+        {
+            if (_board != null)
+            {
+                _board.PropertyChanged -= Board_PropertyChanged;
+            }
+
+            _board = BindingContext as OWBoard;
+
+            if (_board != null)
+            {
+                _board.PropertyChanged += Board_PropertyChanged;
+            }
+
+            RefreshCustomShaping();
+        }
+
+        void Board_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case null:
+                case nameof(OWBoard.RideMode):
+                case nameof(OWBoard.CanCustomShape):
+                case nameof(OWBoard.BoardType):
+                case nameof(OWBoard.AngleOffset):
+                case nameof(OWBoard.TurnCompensation):
+                case nameof(OWBoard.Aggressiveness):
+                case nameof(OWBoard.HasCustomShapingValues):
+                    // Board updates arrive on Bluetooth threads.
+                    MainThread.BeginInvokeOnMainThread(RefreshCustomShaping);
+                    break;
+            }
+        }
+
+        // Values are snapped to 0.1 which is also what the board can sensibly represent.
+        static double Snap(double value) => Math.Round(value, 1);
+
+        void RefreshCustomShaping()
+        {
+            var board = _board;
+            var show = board != null && board.CanCustomShape && board.IsInCustomRideMode;
+            CustomShapingPanel.IsVisible = show;
+
+            if (show == false)
+            {
+                return;
+            }
+
+            // Moving the sliders to the board's values must not look like the user changing them.
+            _isRefreshingCustomShaping = true;
+            try
+            {
+                foreach (var control in _customShapingControls)
+                {
+                    var raw = board.GetCustomShapingValue(control.Trait);
+                    if (raw.HasValue)
+                    {
+                        control.Slider.Value = Snap(CustomShaping.RawToDisplay(control.Trait, raw.Value));
+                    }
+                    else
+                    {
+                        control.ValueLabel.Text = "-";
+                    }
+                }
+            }
+            finally
+            {
+                _isRefreshingCustomShaping = false;
+            }
+
+            CustomShapingSliders.IsEnabled = board.HasCustomShapingValues;
+
+            if (board.HasCustomShapingValues == false)
+            {
+                CustomShapingStatusLabel.Text = "Waiting for the board to report its current settings...";
+            }
+            else if (board.BoardType == OWBoardType.Pint)
+            {
+                CustomShapingStatusLabel.Text = "Pint custom shaping needs a board patched with Rewheel.";
+            }
+            else
+            {
+                CustomShapingStatusLabel.Text = string.Empty;
+            }
+
+            CustomShapingStatusLabel.IsVisible = string.IsNullOrEmpty(CustomShapingStatusLabel.Text) == false;
+        }
+
+        bool _isRefreshingCustomShaping = false;
+
+        void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
+        {
+            var control = _customShapingControls.FirstOrDefault(x => x.Slider == sender);
+            if (control != null)
+            {
+                control.ValueLabel.Text = Snap(e.NewValue).ToString(control.Format, System.Globalization.CultureInfo.CurrentCulture) + control.Suffix;
+            }
+        }
+
+        // Only sent to the board when the user lets go of the slider, never while dragging.
+        async void Slider_DragCompleted(object sender, EventArgs e)
+        {
+            var control = _customShapingControls.FirstOrDefault(x => x.Slider == sender);
+            if (control == null || _board == null || _isRefreshingCustomShaping)
+            {
+                return;
+            }
+
+            if (await ConfirmCustomShapingWarningAsync() == false)
+            {
+                RefreshCustomShaping();
+                return;
+            }
+
+            var error = await _board.SetCustomShapingValueAsync(control.Trait, Snap(control.Slider.Value));
+            if (error != null)
+            {
+                await App.Current.RootPage.DisplayAlertAsync("Custom shaping", error, "OK");
+                RefreshCustomShaping();
+            }
+        }
+
+        static async Task<bool> ConfirmCustomShapingWarningAsync()
+        {
+            if (Preferences.Get(CustomShapingWarningAcceptedKey, false))
+            {
+                return true;
+            }
+
+            var accepted = await App.Current.RootPage.DisplayAlertAsync(
+                "Custom shaping",
+                "This changes how your board rides and is sent straight to the board. Only change it while standing still, make small changes, and test at low speed somewhere safe.",
+                "I understand",
+                "Cancel");
+
+            if (accepted)
+            {
+                Preferences.Set(CustomShapingWarningAcceptedKey, true);
+            }
+
+            return accepted;
+        }
+
+        async void ReloadCustomShaping_Clicked(object sender, EventArgs e)
+        {
+            if (_board == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await _board.RequestCustomShapingValuesAsync();
+            }
+            catch (Exception err)
+            {
+                System.Diagnostics.Debug.WriteLine("ReloadCustomShaping_Clicked: " + err.Message);
+                await App.Current.RootPage.DisplayAlertAsync("Custom shaping", "Could not ask the board for its settings.", "OK");
+            }
         }
 
         void RideModeButton_Clicked(System.Object sender, System.EventArgs e)

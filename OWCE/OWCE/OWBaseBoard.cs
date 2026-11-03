@@ -264,13 +264,21 @@ namespace OWCE
             }
             else if (_boardType == OWBoardType.Pint || _boardType == OWBoardType.PintX)
             {
-                return new List<(string, ushort)>()
+                var rideModes = new List<(string, ushort)>()
                 {
                     ("Redwood", RideModes.Pint_Redwood),
                     ("Pacific", RideModes.Pint_Pacific),
                     ("Elevated", RideModes.Pint_Elevated),
                     ("Skyline", RideModes.Pint_Skyline),
                 };
+
+                // Custom shaping on the Pint only works on boards patched with Rewheel.
+                if (_boardType == OWBoardType.Pint)
+                {
+                    rideModes.Add(("Custom", RideModes.Pint_Custom));
+                }
+
+                return rideModes;
             }
             else if (_boardType == OWBoardType.GT)
             {
