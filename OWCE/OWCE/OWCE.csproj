@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <!--
-      Android builds on Windows, macOS and Linux. iOS needs a Mac (or a paired Mac from Visual Studio on Windows),
-      so it is only added as a target on those two platforms. Override with: -p:TargetFrameworks=net10.0-android
+      Android is always built (Windows, macOS and Linux). iOS needs a Mac, so it is only a target on macOS by default.
+      Visual Studio on Windows with a paired Mac can opt in with: -p:BuildIos=true
+      You can always pick targets explicitly with: -p:TargetFrameworks=net10.0-android
     -->
     <TargetFrameworks>net10.0-android</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx')) or $([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-ios</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx')) or '$(BuildIos)' == 'true'">$(TargetFrameworks);net10.0-ios</TargetFrameworks>
 
     <OutputType>Exe</OutputType>
     <RootNamespace>OWCE</RootNamespace>

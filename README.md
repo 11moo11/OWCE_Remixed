@@ -49,7 +49,7 @@ dotnet build OWCE/OWCE/OWCE.csproj -f net10.0-android
 dotnet build OWCE/OWCE/OWCE.csproj -f net10.0-ios
 ```
 
-To deploy to a connected Android device/emulator use `dotnet build OWCE/OWCE/OWCE.csproj -f net10.0-android -t:Run`. In Visual Studio or Rider open `OWCE/OWCE.sln` and pick the target framework from the run dropdown. On Linux, and on Windows/macOS without the iOS tooling, only the Android target is built by default (override with `-p:TargetFrameworks=...`).
+To deploy to a connected Android device/emulator use `dotnet build OWCE/OWCE/OWCE.csproj -f net10.0-android -t:Run`. In Visual Studio or Rider open `OWCE/OWCE.sln` and pick the target framework from the run dropdown. Only the Android target is built by default on Windows and Linux; iOS is added automatically on macOS (or on Windows with a paired Mac via `-p:BuildIos=true`).
 
 NOTE: Because the app depends on the Onewheels low-energy Bluetooth, it will not function correctly in a simulator/emulator. For best results, deploy to a physical device. Debug builds running in a simulator/emulator use `MockOWBLE` to replay sample ride data.
 
