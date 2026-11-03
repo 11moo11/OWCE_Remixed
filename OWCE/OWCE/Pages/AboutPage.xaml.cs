@@ -1,40 +1,39 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OWCE.Views;
-using Xamarin.CommunityToolkit.ObjectModel;
-using Xamarin.Essentials;
-using Xamarin.Forms;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace OWCE.Pages
 {
     public partial class AboutPage : BaseContentPage
     {
-        public string VersionString => $"{AppInfo.VersionString} (build {AppInfo.BuildString})";
+        public string VersionString => $"{AppInfo.Current.VersionString} (build {AppInfo.Current.BuildString})";
 
-        IAsyncCommand _faqCommand;
-        public IAsyncCommand FAQCommand => _faqCommand ??= new AsyncCommand(async () => await OpenUrlAsync("https://owce.app/faq/"), allowsMultipleExecutions: false);
+        IAsyncRelayCommand _faqCommand;
+        public IAsyncRelayCommand FAQCommand => _faqCommand ??= new AsyncRelayCommand(async () => await OpenUrlAsync("https://owce.app/faq/"));
 
-        IAsyncCommand _sourceCodeCommand;
-        public IAsyncCommand SourceCodeCommand => _sourceCodeCommand ??= new AsyncCommand(async () => await OpenUrlAsync("https://github.com/OnewheelCommunityEdition/OWCE_App"), allowsMultipleExecutions: false);
+        IAsyncRelayCommand _sourceCodeCommand;
+        public IAsyncRelayCommand SourceCodeCommand => _sourceCodeCommand ??= new AsyncRelayCommand(async () => await OpenUrlAsync("https://github.com/OnewheelCommunityEdition/OWCE_App"));
 
-        IAsyncCommand _reportProblemCommand;
-        public IAsyncCommand ReportProblemCommand => _reportProblemCommand ??= new AsyncCommand(async () => await OpenUrlAsync("https://github.com/OnewheelCommunityEdition/OWCE_App/issues/new/choose"), allowsMultipleExecutions: false);
+        IAsyncRelayCommand _reportProblemCommand;
+        public IAsyncRelayCommand ReportProblemCommand => _reportProblemCommand ??= new AsyncRelayCommand(async () => await OpenUrlAsync("https://github.com/OnewheelCommunityEdition/OWCE_App/issues/new/choose"));
 
-        IAsyncCommand _requestFeatureCommand;
-        public IAsyncCommand RequestFeatureCommand => _requestFeatureCommand ??= new AsyncCommand(async () => await OpenUrlAsync("https://github.com/OnewheelCommunityEdition/OWCE_App/issues/new/choose"), allowsMultipleExecutions: false);
+        IAsyncRelayCommand _requestFeatureCommand;
+        public IAsyncRelayCommand RequestFeatureCommand => _requestFeatureCommand ??= new AsyncRelayCommand(async () => await OpenUrlAsync("https://github.com/OnewheelCommunityEdition/OWCE_App/issues/new/choose"));
 
-        IAsyncCommand _redditCommand;
-        public IAsyncCommand RedditCommand => _redditCommand ??= new AsyncCommand(async () => await OpenUrlAsync("https://reddit.com/r/OWCE"), allowsMultipleExecutions: false);
+        IAsyncRelayCommand _redditCommand;
+        public IAsyncRelayCommand RedditCommand => _redditCommand ??= new AsyncRelayCommand(async () => await OpenUrlAsync("https://reddit.com/r/OWCE"));
 
-        IAsyncCommand _twitterCommand;
-        public IAsyncCommand TwitterCommand => _twitterCommand ??= new AsyncCommand(async () => await OpenUrlAsync("https://twitter.com/owceapp"), allowsMultipleExecutions: false);
+        IAsyncRelayCommand _twitterCommand;
+        public IAsyncRelayCommand TwitterCommand => _twitterCommand ??= new AsyncRelayCommand(async () => await OpenUrlAsync("https://twitter.com/owceapp"));
 
-        IAsyncCommand _facebookPageCommand;
-        public IAsyncCommand FacebookPageCommand => _facebookPageCommand ??= new AsyncCommand(async () => await OpenUrlAsync("https://www.facebook.com/owceapp"), allowsMultipleExecutions: false);
+        IAsyncRelayCommand _facebookPageCommand;
+        public IAsyncRelayCommand FacebookPageCommand => _facebookPageCommand ??= new AsyncRelayCommand(async () => await OpenUrlAsync("https://www.facebook.com/owceapp"));
 
-        IAsyncCommand _facebookGroupCommand;
-        public IAsyncCommand FacebookGroupCommand => _facebookGroupCommand ??= new AsyncCommand(async () => await OpenUrlAsync("https://www.facebook.com/groups/owceappgroup"), allowsMultipleExecutions: false);
+        IAsyncRelayCommand _facebookGroupCommand;
+        public IAsyncRelayCommand FacebookGroupCommand => _facebookGroupCommand ??= new AsyncRelayCommand(async () => await OpenUrlAsync("https://www.facebook.com/groups/owceappgroup"));
                   
 
 
@@ -46,10 +45,10 @@ namespace OWCE.Pages
             {
                 Position = CustomToolbarItemPosition.Left,
                 Text = "Cancel",
-                Command = new AsyncCommand(async () =>
+                Command = new AsyncRelayCommand(async () =>
                 {
                     await Navigation.PopModalAsync();
-                }, allowsMultipleExecutions: false),
+                }),
             });
 
             BindingContext = this;

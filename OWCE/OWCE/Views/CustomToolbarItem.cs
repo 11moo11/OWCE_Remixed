@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Xamarin.Forms;
 
 namespace OWCE.Views
 {
@@ -83,7 +82,7 @@ namespace OWCE.Views
 		{
 			MinimumWidthRequest = 30;
 			MinimumHeightRequest = 30;
-            VerticalOptions = LayoutOptions.FillAndExpand;
+            VerticalOptions = LayoutOptions.Fill;
 
             TapGestureRecognizer tapGestureRecognizer = new TapGestureRecognizer()
             {
@@ -93,7 +92,7 @@ namespace OWCE.Views
                     {
                         // Simulate click visual
                         this.Opacity = 0.6;
-                        this.FadeTo(1.0);
+                        this.FadeToAsync(1.0);
 
                         this.Command.Execute(null);
                     }
@@ -159,7 +158,7 @@ namespace OWCE.Views
                 _label = new Label()
                 {
                     FontSize = 18,
-                    TextColor = Color.Black,
+                    TextColor = Colors.Black,
                     VerticalOptions = LayoutOptions.Center,
                     HorizontalOptions = LayoutOptions.Center,
                 };

@@ -1,13 +1,10 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Runtime.CompilerServices;
 using OWCE.Views;
-using Xamarin.Forms;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-
 namespace OWCE.Pages
 {
     [ContentProperty("BaseContent")]
@@ -38,18 +35,6 @@ namespace OWCE.Pages
 		}
 
 
-		public static readonly BindableProperty SafeAreaInsetProperty = BindableProperty.Create(
-			nameof(SafeAreaInsets),
-			typeof(Thickness),
-			typeof(BaseContentPage));
-
-		public Thickness SafeAreaInsets
-		{
-			get { return (Thickness)GetValue(SafeAreaInsetProperty); }
-			set { SetValue(SafeAreaInsetProperty, value); }
-		}
-
-
 		public static readonly BindableProperty CustomToolbarItemsProperty = BindableProperty.Create(
 			nameof(CustomToolbarItems),
 			typeof(ObservableCollection<CustomToolbarItem>),
@@ -73,7 +58,7 @@ namespace OWCE.Pages
 		{
 			CustomToolbarItems = new ObservableCollection<CustomToolbarItem>();
 
-			Xamarin.Forms.NavigationPage.SetHasNavigationBar(this, false);
+			Microsoft.Maui.Controls.NavigationPage.SetHasNavigationBar(this, false);
 
 			CustomToolbarItems.CollectionChanged += (sender, e) =>
 			{
@@ -91,17 +76,17 @@ namespace OWCE.Pages
                 }
 			};
 
-			NavigationBarHeight = Device.RuntimePlatform switch
-			{
-				Device.iOS => 44,
-				_ => 50,
-			};
+			NavigationBarHeight = DeviceInfo.Current.Platform == DevicePlatform.iOS ? 44 : 50;
+
+			// The custom navigation bar below fills the top of the page, so the page itself takes the navigation bar colour.
+			// This is what shows behind the status bar / notch (the page content is laid out inside the safe area).
+			var navigationBarColor = App.Current.Resources.TryGetValue("BackgroundGradientStart", out var navigationBarColorResource) && navigationBarColorResource is Color color ? color : Colors.White;
+			BackgroundColor = navigationBarColor;
 
 			_mainGrid = new Grid()
 			{
 				RowDefinitions = new RowDefinitionCollection()
 				{
-					new RowDefinition() { Height = new GridLength(SafeAreaInsets.Top, GridUnitType.Absolute) },
 					new RowDefinition() { Height = new GridLength(NavigationBarHeight, GridUnitType.Absolute) },
 					new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) },
 				},
@@ -111,26 +96,25 @@ namespace OWCE.Pages
 
 			_navBackgroundView = new BoxView()
 			{
-				BackgroundColor = (App.Current.Resources["BackgroundGradientStart"] as Color?) ?? Color.White,
+				BackgroundColor = navigationBarColor,
 			};
-			Grid.SetRowSpan(_navBackgroundView, 2);
 			Grid.SetRow(_navBackgroundView, 0);
 			_mainGrid.Children.Add(_navBackgroundView);
 
 			_navigationBarGrid = new Grid();
-			Grid.SetRow(_navigationBarGrid, 1);
+			Grid.SetRow(_navigationBarGrid, 0);
 			_mainGrid.Children.Add(_navigationBarGrid);
 
 			_titleLabel = new Label()
 			{
 				FontAttributes = FontAttributes.Bold,
 				FontSize = 18,
-				TextColor = Color.Black,
+				TextColor = Colors.Black,
 				VerticalOptions = LayoutOptions.Center,
 				HorizontalOptions = LayoutOptions.Center,
 			};
 
-            Grid.SetRow(_titleLabel, 1);
+            Grid.SetRow(_titleLabel, 0);
 			_mainGrid.Children.Add(_titleLabel);
 
 			Content = _mainGrid;
@@ -154,14 +138,9 @@ namespace OWCE.Pages
         {
             base.OnPropertyChanged(propertyName);
 
-			if (Xamarin.Forms.PlatformConfiguration.iOSSpecific.Page.SafeAreaInsetsProperty.PropertyName.Equals(propertyName))
+			if (BaseContentProperty.PropertyName.Equals(propertyName))
 			{
-				SafeAreaInsets = On<Xamarin.Forms.PlatformConfiguration.iOS>().SafeAreaInsets();
-				_mainGrid.RowDefinitions[0].Height = new GridLength(SafeAreaInsets.Top, GridUnitType.Absolute);				
-			}
-			else if (BaseContentProperty.PropertyName.Equals(propertyName))
-			{
-				Grid.SetRow(BaseContent, 2);
+				Grid.SetRow(BaseContent, 1);
 				_mainGrid.Children.Add(BaseContent);
 			}
 			else if (TitleProperty.PropertyName.Equals(propertyName))

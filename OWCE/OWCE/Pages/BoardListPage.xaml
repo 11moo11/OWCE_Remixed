@@ -1,24 +1,26 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<pages:BaseContentPage  xmlns="http://xamarin.com/schemas/2014/forms"
+<?xml version="1.0" encoding="UTF-8"?>
+<pages:BaseContentPage  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="OWCE.Pages.BoardListPage"
              xmlns:pages="clr-namespace:OWCE.Pages"
              xmlns:converters="clr-namespace:OWCE.Converters"
              xmlns:owce="clr-namespace:OWCE"
-             xmlns:yummy="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
              xmlns:views="clr-namespace:OWCE.Views"
              xmlns:popup="clr-namespace:OWCE.Pages.Popup"
              x:DataType="pages:BoardListPage"
-             xmlns:xcte="clr-namespace:Xamarin.CommunityToolkit.Effects;assembly=Xamarin.CommunityToolkit">
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:BoardIsAvailableOpacityConverter x:Key="boardIsAvailableOpacityConverter" />
 
             <DataTemplate x:Key="SideMenu">
-                <Grid BackgroundColor="White" ColumnSpacing="0" RowSpacing="0" VerticalOptions="FillAndExpand" RowDefinitions="Auto,*">
+                <Grid BackgroundColor="White" ColumnSpacing="0" RowSpacing="0" VerticalOptions="Fill" RowDefinitions="Auto,*">
                                 
-                    <Grid Grid.Row="0" VerticalOptions="End" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0"  xcte:TouchEffect.NativeAnimation="true" xcte:TouchEffect.Command="{Binding PastRidesCommand}" xcte:TouchEffect.CommandParameter="{Binding Source={RelativeSource Self}}">
-                        <Image Grid.Row="0" Grid.Column="0" Source="menu_myrides" xcte:IconTintColorEffect.TintColor="Black" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center" />
+                    <Grid Grid.Row="0" VerticalOptions="End" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0">
+<Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding PastRidesCommand}" /></Grid.GestureRecognizers>
+                        <Image Grid.Row="0" Grid.Column="0" Source="menu_myrides" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
+<Image.Behaviors><toolkit:IconTintColorBehavior TintColor="Black" /></Image.Behaviors>
+</Image>
                         <Label Grid.Row="0" Grid.Column="1" Text="Past Rides" TextColor="Black" FontSize="18" />
                     </Grid>
 
@@ -56,19 +58,20 @@
                     <DataTemplate x:DataType="owce:OWBaseBoard">
                         <ContentView Padding="16,10,16,15">
                            
-                            <yummy:PancakeView HeightRequest="121" CornerRadius="11" BackgroundColor="{StaticResource BrightYellow}" xcte:TouchEffect.NativeAnimation="true" xcte:TouchEffect.Command="{Binding Source={x:Reference MainCollectionView}, Path=BindingContext.BoardSelectedCommand}" xcte:TouchEffect.CommandParameter="{Binding .}" >
+                            <Border HeightRequest="121" StrokeShape="RoundRectangle 11" BackgroundColor="{StaticResource BrightYellow}">
+<Border.GestureRecognizers><TapGestureRecognizer Command="{Binding Source={x:Reference MainCollectionView}, Path=BindingContext.BoardSelectedCommand}" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
 
                                 
-                                <yummy:PancakeView.Shadow>
-                                    <yummy:DropShadow Color="Black" Opacity="0.14" Offset="0,1" BlurRadius="5" />
-                                </yummy:PancakeView.Shadow>
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" Opacity="0.14" Offset="0,1" Radius="5" />
+                                </Border.Shadow>
 
                                 <Grid>
                                     <Label FontFamily="SairaExtraCondensed-Bold" FontSize="16" Text="{Binding BoardModelStringLong}" TextColor="Black" Margin="20,5,0,0" CharacterSpacing="-0.26" />
                                     <Label FontFamily="SairaExtraCondensed-Black" FontSize="40" Text="{Binding Name}" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center" CharacterSpacing="0.48" />
                                 </Grid>
                                 
-                            </yummy:PancakeView>
+                            </Border>
                         </ContentView>
 
                     </DataTemplate>
@@ -95,19 +98,19 @@
           
        <ListView.Header> 
                 <StackLayout>
-                    <StackLayout x:Name="NotScanningHeader" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Orientation="Horizontal" Padding="20">
+                    <StackLayout x:Name="NotScanningHeader" HorizontalOptions="Fill" VerticalOptions="Fill" Orientation="Horizontal" Padding="20">
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding StartScanningTapCommand}" />
                         </StackLayout.GestureRecognizers>
-                        <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="Center" Orientation="Horizontal">
+                        <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Orientation="Horizontal">
                             <Label Text="Tap to start scanning" InputTransparent="true" HorizontalOptions="Center" VerticalOptions="Center"  />
                         </StackLayout>
                     </StackLayout>
-                    <StackLayout x:Name="ScanningHeader" IsVisible="false"  HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Padding="20">
+                    <StackLayout x:Name="ScanningHeader" IsVisible="false"  HorizontalOptions="Fill" VerticalOptions="Fill" Padding="20">
                         <StackLayout.GestureRecognizers> 
                             <TapGestureRecognizer Command="{Binding StopScanningTapCommand}" />
                         </StackLayout.GestureRecognizers>
-                        <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="Center" Orientation="Horizontal" >
+                        <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Orientation="Horizontal" >
                             <Label Text="Scanning..." InputTransparent="true" HorizontalOptions="Center" VerticalOptions="Center"  />
                             <ActivityIndicator InputTransparent="true" HorizontalOptions="Center" VerticalOptions="Center" IsRunning="true">
                                 <ActivityIndicator.Color>
@@ -123,8 +126,8 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout VerticalOptions="FillAndExpand" Orientation="Horizontal" Padding="20,8" Opacity="{Binding IsAvailable, Converter={StaticResource boardIsAvailableOpacityConverter}}">
-                            <Label Text="{Binding Name}" HorizontalOptions="FillAndExpand" VerticalOptions="Center" />
+                        <StackLayout VerticalOptions="Fill" Orientation="Horizontal" Padding="20,8" Opacity="{Binding IsAvailable, Converter={StaticResource boardIsAvailableOpacityConverter}}">
+                            <Label Text="{Binding Name}" HorizontalOptions="Fill" VerticalOptions="Center" />
                             <Label Text="{Binding BoardModelString}" FontAttributes="Bold" VerticalOptions="Center" HorizontalOptions="End"/>
                         </StackLayout>
                     </ViewCell>
@@ -133,8 +136,8 @@
               <ListView.GroupHeaderTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout VerticalOptions="FillAndExpand" Padding="20,0" BackgroundColor="{DynamicResource darkBackgroundColor}">
-                            <Label Text="{Binding GroupName}" FontAttributes="Bold" VerticalOptions="FillAndExpand" VerticalTextAlignment="Center" />
+                        <StackLayout VerticalOptions="Fill" Padding="20,0" BackgroundColor="{DynamicResource darkBackgroundColor}">
+                            <Label Text="{Binding GroupName}" FontAttributes="Bold" VerticalOptions="Fill" VerticalTextAlignment="Center" />
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>

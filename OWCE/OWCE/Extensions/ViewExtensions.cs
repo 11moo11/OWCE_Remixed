@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-using Xamarin.Forms;
 
 namespace OWCE.Extensions
 {
@@ -9,10 +8,10 @@ namespace OWCE.Extensions
         public static Task<bool> ColorTo(this VisualElement self, Color fromColor, Color toColor, Action<Color> callback, uint length = 250, Easing easing = null)
         {
             Func<double, Color> transform = (t) =>
-              Color.FromRgba(fromColor.R + t * (toColor.R - fromColor.R),
-                             fromColor.G + t * (toColor.G - fromColor.G),
-                             fromColor.B + t * (toColor.B - fromColor.B),
-                             fromColor.A + t * (toColor.A - fromColor.A));
+              Color.FromRgba(fromColor.Red + t * (toColor.Red - fromColor.Red),
+                             fromColor.Green + t * (toColor.Green - fromColor.Green),
+                             fromColor.Blue + t * (toColor.Blue - fromColor.Blue),
+                             fromColor.Alpha + t * (toColor.Alpha - fromColor.Alpha));
             return ColorAnimation(self, "ColorTo", transform, callback, length, easing);
         }
 
@@ -41,10 +40,10 @@ namespace OWCE.Extensions
 
 
             Func<double, Color> transform = (t) =>
-              Color.FromRgba(fromColor.R + t * (toColor.R - fromColor.R),
-                             fromColor.G + t * (toColor.G - fromColor.G),
-                             fromColor.B + t * (toColor.B - fromColor.B),
-                             fromColor.A + t * (toColor.A - fromColor.A));
+              Color.FromRgba(fromColor.Red + t * (toColor.Red - fromColor.Red),
+                             fromColor.Green + t * (toColor.Green - fromColor.Green),
+                             fromColor.Blue + t * (toColor.Blue - fromColor.Blue),
+                             fromColor.Alpha + t * (toColor.Alpha - fromColor.Alpha));
             return ColorAnimation(self, "WidthPercent", transform, callback, length, easing);
             */
         }

@@ -1,16 +1,16 @@
-﻿using System;
+using CommunityToolkit.Mvvm.Messaging;
+using System;
 using System.Collections.Generic;
-using Xamarin.Essentials;
-using Xamarin.Forms;
 using System.Net;
 using System.IO;
 using System.Threading.Tasks;
 using OWCE.Pages.Popup;
-using Rg.Plugins.Popup.Services;
+using Mopups.Services;
 using System.Linq;
 using OWCE.Views;
 using OWCE.DependencyInterfaces;
-using Xamarin.CommunityToolkit.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace OWCE.Pages
 {
@@ -33,11 +33,11 @@ namespace OWCE.Pages
         private bool _initialSubscirbe = false;
         Grid _sideMenuItem = null;
 
-        IAsyncCommand _startRecordRideCommand = null;
-        public IAsyncCommand StartRecordRideCommand => _startRecordRideCommand ??= new AsyncCommand(StartRecordingAsync, allowsMultipleExecutions: false);
+        IAsyncRelayCommand _startRecordRideCommand = null;
+        public IAsyncRelayCommand StartRecordRideCommand => _startRecordRideCommand ??= new AsyncRelayCommand(StartRecordingAsync);
 
-        IAsyncCommand _stopRecordRideCommand = null;
-        public IAsyncCommand StopRecordRideCommand => _stopRecordRideCommand ??= new AsyncCommand(StopRecordingAsync, allowsMultipleExecutions: false);
+        IAsyncRelayCommand _stopRecordRideCommand = null;
+        public IAsyncRelayCommand StopRecordRideCommand => _stopRecordRideCommand ??= new AsyncRelayCommand(StopRecordingAsync);
 
 
 
@@ -48,7 +48,7 @@ namespace OWCE.Pages
             InitializeComponent();
             BindingContext = board;
 
-            AppVersionLabel.Text = $"{AppInfo.VersionString} (build {AppInfo.BuildString})";
+            AppVersionLabel.Text = $"{AppInfo.Current.VersionString} (build {AppInfo.Current.BuildString})";
 
             // TODO: Fix ImperialSwitch.IsToggled = !App.Current.MetricDisplay;
 
@@ -71,10 +71,10 @@ namespace OWCE.Pages
             {
                 Position = CustomToolbarItemPosition.Left,
                 IconImageSource = "burger_menu",
-                Command = new AsyncCommand(async () =>
+                Command = new AsyncRelayCommand(async () =>
                 {
-                    await PopupNavigation.Instance.PushAsync(Popup.SideMenuPopup.Instance);
-                }, allowsMultipleExecutions: false),
+                    await MopupService.Instance.PushAsync(Popup.SideMenuPopup.Instance);
+                }),
             };
             CustomToolbarItems.Add(sideMenuItem);
 
@@ -92,14 +92,14 @@ namespace OWCE.Pages
             _reconnectingAlert = new ConnectingAlert(Board.Name, new Command(() =>
             {
                 // TODO Disconnect.
-                PopupNavigation.Instance.RemovePageAsync(_reconnectingAlert);
+                MopupService.Instance.RemovePageAsync(_reconnectingAlert);
                 _reconnectingAlert = null;
             }), "Reconnecting...");
             
 
-            if (PopupNavigation.Instance.PopupStack.Contains(_reconnectingAlert) == false)
+            if (MopupService.Instance.PopupStack.Contains(_reconnectingAlert) == false)
             {
-                PopupNavigation.Instance.PushAsync(_reconnectingAlert, true);
+                MopupService.Instance.PushAsync(_reconnectingAlert, true);
             }
 
         }
@@ -109,9 +109,9 @@ namespace OWCE.Pages
         {
             System.Diagnostics.Debug.WriteLine("OWBLE_BoardReconnected");
 
-            if (PopupNavigation.Instance.PopupStack.Contains(_reconnectingAlert))
+            if (MopupService.Instance.PopupStack.Contains(_reconnectingAlert))
             {
-                PopupNavigation.Instance.RemovePageAsync(_reconnectingAlert);
+                MopupService.Instance.RemovePageAsync(_reconnectingAlert);
                 _reconnectingAlert = null;
             }
         }
@@ -160,13 +160,13 @@ namespace OWCE.Pages
 
         async void Disconnect_Tapped(System.Object sender, System.EventArgs e)
         {
-            var result = await DisplayActionSheet("Are you sure you want to disconnect?", "Cancel", "Disconnect");
+            var result = await DisplayActionSheetAsync("Are you sure you want to disconnect?", "Cancel", "Disconnect");
 
             if (result == "Disconnect")
             {
-                if (PopupNavigation.Instance.PopupStack.Any())
+                if (MopupService.Instance.PopupStack.Any())
                 {
-                    await PopupNavigation.Instance.PopAllAsync();
+                    await MopupService.Instance.PopAllAsync();
                 }
                 await DisconnectAndPop();
             }
@@ -180,7 +180,7 @@ namespace OWCE.Pages
 
             await Navigation.PopModalAsync();
 
-            IWatch watchService = DependencyService.Get<IWatch>();
+            IWatch watchService = App.GetService<IWatch>();
 
             watchService.StopListeningForWatchMessages();
         }
@@ -191,7 +191,7 @@ namespace OWCE.Pages
             App.Current.MetricDisplay = !isToggled;
             Preferences.Set("metric_display", !isToggled);
 
-            MessagingCenter.Send<App>(App.Current, App.UnitDisplayUpdatedKey);
+            WeakReferenceMessenger.Default.Send(new UnitDisplayUpdatedMessage());
         }
 
         async Task StartRecordingAsync()

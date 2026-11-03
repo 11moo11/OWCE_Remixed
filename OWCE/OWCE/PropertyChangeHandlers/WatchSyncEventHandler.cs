@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using OWCE.Converters;
 using OWCE.DependencyInterfaces;
-using Xamarin.Forms;
 
 namespace OWCE.PropertyChangeHandlers
 {
@@ -64,7 +63,7 @@ namespace OWCE.PropertyChangeHandlers
             var updates = watchUpdates;
             watchUpdates = new Dictionary<WatchMessage, object>();
 
-            IWatch watchService = DependencyService.Get<IWatch>();
+            IWatch watchService = App.GetService<IWatch>();
             watchService.SendWatchMessages(updates);
         }
 

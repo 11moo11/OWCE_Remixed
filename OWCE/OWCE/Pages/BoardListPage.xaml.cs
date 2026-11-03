@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,13 +11,9 @@ using System.Windows.Input;
 using OWCE.DependencyInterfaces;
 using OWCE.Pages.Popup;
 using OWCE.Views;
-using Rg.Plugins.Popup.Extensions;
-using Rg.Plugins.Popup.Services;
-using Xamarin.CommunityToolkit.ObjectModel;
-using Xamarin.Essentials;
-using Xamarin.Forms;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-
+using Mopups.Services;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 namespace OWCE.Pages
 {
     public partial class BoardListPage : BaseContentPage
@@ -61,8 +57,8 @@ namespace OWCE.Pages
             }
         }));
 
-        AsyncCommand<OWBaseBoard> _boardSelectedCommand;
-        public AsyncCommand<OWBaseBoard> BoardSelectedCommand => _boardSelectedCommand ??= new AsyncCommand<OWBaseBoard>(BoardSelectedAsync, allowsMultipleExecutions: false);
+        AsyncRelayCommand<OWBaseBoard> _boardSelectedCommand;
+        public AsyncRelayCommand<OWBaseBoard> BoardSelectedCommand => _boardSelectedCommand ??= new AsyncRelayCommand<OWBaseBoard>(BoardSelectedAsync);
 
        
         
@@ -86,8 +82,8 @@ namespace OWCE.Pages
         //public IOWScanner OWScanner => _owScanner;
 
         //PastRidesCommand
-        AsyncCommand _pastRidesCommand;
-        public AsyncCommand PastRidesCommand => _pastRidesCommand ??= new AsyncCommand(PastRidesCommand_Clicked, allowsMultipleExecutions: false);
+        AsyncRelayCommand _pastRidesCommand;
+        public AsyncRelayCommand PastRidesCommand => _pastRidesCommand ??= new AsyncRelayCommand(PastRidesCommand_Clicked);
 
         Grid _scanningView;
 
@@ -113,7 +109,7 @@ namespace OWCE.Pages
             var scanningLabel = new Label()
             {
                 Text = "Scanning...",
-                TextColor = Color.Black,
+                TextColor = Colors.Black,
                 FontFamily = "SairaExtraCondensed-SemiBold",
                 FontSize = 24,
                 VerticalOptions = LayoutOptions.Center,
@@ -124,7 +120,7 @@ namespace OWCE.Pages
             {
                 WidthRequest = 26,
                 HeightRequest = 26,
-                Color = Color.Black,
+                Color = Colors.Black,
                 IsRunning = true,
                 VerticalOptions = LayoutOptions.Center,
                 HorizontalOptions = LayoutOptions.End,
@@ -145,10 +141,10 @@ namespace OWCE.Pages
             {
                 Position = CustomToolbarItemPosition.Left,
                 IconImageSource = "burger_menu",
-                Command = new AsyncCommand(async () =>
+                Command = new AsyncRelayCommand(async () =>
                 {
-                    await PopupNavigation.Instance.PushAsync(Popup.SideMenuPopup.Instance);
-                }, allowsMultipleExecutions: false),
+                    await MopupService.Instance.PushAsync(Popup.SideMenuPopup.Instance);
+                }),
             };
             CustomToolbarItems.Add(sideMenuItem);
 
@@ -214,7 +210,7 @@ namespace OWCE.Pages
                     {
                         ButtonText = "OK",
                     };
-                    await PopupNavigation.Instance.PushAsync(alert, true);
+                    await MopupService.Instance.PushAsync(alert, true);
 
                     // Additionally if this is also the first launch ever, lets prompt them for bluetooth after they have dismissed the initial alert.
                     if (VersionTracking.IsFirstLaunchEver)
@@ -225,7 +221,7 @@ namespace OWCE.Pages
                             {
                                 if (parameter is Popup.Alert alertPage)
                                 {
-                                    await Rg.Plugins.Popup.Services.PopupNavigation.Instance.RemovePageAsync(alertPage);
+                                    await MopupService.Instance.RemovePageAsync(alertPage);
                                     await StartScanning();
                                 }
                             }))
@@ -233,7 +229,7 @@ namespace OWCE.Pages
                                 SuperTitleText = "Welcome",
                                 ButtonText = "OK",
                             };
-                            PopupNavigation.Instance.PushAsync(bluetoothPleaseAlert, true);
+                            MopupService.Instance.PushAsync(bluetoothPleaseAlert, true);
                         };
                     }
                     else
@@ -257,12 +253,12 @@ namespace OWCE.Pages
             /*
             if (App.Current.OWBLE.BluetoothEnabled() == false)
             {
-                await DisplayAlert("Error", "Bluetooth is not enabled on your device. Please enable bluetooth and try scan for boards again.", "Ok");
+                await DisplayAlertAsync("Error", "Bluetooth is not enabled on your device. Please enable bluetooth and try scan for boards again.", "Ok");
                 return;
             }
             */
 
-            if (await DependencyService.Get<DependencyInterfaces.IPermissionPrompt>().PromptBLEPermission() == false)
+            if (await App.GetService<DependencyInterfaces.IPermissionPrompt>().PromptBLEPermission() == false)
             {
                 return;
             }
@@ -274,7 +270,7 @@ namespace OWCE.Pages
             catch (Exception)
             {
                 var alert = new Pages.Popup.Alert("Error", "Could not scan for boards. Please ensure bluetooth is enabled and has correct permission to scan.");
-                await PopupNavigation.Instance.PushAsync(alert, true);
+                await MopupService.Instance.PushAsync(alert, true);
             }
         }
 
@@ -297,10 +293,10 @@ namespace OWCE.Pages
 
         void OWBLE_ErrorOccurred(string message)
         {
-            Device.InvokeOnMainThreadAsync(async () =>
+            MainThread.InvokeOnMainThreadAsync(async () =>
             {
                 var alert = new Pages.Popup.Alert("Error", message);
-                await PopupNavigation.Instance.PushAsync(alert, true);
+                await MopupService.Instance.PushAsync(alert, true);
             });
         }
 
@@ -327,7 +323,7 @@ namespace OWCE.Pages
             System.Diagnostics.Debug.WriteLine($"Device connected {board.Name} {board.ID}");
             if (_selectedBoard != null && _selectedBoard.Equals(board))
             {
-                Device.BeginInvokeOnMainThread(async () =>
+                MainThread.BeginInvokeOnMainThread(async () =>
                 {
                     Hud.Dismiss();
                     await Navigation.PushAsync(new BoardPage(board));
@@ -365,15 +361,15 @@ namespace OWCE.Pages
                         //App.Current.OWBLE.Disconnect();
                     }
                 }));
-                await PopupNavigation.Instance.PushAsync(connectingAlert, true);
+                await MopupService.Instance.PushAsync(connectingAlert, true);
 
                 var board = await App.Current.ConnectToBoard(baseBoard, cancellationTokenSource.Token);
-                await PopupNavigation.Instance.PopAllAsync();
+                await MopupService.Instance.PopAllAsync();
                 if (board != null)
                 {
-                    await Navigation.PushModalAsync(new CustomNavigationPage(new BoardPage(board)));
+                    await Navigation.PushModalAsync(new NavigationPage(new BoardPage(board)));
                     // Publish notification that board was connected
-                    IWatch watchService = DependencyService.Get<IWatch>();
+                    IWatch watchService = App.GetService<IWatch>();
                     watchService.ListenForWatchMessages(board);
                 }
                 /*
@@ -390,14 +386,14 @@ namespace OWCE.Pages
                 }
                 catch (Exception)
                 {
-                    await DisplayAlert("Error", $"Unable to connect to {board.Name}.", "Cancel");
+                    await DisplayAlertAsync("Error", $"Unable to connect to {board.Name}.", "Cancel");
                 }
                 */
             }
             else
             {
                 var alert = new Pages.Popup.Alert("Error", $"{baseBoard.Name} is not available.");
-                await PopupNavigation.Instance.PushAsync(alert, true);
+                await MopupService.Instance.PushAsync(alert, true);
             }
         }
 
@@ -405,7 +401,7 @@ namespace OWCE.Pages
         {
             await Task.WhenAll(
                Navigation.PushAsync(new PastRidesPage()),
-               PopupNavigation.Instance.RemovePageAsync(SideMenuPopup.Instance)
+               MopupService.Instance.RemovePageAsync(SideMenuPopup.Instance)
            );
         }
 

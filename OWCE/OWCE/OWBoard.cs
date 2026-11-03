@@ -1,4 +1,6 @@
-﻿using System;
+using AsyncAwaitBestPractices;
+using CommunityToolkit.Mvvm.Messaging;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -12,14 +14,11 @@ using System.Text.Json;
 using OWCE.Protobuf;
 //using Plugin.Geolocator;
 //using Plugin.Geolocator.Abstractions;
-using Xamarin.Essentials;
-using Xamarin.Forms;
 using System.Collections.ObjectModel;
 using OWCE.Models;
 using OWCE.Network;
 using OWCE.DependencyInterfaces;
-using Rg.Plugins.Popup.Services;
-using MvvmHelpers;
+using Mopups.Services;
 using OWCE.PropertyChangeHandlers;
 
 namespace OWCE
@@ -557,7 +556,7 @@ namespace OWCE
 
         public OWBoard(IOWBLE owble, OWBaseBoard baseBoard) : base(baseBoard)
         {
-            MessagingCenter.Subscribe<App>(this, App.UnitDisplayUpdatedKey, (app) =>
+            WeakReferenceMessenger.Default.Register<UnitDisplayUpdatedMessage>(this, (recipient, message) =>
             {
                 OnPropertyChanged(nameof(RPM));
                 OnPropertyChanged(nameof(LifetimeOdometer));
@@ -658,7 +657,7 @@ namespace OWCE
 
         private void RSSIMonitor()
         {
-            Device.StartTimer(TimeSpan.FromSeconds(0.5), () =>
+            App.Current.Dispatcher.StartTimer(TimeSpan.FromSeconds(0.5), () =>
             {
                 try
                 {
@@ -777,20 +776,20 @@ namespace OWCE
                 {
                     if (FirmwareRevision >= 4155 && HardwareRevision < 5000) // XR with 4155 FW.
                     {
-                        await App.Current.MainPage.DisplayAlert("Oh no!", "Some features of this app currently will not work with board firmware 4155 and higher.\n\nFuture Motion has locked some features down and as a result prevents apps like OWCE reporting valuable data to you.\n\nSorry about that.", "Ok");
+                        await App.Current.RootPage.DisplayAlertAsync("Oh no!", "Some features of this app currently will not work with board firmware 4155 and higher.\n\nFuture Motion has locked some features down and as a result prevents apps like OWCE reporting valuable data to you.\n\nSorry about that.", "Ok");
                     }
 
                     // No longer using the handshake with web connection.
                     var jumpstartAlert = new Pages.Popup.JumpstartAlert(new Command(async () =>
                     {
-                        await PopupNavigation.Instance.PopAllAsync();
-                        if (App.Current.MainPage.Navigation.ModalStack.Count == 1 && App.Current.MainPage.Navigation.ModalStack.FirstOrDefault() is NavigationPage modalNavigationPage && modalNavigationPage.CurrentPage is Pages.BoardPage boardPage)
+                        await MopupService.Instance.PopAllAsync();
+                        if (App.Current.RootPage.Navigation.ModalStack.Count == 1 && App.Current.RootPage.Navigation.ModalStack.FirstOrDefault() is NavigationPage modalNavigationPage && modalNavigationPage.CurrentPage is Pages.BoardPage boardPage)
                         {
                             await boardPage.DisconnectAndPop();
                             return;
                         }
                     }));
-                    await PopupNavigation.Instance.PushAsync(jumpstartAlert, true);
+                    await MopupService.Instance.PushAsync(jumpstartAlert, true);
                     return;
                 }
                 else // XR 4209 and below
@@ -801,10 +800,10 @@ namespace OWCE
                     }
                     catch (Exceptions.HandshakeException handshakeException)
                     {
-                        await App.Current.MainPage.DisplayAlert("Error", handshakeException.Message, "Ok");
+                        await App.Current.RootPage.DisplayAlertAsync("Error", handshakeException.Message, "Ok");
                         if (handshakeException.ShouldDisconnect)
                         {
-                            if (App.Current.MainPage.Navigation.ModalStack.Count == 1 && App.Current.MainPage.Navigation.ModalStack.FirstOrDefault() is Pages.CustomNavigationPage modalNavigationPage && modalNavigationPage.CurrentPage is Pages.BoardPage boardPage)
+                            if (App.Current.RootPage.Navigation.ModalStack.Count == 1 && App.Current.RootPage.Navigation.ModalStack.FirstOrDefault() is NavigationPage modalNavigationPage && modalNavigationPage.CurrentPage is Pages.BoardPage boardPage)
                             {
                                 await boardPage.DisconnectAndPop();
                             }
@@ -821,7 +820,7 @@ namespace OWCE
                     KeepBoardAlive().SafeFireAndForget();
 
                     _keepHandshakeBackgroundRunning = true;
-                    Device.StartTimer(TimeSpan.FromSeconds(15), () =>
+                    App.Current.Dispatcher.StartTimer(TimeSpan.FromSeconds(15), () =>
                     {
                         KeepBoardAlive().SafeFireAndForget();
                         return _keepHandshakeBackgroundRunning;

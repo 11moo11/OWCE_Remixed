@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Rg.Plugins.Popup.Pages;
-using Xamarin.Forms;
+using Mopups.Pages;
 
 namespace OWCE.Pages.Popup
 {

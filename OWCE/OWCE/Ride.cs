@@ -1,8 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
 using SQLite;
-using Xamarin.Essentials;
-
 namespace OWCE
 {
     public class Ride

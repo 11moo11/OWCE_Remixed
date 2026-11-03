@@ -1,9 +1,8 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ContentView
-    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:xct="clr-namespace:Xamarin.CommunityToolkit.UI.Views;assembly=Xamarin.CommunityToolkit"
-    xmlns:yummy="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:views="clr-namespace:OWCE.Views"
     xmlns:converters="clr-namespace:OWCE.Converters"
     x:Class="OWCE.Views.BatteryView">
@@ -13,11 +12,11 @@
         <converters:IsBoardTypeConverter x:Key="IsBoardTypeConverter" />
     </ContentView.Resources>
 
-    <yummy:PancakeView x:Name="MainView" BackgroundColor="#FFFF00" Style="{StaticResource BoardDetailBlockBaseStyle}" >
+    <Border x:Name="MainView" BackgroundColor="#FFFF00" Style="{StaticResource BoardDetailBlockBaseStyle}" >
 
 
-        <xct:Expander x:Name="ExpanderView" HorizontalOptions="Fill" PropertyChanged="ExpanderView_PropertyChanged">
-            <xct:Expander.IsEnabled>
+        <toolkit:Expander x:Name="ExpanderView" HorizontalOptions="Fill" PropertyChanged="ExpanderView_PropertyChanged">
+            <toolkit:Expander.IsEnabled>
                 <MultiBinding Converter="{StaticResource AnyTrueConverter}">
                     <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="V1" />
                     <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="Plus" />
@@ -25,8 +24,8 @@
                     <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="Pint" />
                     <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="PintX" />
                 </MultiBinding>
-            </xct:Expander.IsEnabled>
-            <xct:Expander.Header>
+            </toolkit:Expander.IsEnabled>
+            <toolkit:Expander.Header>
                 <Grid BackgroundColor="#CC00CC" RowDefinitions="121" AbsoluteLayout.LayoutFlags="WidthProportional" AbsoluteLayout.LayoutBounds="0,0,1,121">
 
                     <BoxView x:Name="BatteryBar" BackgroundColor="#FF00FF" VerticalOptions="Fill" HorizontalOptions="Start" WidthRequest="100" />
@@ -81,10 +80,10 @@
 
                 </Grid>
 
-            </xct:Expander.Header>
+            </toolkit:Expander.Header>
 
             <views:BatteryCellsView x:Name="BatteryCellsView" BindingContext="{Binding BatteryCells}" />
 
-        </xct:Expander>
-    </yummy:PancakeView>
+        </toolkit:Expander>
+    </Border>
 </ContentView>

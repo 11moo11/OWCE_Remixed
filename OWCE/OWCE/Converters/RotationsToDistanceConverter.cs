@@ -1,7 +1,5 @@
-﻿using System;
+using System;
 using System.Globalization;
-using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace OWCE.Converters
 {

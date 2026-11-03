@@ -1,10 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <pages:PopupPage
-    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
-    xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup"
-    xmlns:yummy="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+    xmlns:pages="clr-namespace:Mopups.Pages;assembly=Mopups"
+    xmlns:animations="clr-namespace:Mopups.Animations;assembly=Mopups"
     xmlns:popup="clr-namespace:OWCE.Pages.Popup"
     x:Class="OWCE.Pages.Popup.ConnectingAlert"
     x:DataType="popup:ConnectingAlert"
@@ -24,7 +23,7 @@
             HasBackgroundAnimation="True"/>
     </pages:PopupPage.Animation>
     
-        <yummy:PancakeView Margin="16,0" VerticalOptions="Center" CornerRadius="11" BackgroundColor="{StaticResource BrightYellow}">
+        <Border Margin="16,0" VerticalOptions="Center" StrokeShape="RoundRectangle 11" BackgroundColor="{StaticResource BrightYellow}">
             <Grid RowDefinitions="Auto,Auto,Auto,76" ColumnSpacing="0" RowSpacing="0">
                 <Label Grid.Row="0" Text="{Binding SuperTitleText}" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="16" CharacterSpacing="-0.26" Margin="22,5,22,0" VerticalOptions="Start" />
                 <Label Grid.Row="1" Text="{Binding TitleText}" FontFamily="SairaExtraCondensed-Black" TextColor="Black" FontSize="36" HorizontalTextAlignment="Center" />
@@ -33,8 +32,8 @@
                     <ActivityIndicator Grid.Column="1" IsRunning="True" Color="Black" WidthRequest="26" HeightRequest="26" VerticalOptions="Center" />
                 </Grid>
                 <Grid Grid.Row="3" BackgroundColor="White" HeightRequest="76">
-                    <Button Text="{Binding ButtonText}" Style="{StaticResource RoundButtonStyle}" HorizontalOptions="CenterAndExpand" WidthRequest="112" Command="{Binding ActionButtonCommand}" />
+                    <Button Text="{Binding ButtonText}" Style="{StaticResource RoundButtonStyle}" HorizontalOptions="Center" WidthRequest="112" Command="{Binding ActionButtonCommand}" />
                 </Grid>
             </Grid>
-        </yummy:PancakeView>
+        </Border>
 </pages:PopupPage>

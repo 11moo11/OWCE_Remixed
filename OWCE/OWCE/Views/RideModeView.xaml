@@ -1,8 +1,7 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:xct="clr-namespace:Xamarin.CommunityToolkit.UI.Views;assembly=Xamarin.CommunityToolkit"
-             xmlns:yummy="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="OWCE.Views.RideModeView"
              xmlns:views="clr-namespace:OWCE.Views"
              xmlns:converters="clr-namespace:OWCE.Converters">
@@ -16,9 +15,9 @@
         <converters:SelectedButtonConverter x:Key="SelectedButtonConverter" />
     </ContentView.Resources>
 
-    <yummy:PancakeView BackgroundColor="#000000" Style="{StaticResource BoardDetailBlockBaseStyle}">
-        <xct:Expander x:Name="ExpanderView" Margin="0" Padding="0" HorizontalOptions="Fill" PropertyChanged="ExpanderView_PropertyChanged">
-            <xct:Expander.Header>
+    <Border BackgroundColor="#000000" Style="{StaticResource BoardDetailBlockBaseStyle}">
+        <toolkit:Expander x:Name="ExpanderView" Margin="0" Padding="0" HorizontalOptions="Fill" PropertyChanged="ExpanderView_PropertyChanged">
+            <toolkit:Expander.Header>
                 <Grid BackgroundColor="#000000"  AbsoluteLayout.LayoutFlags="WidthProportional" AbsoluteLayout.LayoutBounds="0,0,1,121">
                     <Label Text="RIDE MODE" FontFamily="SairaExtraCondensed-Bold" TextColor="White" CharacterSpacing="0.26" FontSize="16" Margin="20,6,0,0" />
 
@@ -33,7 +32,7 @@
                     <views:ExpanderArrowView x:Name="ExpanderArrow" HorizontalOptions="End" Margin="17,13" />
 
                 </Grid>
-            </xct:Expander.Header>
+            </toolkit:Expander.Header>
             <Grid ColumnSpacing="0" RowSpacing="0" RowDefinitions="Auto,76,Auto" Margin="0" Padding="0">
                 <!--
                 <views:SwitchView Grid.Row="0" HorizontalOptions="Center">
@@ -64,7 +63,7 @@
                     <StackLayout  x:Name="RideModesStackLayout" BindableLayout.ItemsSource="{Binding User.TopFollowers}" Grid.Row="1" HeightRequest="76" BackgroundColor="White" Orientation="Horizontal">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="views:RideModeButton">
-                                <Button Text="{Binding Name}" Clicked="RideModeButton_Clicked" Style="{Binding IsSelected, Converter={StaticResource SelectedButtonConverter}}" HorizontalOptions="CenterAndExpand">
+                                <Button Text="{Binding Name}" Clicked="RideModeButton_Clicked" Style="{Binding IsSelected, Converter={StaticResource SelectedButtonConverter}}" HorizontalOptions="Center">
                                     
                                 </Button>
                             </DataTemplate>
@@ -83,6 +82,6 @@
                     </Button.IsVisible>
                 </Button>
             </Grid>
-        </xct:Expander>
-    </yummy:PancakeView>
+        </toolkit:Expander>
+    </Border>
 </ContentView>

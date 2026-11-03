@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Xamarin.CommunityToolkit.UI.Views;
-using Xamarin.Forms;
+using CommunityToolkit.Maui.Views;
 
 namespace OWCE.Views
 {
@@ -90,11 +89,11 @@ namespace OWCE.Views
             {
                 if (ExpanderView.IsExpanded)
                 {
-                    ExpanderArrow.RotateTo(180, ExpanderView.ExpandAnimationLength, ExpanderView.ExpandAnimationEasing);
+                    ExpanderArrow.RotateToAsync(180, 200, Easing.CubicIn);
                 }
                 else
                 {
-                    ExpanderArrow.RotateTo(0, ExpanderView.CollapseAnimationLength, ExpanderView.CollapseAnimationEasing);
+                    ExpanderArrow.RotateToAsync(0, 200, Easing.CubicOut);
                 }
             }
         }
@@ -114,7 +113,7 @@ namespace OWCE.Views
 
         async void SetCustomShaping_Clicked(System.Object sender, System.EventArgs e)
         {
-            await Application.Current.MainPage.DisplayAlert(null, "Under Construction", "OK");
+            await App.Current.RootPage.DisplayAlertAsync(null, "Under Construction", "OK");
         }
 
         protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)

@@ -1,9 +1,9 @@
-﻿using System;
+using OWCE.Extensions;
+using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using OWCE.Views;
-using Xamarin.CommunityToolkit.ObjectModel;
-using Xamarin.Forms;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace OWCE.Pages
 {
@@ -11,14 +11,14 @@ namespace OWCE.Pages
     {
         public ObservableRangeCollection<Ride> Rides { get; set; } = new ObservableRangeCollection<Ride>();
 
-        AsyncCommand<Ride> rideSelectedCommand;
-        public AsyncCommand<Ride> RideSelectedCommand => rideSelectedCommand ??= new AsyncCommand<Ride>(RideSelected, allowsMultipleExecutions: false);
+        AsyncRelayCommand<Ride> rideSelectedCommand;
+        public AsyncRelayCommand<Ride> RideSelectedCommand => rideSelectedCommand ??= new AsyncRelayCommand<Ride>(RideSelected);
 
-        AsyncCommand<Ride> deleteRideCommand;
-        public AsyncCommand<Ride> DeleteRideCommand => deleteRideCommand ??= new AsyncCommand<Ride>(DeleteRide, allowsMultipleExecutions: false);
+        AsyncRelayCommand<Ride> deleteRideCommand;
+        public AsyncRelayCommand<Ride> DeleteRideCommand => deleteRideCommand ??= new AsyncRelayCommand<Ride>(DeleteRide);
 
-        AsyncCommand<Ride> renameRideCommand;
-        public AsyncCommand<Ride> RenameRideCommand => renameRideCommand ??= new AsyncCommand<Ride>(RenameRide, allowsMultipleExecutions: false);
+        AsyncRelayCommand<Ride> renameRideCommand;
+        public AsyncRelayCommand<Ride> RenameRideCommand => renameRideCommand ??= new AsyncRelayCommand<Ride>(RenameRide);
         
         public PastRidesPage()
         {
@@ -29,10 +29,10 @@ namespace OWCE.Pages
             {
                 Position = CustomToolbarItemPosition.Left,
                 Text = "Close",
-                Command = new AsyncCommand(async () =>
+                Command = new AsyncRelayCommand(async () =>
                 {
                     await Navigation.PopAsync();
-                }, allowsMultipleExecutions: false),
+                }),
             });
 
             var rides = Database.Connection.Table<Ride>().OrderByDescending((r) => r.StartTime);
@@ -52,7 +52,7 @@ namespace OWCE.Pages
             }
         }
 
-        void CollectionView_SelectionChanged(System.Object sender, Xamarin.Forms.SelectionChangedEventArgs e)
+        void CollectionView_SelectionChanged(System.Object sender, Microsoft.Maui.Controls.SelectionChangedEventArgs e)
         {
         }
 
@@ -64,10 +64,10 @@ namespace OWCE.Pages
         //[RelayCommand]
         async Task RideSelected(Ride ride)
         {
-            var submit = await DisplayAlert("Coming Soon", "Viewing of recorded rides is not available yet. We are working hard to bring it to you soon.\n\nIn the meantime if you would like to assist with OWCE development (specifically if you have aftermarket batteries) you can submit your ride data for research purposes.", "Learn More", "Cancel");
+            var submit = await DisplayAlertAsync("Coming Soon", "Viewing of recorded rides is not available yet. We are working hard to bring it to you soon.\n\nIn the meantime if you would like to assist with OWCE development (specifically if you have aftermarket batteries) you can submit your ride data for research purposes.", "Learn More", "Cancel");
             if (submit)
             {
-                await Navigation.PushModalAsync(new CustomNavigationPage(new SubmitRidePage(ride)));
+                await Navigation.PushModalAsync(new NavigationPage(new SubmitRidePage(ride)));
             }
         }
 
@@ -75,7 +75,7 @@ namespace OWCE.Pages
         //[RelayCommand]
         async Task DeleteRide(Ride ride)
         {
-            var delete = await DisplayAlert("Delete Ride", $"Are you sure you want to delete the ride \"{ride.Name}\"?", "Delete", "Cancel");
+            var delete = await DisplayAlertAsync("Delete Ride", $"Are you sure you want to delete the ride \"{ride.Name}\"?", "Delete", "Cancel");
             if (delete)
             {
                 Database.Connection.Delete(ride);
@@ -98,7 +98,7 @@ namespace OWCE.Pages
             }
             else
             {
-                await DisplayAlert("Error", $"\"{name}\" was an invalid name for a ride.", "OKAY");
+                await DisplayAlertAsync("Error", $"\"{name}\" was an invalid name for a ride.", "OKAY");
             }
         }
 
