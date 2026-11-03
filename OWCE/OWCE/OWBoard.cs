@@ -614,6 +614,43 @@ namespace OWCE
             set { if (_lightMode != value) { _lightMode = value; OnPropertyChanged(); } }
         }
 
+        public const ushort LightModeOff = 0;
+        public const ushort LightModeOn = 1; // The board's default lights.
+
+        /// <summary>
+        /// Turns the board's lights on (default lights) or off. After writing, the mode is read back so
+        /// <see cref="LightMode"/> reflects what the board did. Returns null on success, or a message on failure.
+        /// </summary>
+        public async Task<string> SetLightsAsync(bool on)
+        {
+            try
+            {
+                await _owble.WriteValue(LightModeUUID, BitConverter.GetBytes(on ? LightModeOn : LightModeOff), true);
+
+                var data = await _owble.ReadValue(LightModeUUID, true);
+                if (data != null)
+                {
+                    SetValue(LightModeUUID, data);
+                }
+                else
+                {
+                    LightMode = on;
+                }
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine("SetLightsAsync: " + err.Message);
+                return "Could not change the lights.";
+            }
+
+            if (LightMode != on)
+            {
+                return on ? "The board did not turn its lights on." : "The board did not turn its lights off.";
+            }
+
+            return null;
+        }
+
         private int _frontLightMode = 0;
         public int FrontLightMode
         {

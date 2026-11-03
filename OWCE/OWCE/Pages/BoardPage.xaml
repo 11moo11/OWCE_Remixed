@@ -107,6 +107,7 @@
                 <views:PowerView BindingContext="{Binding .}" CurrentAmps="{Binding CurrentAmps}" IsRegen="{Binding IsRegen}" TripAmpHours="{Binding TripAmpHours}" TripRegenAmpHours="{Binding TripRegenAmpHours}" />
                 <views:TemperatureView x:Name="TemperatureView" BindingContext="{Binding .}" ControllerTemp="{Binding ControllerTemperature}" MotorTemp="{Binding MotorTemperature}" BatteryTemp="{Binding BatteryTemperature}" />
                 <views:RideModeView BindingContext="{Binding .}" BoardType="{Binding BoardType}" SimpleStopEnabled="{Binding SimpleStopEnabled}" />
+                <views:LightsView BindingContext="{Binding .}" />
                 <!--
                 These are removed for now to make way for bluetooth subscription limits on Android.
                 They may come back later in the way of a diagnostics screen.
