@@ -10,7 +10,7 @@ namespace OWCE
     ///
     ///   Aggressiveness   raw -80..127   shown as 0..10
     ///   TurnCompensation raw -100..100  shown as 0..10
-    ///   AngleOffset      shown in degrees as -(raw * 0.05), limited to -1.5..3.0 degrees
+    ///   AngleOffset      shown in degrees as (raw * 0.05), limited to -3.0..1.5 degrees (positive is nose up)
     ///
     /// Protocol details come from community work on OWCE (upstream PR #85 "Simple Stop + Custom Shaping")
     /// and have not been independently verified against official app traffic. See Documentation/CustomShaping.md.
@@ -20,8 +20,8 @@ namespace OWCE
         public const double UiMin = 0;
         public const double UiMax = 10;
 
-        public const double AngleOffsetMinDegrees = -1.5;
-        public const double AngleOffsetMaxDegrees = 3.0;
+        public const double AngleOffsetMinDegrees = -3.0;
+        public const double AngleOffsetMaxDegrees = 1.5;
         const double AngleOffsetDegreesPerStep = 0.05;
 
         const int AggressivenessRawMin = -80;
@@ -29,9 +29,8 @@ namespace OWCE
         const int TurnCompensationRawMin = -100;
         const int TurnCompensationRawMax = 100;
 
-        // Raw limits for the angle offset. The sign is inverted, so the max angle is the min raw value.
-        static readonly int AngleOffsetRawMin = (int)Math.Round(-AngleOffsetMaxDegrees / AngleOffsetDegreesPerStep); // -60
-        static readonly int AngleOffsetRawMax = (int)Math.Round(-AngleOffsetMinDegrees / AngleOffsetDegreesPerStep); // 30
+        static readonly int AngleOffsetRawMin = (int)Math.Round(AngleOffsetMinDegrees / AngleOffsetDegreesPerStep); // -60
+        static readonly int AngleOffsetRawMax = (int)Math.Round(AngleOffsetMaxDegrees / AngleOffsetDegreesPerStep); // 30
 
         public static (int Min, int Max) RawRange(RideTrait trait) => trait switch
         {
@@ -56,7 +55,7 @@ namespace OWCE
                 case RideTrait.TurnCompensation:
                     return Clamp(trait, (int)Math.Round(Rescale(Math.Clamp(display, UiMin, UiMax), UiMin, UiMax, TurnCompensationRawMin, TurnCompensationRawMax)));
                 case RideTrait.AngleOffset:
-                    return Clamp(trait, (int)Math.Round(-Math.Clamp(display, AngleOffsetMinDegrees, AngleOffsetMaxDegrees) / AngleOffsetDegreesPerStep));
+                    return Clamp(trait, (int)Math.Round(Math.Clamp(display, AngleOffsetMinDegrees, AngleOffsetMaxDegrees) / AngleOffsetDegreesPerStep));
                 default:
                     throw new ArgumentOutOfRangeException(nameof(trait), trait, "Not a custom shaping trait.");
             }
@@ -72,7 +71,7 @@ namespace OWCE
                 case RideTrait.TurnCompensation:
                     return Math.Clamp(Rescale(raw, TurnCompensationRawMin, TurnCompensationRawMax, UiMin, UiMax), UiMin, UiMax);
                 case RideTrait.AngleOffset:
-                    return Math.Clamp(-raw * AngleOffsetDegreesPerStep, AngleOffsetMinDegrees, AngleOffsetMaxDegrees);
+                    return Math.Clamp(raw * AngleOffsetDegreesPerStep, AngleOffsetMinDegrees, AngleOffsetMaxDegrees);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(trait), trait, "Not a custom shaping trait.");
             }

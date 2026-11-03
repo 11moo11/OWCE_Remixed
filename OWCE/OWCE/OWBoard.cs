@@ -472,8 +472,7 @@ namespace OWCE
 
         /// <summary>
         /// Writes one custom shaping value. Returns null on success, or a message explaining why it was not written.
-        /// The value is clamped to the supported range and nothing is sent unless the board is in Custom ride mode
-        /// and standing still.
+        /// The value is clamped to the supported range and nothing is sent unless the board is in Custom ride mode.
         /// </summary>
         public async Task<string> SetCustomShapingValueAsync(RideTrait trait, double displayValue)
         {
@@ -490,12 +489,6 @@ namespace OWCE
             if (IsInCustomRideMode == false)
             {
                 return "Switch the board to Custom ride mode first.";
-            }
-
-            // The board is expected to be stationary. Refuse to change how it rides while it is moving.
-            if (Math.Abs(RPM) > 2)
-            {
-                return "Stop the board before changing custom shaping.";
             }
 
             var raw = CustomShaping.DisplayToRaw(trait, displayValue);

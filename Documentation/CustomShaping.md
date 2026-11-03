@@ -6,7 +6,7 @@ When a board is in **Custom** ride mode, the ride mode panel shows three sliders
 |---|---|---|
 | Aggressiveness | 0 - 10 | -80 .. 127 |
 | Turn compensation | 0 - 10 | -100 .. 100 |
-| Angle offset | -1.5 .. 3.0 degrees | `-(degrees / 0.05)`, i.e. 30 .. -60 |
+| Angle offset | -3.0 .. 1.5 degrees (positive = nose up) | `degrees / 0.05`, i.e. -60 .. 30 |
 
 Supported boards: Plus, XR, GT, and **Rewheel patched** Pints. A stock Pint falls back to another ride mode when
 Custom is selected, so Custom shaping on a Pint needs the Rewheel patch. Pint X and V1 are not supported.
@@ -27,15 +27,16 @@ Code: [CustomShaping.cs](../OWCE/OWCE/CustomShaping.cs) (conversions and frame f
 ## Safety guards
 
 * Values are clamped to the ranges above before anything is sent.
-* Nothing is written unless the board is in Custom ride mode and its RPM is (near) zero.
-* A one time warning is shown before the first change.
+* Nothing is written unless the board is in Custom ride mode. Changes are allowed while riding.
+* A one time notice is shown before the first change.
 
 ## Provenance and what is not verified
 
 The characteristic, frame layout, trait ids and value ranges come from community work on OWCE: upstream pull request
 [#85](https://github.com/OnewheelCommunityEdition/OWCE_App/pull/85) ("Simple Stop + Custom Shaping") as merged in
 [sirmammingtonham/OWCE](https://github.com/sirmammingtonham/OWCE). Both are GPL-3.0, like this project. This code is
-an independent implementation, not a copy.
+an independent implementation, not a copy. The angle offset sign is flipped compared with that code so that a positive
+value tilts the nose up (confirmed by riding a Rewheel patched Pint).
 
 **This has not been checked against official Onewheel app traffic**, and the app does not read a value back after
 writing it: the sliders show what was sent. Treat the ranges as the community's best knowledge, test with small

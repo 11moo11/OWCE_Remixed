@@ -96,7 +96,7 @@
                             <Label Text="Angle offset" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
                             <Label x:Name="AngleOffsetValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
                         </Grid>
-                        <Slider x:Name="AngleOffsetSlider" Minimum="-1.5" Maximum="3" MinimumTrackColor="Black" MaximumTrackColor="#D0D0D0" ThumbColor="Black" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
+                        <Slider x:Name="AngleOffsetSlider" Minimum="-3" Maximum="1.5" MinimumTrackColor="Black" MaximumTrackColor="#D0D0D0" ThumbColor="Black" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
                     </VerticalStackLayout>
                     </VerticalStackLayout>
 

@@ -296,7 +296,7 @@ namespace OWCE.Views
 
             var accepted = await App.Current.RootPage.DisplayAlertAsync(
                 "Custom shaping",
-                "This changes how your board rides and is sent straight to the board. Only change it while standing still, make small changes, and test at low speed somewhere safe.",
+                "This changes how your board rides and is sent straight to the board. Make small changes and check how it feels.",
                 "I understand",
                 "Cancel");
 
