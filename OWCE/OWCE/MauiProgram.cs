@@ -1,6 +1,8 @@
 using CommunityToolkit.Maui;
 using Mopups.Hosting;
 using OWCE.DependencyInterfaces;
+using Microsoft.Maui.Handlers;
+using OWCE.Views;
 using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace OWCE
@@ -16,6 +18,19 @@ namespace OWCE
                 .UseMauiCommunityToolkit()
                 .UseSkiaSharp()
                 .ConfigureMopups();
+
+            // Thicker track for ThickSlider (MAUI has no setting for this).
+            SliderHandler.Mapper.AppendToMapping("OWCEThickTrack", (handler, view) =>
+            {
+                if (view is ThickSlider thickSlider)
+                {
+#if ANDROID
+                    OWCE.Droid.ThickSliderStyle.Apply(handler, thickSlider);
+#elif IOS
+                    OWCE.iOS.ThickSliderStyle.Apply(handler, thickSlider);
+#endif
+                }
+            });
 
             // Platform specific implementations of the interfaces in OWCE.DependencyInterfaces.
 #if ANDROID
