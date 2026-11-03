@@ -1,4 +1,5 @@
-﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using OWCE.Protobuf;
 using System.Collections.Generic;
 using System.Threading;
@@ -7,7 +8,7 @@ using OWCE.Network;
 
 namespace OWCE.Pages
 {
-	public class ViewRawRideDataModel : Xamarin.CommunityToolkit.ObjectModel.ObservableObject
+	public class ViewRawRideDataModel : ObservableObject
     {
         string dataFile = String.Empty;
         public string DataFile

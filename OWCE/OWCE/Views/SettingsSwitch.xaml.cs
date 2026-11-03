@@ -1,10 +1,9 @@
-﻿using System;
+using AsyncAwaitBestPractices;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using MvvmHelpers;
 using OWCE.Extensions;
-using Xamarin.Forms;
 
 namespace OWCE.Views
 {
@@ -14,7 +13,7 @@ namespace OWCE.Views
             nameof(OnColor),
             typeof(Color),
             typeof(SettingsSwitch),
-            Color.Blue);
+            Colors.Blue);
 
         public Color OnColor
         {
@@ -27,7 +26,7 @@ namespace OWCE.Views
             nameof(OffColor),
             typeof(Color),
             typeof(SettingsSwitch),
-            Color.Black);
+            Colors.Black);
 
         public Color OffColor
         {
@@ -53,7 +52,7 @@ namespace OWCE.Views
             nameof(CurrentColor),
             typeof(Color),
             typeof(SettingsSwitch),
-            Color.Black);
+            Colors.Black);
 
         public Color CurrentColor
         {
@@ -117,7 +116,7 @@ namespace OWCE.Views
             var xPosition = IsToggled ? (RoundedRectangle.WidthRequest - 2 - 2 - CircleDot.Width) : 0;
             var animationTasks = new List<Task>();
 
-            animationTasks.Add(CircleDot.TranslateTo(xPosition, 0, duration, easing));
+            animationTasks.Add(CircleDot.TranslateToAsync(xPosition, 0, duration, easing));
 
             var fromColor = RoundedRectangle.BackgroundColor;
             var toColor = IsToggled ? OnColor : OffColor;

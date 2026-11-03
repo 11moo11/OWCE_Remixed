@@ -1,10 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <pages:BaseContentPage
-    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="OWCE.Pages.SubmitRidePage"
     xmlns:pages="clr-namespace:OWCE.Pages"
-    xmlns:yummy="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
     x:DataType="pages:SubmitRideModel"
     Title="Additional Info">
 
@@ -26,12 +25,10 @@
             <Label Grid.Row="7" Grid.ColumnSpan="2" Text="Your ride may be added to the OWCE repository so anyone working from the source could replay your ride through the app." FontSize="Small" TextColor="Black" Margin="0,0,0,16"  />
 
             <Label Grid.Row="8" Grid.Column="0" VerticalTextAlignment="Center" Text="Additional Notes" FontAttributes="Bold" TextColor="Black" />
-            <yummy:PancakeView Grid.Row="9" Grid.ColumnSpan="2" CornerRadius="4">
-                <yummy:PancakeView.Border>
-                    <yummy:Border  Color="LightGray" Thickness="1" />
-                </yummy:PancakeView.Border>
+            <Border Grid.Row="9" Grid.ColumnSpan="2" StrokeShape="RoundRectangle 4" Stroke="LightGray" StrokeThickness="1">
+                
                 <Editor Text="{Binding AdditionalNotes}" TextColor="Black" />
-            </yummy:PancakeView>
+            </Border>
 
             <Button Grid.Row="10" Grid.ColumnSpan="2" Text="View raw ride data being submitted" Command="{Binding ViewDataSubmittedCommand}" />
         </Grid>

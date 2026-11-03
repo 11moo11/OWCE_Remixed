@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Xamarin.Forms;
 
 namespace OWCE.Views
 {
@@ -58,15 +57,15 @@ namespace OWCE.Views
 
             if (PitchProperty.PropertyName.Equals(propertyName))
             {
-                PitchView.RotateTo(Pitch, 100, Easing.CubicInOut);
+                PitchView.RotateToAsync(Pitch, 100, Easing.CubicInOut);
             }
             else if (YawProperty.PropertyName.Equals(propertyName))
             {
-                YawView.RotateTo(Yaw, 100, Easing.CubicInOut);
+                YawView.RotateToAsync(Yaw, 100, Easing.CubicInOut);
             }
             else if (RollProperty.PropertyName.Equals(propertyName))
             {
-                RollView.RotateTo(Roll, 100, Easing.CubicInOut);
+                RollView.RotateToAsync(Roll, 100, Easing.CubicInOut);
             }
         }
 

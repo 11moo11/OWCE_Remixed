@@ -4,7 +4,7 @@ This page discusses Watch support for OWCE. Currently, only WatchOS (Apple Watch
 
 ## How the code works
 
-The Watch App uses Dependency Interfaces to communicate between the core (platform independent) OWCE app and the native iOS app, and WatchConnectivity to communicate between iOS and WatchOS.
+The Watch App uses Dependency Interfaces (registered with dependency injection in `MauiProgram.cs`) to communicate between the core (platform independent) OWCE app and the native iOS app, and WatchConnectivity to communicate between iOS and WatchOS.
 
 ### When board is connected
 
@@ -23,6 +23,6 @@ In [InterfaceController.cs](../OWCE/OWCE.WatchOS/OWCE.WatchOS.WatchOSExtension/I
 
 In [OWBoard.cs](../OWCE/OWCE/OWBoard.cs) under `OWBoard()`, `WatchSyncEventHandler` is registered as a `PropertyChanged` listener to keep the watch app in sync with the latest values (eg speed, pattery percent, distance).
 
-[WatchSyncEventHandler](../OWCE/OWCE/PropertyChangeHandlers/WatchSyncEventHandler.cs) filters the list of property changes and sends the relevant updates to the [IWatch](../OWCE/OWCE/DependencyInterfaces/IWatch.cs) Dependency Interface, implemented by [Watch.cs](../OWCE/OWCE.iOS/DependencyImplementations/Watch.cs) on iOS.
+[WatchSyncEventHandler](../OWCE/OWCE/PropertyChangeHandlers/WatchSyncEventHandler.cs) filters the list of property changes and sends the relevant updates to the [IWatch](../OWCE/OWCE/DependencyInterfaces/IWatch.cs) Dependency Interface, implemented by [Watch.cs](../OWCE/OWCE/Platforms/iOS/Watch.cs) on iOS.
 
-[Watch.cs](../OWCE/OWCE.iOS/DependencyImplementations/Watch.cs) uses the WatchConnectivity session to send update messages to the watch.
+[Watch.cs](../OWCE/OWCE/Platforms/iOS/Watch.cs) uses the WatchConnectivity session to send update messages to the watch.

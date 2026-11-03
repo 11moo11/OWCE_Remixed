@@ -1,6 +1,6 @@
-﻿using System;
+using CommunityToolkit.Mvvm.Messaging;
+using System;
 using System.Collections.Generic;
-using Xamarin.Forms;
 using OWCE.Views;
 using System.Runtime.CompilerServices;
 using OWCE.Extensions;
@@ -40,7 +40,7 @@ namespace OWCE.Views
             InitializeComponent();
             MainView.BindingContext = this;
 
-            MessagingCenter.Subscribe<App>(this, App.UnitDisplayUpdatedKey, (app) =>
+            WeakReferenceMessenger.Default.Register<UnitDisplayUpdatedMessage>(this, (recipient, message) =>
             {
                 OnPropertyChanged(nameof(BatteryTemp));
                 OnPropertyChanged(nameof(MotorTemp));

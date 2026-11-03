@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
-using Xamarin.Forms;
-using Xamarin.Forms.Shapes;
+using Microsoft.Maui.Controls.Shapes;
 
 namespace OWCE.Views
 {
@@ -12,7 +11,7 @@ namespace OWCE.Views
           "ArrowColor",
           typeof(Color),
           typeof(ExpanderArrowView),
-          Color.White);
+          Colors.White);
 
         public Color ArrowColor
         {
@@ -61,7 +60,7 @@ namespace OWCE.Views
                 if (Content is Polyline polyline)
                 {
                     polyline.Stroke = new SolidColorBrush(ArrowColor);
-                    ForceLayout();
+                    InvalidateMeasure();
                 }
             }
         }

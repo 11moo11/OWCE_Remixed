@@ -1,73 +1,84 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <!--
+      Android builds on Windows, macOS and Linux. iOS needs a Mac (or a paired Mac from Visual Studio on Windows),
+      so it is only added as a target on those two platforms. Override with: -p:TargetFrameworks=net10.0-android
+    -->
+    <TargetFrameworks>net10.0-android</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx')) or $([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-ios</TargetFrameworks>
+
+    <OutputType>Exe</OutputType>
+    <RootNamespace>OWCE</RootNamespace>
+    <AssemblyName>OWCE</AssemblyName>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+
+    <!-- App identity -->
+    <ApplicationTitle>OWCE</ApplicationTitle>
+    <ApplicationId>com.owcommunity.owce</ApplicationId>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+
+    <SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-android'))">24.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-ios'))">15.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>pdbonly</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <LangVersion>8.0</LangVersion>
+  <PropertyGroup Condition="$(TargetFramework.Contains('-ios'))">
+    <CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <LangVersion>8.0</LangVersion>
-  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.3" />
-    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.3" />
-    <PackageReference Include="Google.Protobuf" Version="3.25.3" />
-    <PackageReference Include="SharpZipLib" Version="1.4.2" />
-    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2622" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.8.1" />
-    <PackageReference Include="Xam.Plugin.Geolocator" Version="4.5.0.6" />
-    <PackageReference Include="System.Text.Json" Version="8.0.2" />
-    <PackageReference Include="Xamarin.Forms.PancakeView" Version="2.3.0.759" />
-    <PackageReference Include="Rg.Plugins.Popup" Version="2.1.0" />
-    <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
-    <PackageReference Include="SkiaSharp" Version="2.88.7" />
-    <PackageReference Include="SkiaSharp.Views.Forms" Version="2.88.7" />
-    <PackageReference Include="Xamarin.CommunityToolkit" Version="2.0.6" />
-    <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-    <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
-  </ItemGroup>
+    <!-- App icon + splash. -->
+    <MauiIcon Include="Resources\AppIcon\appicon.png" Color="#ECEC00" />
+    <MauiSplashScreen Include="Resources\Splash\splash.png" Color="#ECEC00" BaseSize="255,440" />
 
+    <!-- Images (source files are the 3x assets, BaseSize is the 1x size). -->
+    <MauiImage Include="Resources\Images\burger_menu.png" Resize="true" BaseSize="40,40" />
+    <MauiImage Include="Resources\Images\hamburger.png" Resize="true" BaseSize="14,15" />
+    <MauiImage Include="Resources\Images\icon_share.png" Resize="true" BaseSize="24,24" />
+    <MauiImage Include="Resources\Images\menu_cancel.png" Resize="true" BaseSize="24,24" />
+    <MauiImage Include="Resources\Images\menu_leaderboards.png" Resize="true" BaseSize="20,20" />
+    <MauiImage Include="Resources\Images\menu_myrides.png" Resize="true" BaseSize="24,24" />
+    <MauiImage Include="Resources\Images\menu_onewheels.png" Resize="true" BaseSize="20,20" />
+    <MauiImage Include="Resources\Images\menu_settings.png" Resize="true" BaseSize="24,24" />
+    <MauiImage Include="Resources\Images\settings_disconnect.png" Resize="true" BaseSize="24,24" />
+    <MauiImage Include="Resources\Images\settings_info.png" Resize="true" BaseSize="24,24" />
+    <MauiImage Include="Resources\Images\settings_start_recording.png" Resize="true" BaseSize="24,24" />
+    <MauiImage Include="Resources\Images\settings_stop_recording.png" Resize="true" BaseSize="24,24" />
+    <MauiImage Include="Resources\Images\swipe_delete.png" Resize="true" BaseSize="24,24" />
+    <MauiImage Include="Resources\Images\swipe_rename.png" Resize="true" BaseSize="24,24" />
+    <MauiImage Include="Resources\Images\splash_image.png" Resize="true" BaseSize="255,440" />
 
-  <ItemGroup>
-    <Folder Include="Pages\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Views\" />
-    <Folder Include="Models\" />
-    <Folder Include="Resources\" />
-    <Folder Include="Resources\Fonts\" />
-    <Folder Include="Pages\Popup\" />
-    <Folder Include="Network\" />
-    <Folder Include="Exceptions\" />
-    <Folder Include="PropertyChangeHandlers\" />
-    <Folder Include="Resources\SampleRideData\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="**/.DS_Store" />
-    <None Remove="Resources\Fonts\SairaExtraCondensed-SemiBold.ttf" />
-    <None Remove="Resources\Fonts\SairaExtraCondensed-Bold.ttf" />
-    <None Remove="Resources\Fonts\SairaExtraCondensed-Black.ttf" />
-    <None Remove="Resources\Fonts\SairaExtraCondensed-Light.ttf" />
-    <None Remove="Resources\Fonts\SairaExtraCondensed-Medium.ttf" />
-    <None Remove="Newtonsoft.Json" />
-    <None Remove="PropertyChangeHandlers\" />
-    <None Remove="Resources\SampleRideData\" />
-    <None Remove="Resources\SampleRideData\*.bin" />
-    <None Remove="sqlite-net-pcl" />
-    <None Remove="CommunityToolkit.Mvvm" />
-    <None Remove="System.Net.Http.Json" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Fonts\SairaExtraCondensed-SemiBold.ttf" />
-    <EmbeddedResource Include="Resources\Fonts\SairaExtraCondensed-Bold.ttf" />
-    <EmbeddedResource Include="Resources\Fonts\SairaExtraCondensed-Black.ttf" />
-    <EmbeddedResource Include="Resources\Fonts\SairaExtraCondensed-Light.ttf" />
-    <EmbeddedResource Include="Resources\Fonts\SairaExtraCondensed-Medium.ttf" />
+    <!-- Fonts (referenced by family name, eg FontFamily="SairaExtraCondensed-Bold"). -->
+    <MauiFont Include="Resources\Fonts\SairaExtraCondensed-Black.ttf" />
+    <MauiFont Include="Resources\Fonts\SairaExtraCondensed-Bold.ttf" />
+    <MauiFont Include="Resources\Fonts\SairaExtraCondensed-Light.ttf" />
+    <MauiFont Include="Resources\Fonts\SairaExtraCondensed-Medium.ttf" />
+    <MauiFont Include="Resources\Fonts\SairaExtraCondensed-SemiBold.ttf" />
+
+    <!-- Sample ride data used by MockOWBLE when running on a simulator/emulator in Debug. -->
     <EmbeddedResource Include="Resources\SampleRideData\*.bin" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+    <PackageReference Include="CommunityToolkit.Maui" Version="15.0.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="AsyncAwaitBestPractices" Version="10.0.0" />
+    <PackageReference Include="Mopups" Version="1.3.4" />
+    <PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="4.154.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.36.2" />
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+    <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+    <!-- sqlite-net-pcl pulls in an old SQLitePCLRaw native build with a known vulnerability, so pin a newer one. -->
+    <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.14" Condition="!$(TargetFramework.Contains('-android'))" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.android" Version="2.1.14" Condition="$(TargetFramework.Contains('-android'))" />
+  </ItemGroup>
+
 </Project>

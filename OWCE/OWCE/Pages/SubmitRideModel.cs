@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using OWCE.Network;
-using Xamarin.CommunityToolkit.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace OWCE.Pages
 {
-    public class SubmitRideModel : Xamarin.CommunityToolkit.ObjectModel.ObservableObject
+    public class SubmitRideModel : ObservableObject
     {
         string rideName = String.Empty;
         public string RideName

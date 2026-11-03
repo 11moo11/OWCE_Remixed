@@ -109,7 +109,7 @@
       <DependentUpon>NotificationController.cs</DependentUpon>
     </Compile>
     <Compile Include="ComplicationController.cs" />
-    <Compile Include="..\..\OWCE.iOS\SessionManager\WCSessionManager.cs">
+    <Compile Include="..\..\OWCE\Platforms\iOS\SessionManager\WCSessionManager.cs">
       <Link>SessionManager\WCSessionManager.cs</Link>
     </Compile>
     <Compile Include="..\..\OWCE\SharedEnums.cs">

@@ -12,7 +12,7 @@ _ Pint X, all firmware
 
 NOTE: Onewheel Community Edition app is not endorsed by or affiliated with Future Motion in any way.
 
-Written in C# with [Xamarin](http://www.xamarin.com)
+Written in C# with [.NET MAUI](https://dotnet.microsoft.com/apps/maui) (.NET 10)
 
 Open Source Project by [@beeradmoore](http://www.twitter.com/beeradmoore) 
 
@@ -20,15 +20,44 @@ Open Source Project by [@beeradmoore](http://www.twitter.com/beeradmoore)
 * Android and WearOS: Available on Google Play
 * iPhone and Apple Watch: Available on App Store
 
-## How to build and run this project. 
+## How to build and run this project.
 
-Before you start, you will need to install both Visual Studio and Xamarin. If you are using Windows you will want Visual Studio 2017 ([install guide here](https://docs.microsoft.com/en-us/xamarin/cross-platform/get-started/installation/windows)) or if you are on macOS you will want Visual Studio for Mac ([install guide here](https://docs.microsoft.com/en-us/visualstudio/mac/installation)).
+The app is a single [.NET MAUI](https://learn.microsoft.com/dotnet/maui/) project (`OWCE/OWCE/OWCE.csproj`) targeting **.NET 10**. It replaces the old Xamarin.Forms solution (Xamarin reached end of support in May 2024).
 
-Using your flavor of Visual Studio, open OWCE.sln. From the platform dropdown, choose OWCE.iOS or OWCE.Android, depending on what platform you wish to build for. Then, deploy and debug your app like any other project.
+### Prerequisites
 
-NOTE: Because the app depends on the Onewheels low-energy Bluetooth, it will not function correctly in a simulator/emulator. For best results, deploy to a physical device. 
+1. The [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (`global.json` pins the major version).
+2. The MAUI workload for the platform(s) you want to build:
+   ```bash
+   dotnet workload install maui-android   # Android - Windows, macOS or Linux
+   dotnet workload install maui-ios       # iOS - macOS only
+   ```
+3. A JDK (17 or newer) and the Android SDK for Android builds. If you do not have the Android SDK yet, the .NET Android tooling can install it for you:
+   ```bash
+   dotnet build OWCE/OWCE/OWCE.csproj -f net10.0-android -t:InstallAndroidDependencies -p:AndroidSdkDirectory=$HOME/android-sdk -p:AcceptAndroidSDKLicenses=True
+   ```
+   (Then pass the same `-p:AndroidSdkDirectory=...` to the builds below, or set `ANDROID_HOME`.)
+4. For iOS you also need Xcode (the version required by your .NET SDK) on a Mac.
 
+### Build
 
+```bash
+# Android (builds an APK/AAB, works on any OS)
+dotnet build OWCE/OWCE/OWCE.csproj -f net10.0-android
+
+# iOS (macOS only)
+dotnet build OWCE/OWCE/OWCE.csproj -f net10.0-ios
+```
+
+To deploy to a connected Android device/emulator use `dotnet build OWCE/OWCE/OWCE.csproj -f net10.0-android -t:Run`. In Visual Studio or Rider open `OWCE/OWCE.sln` and pick the target framework from the run dropdown. On Linux, and on Windows/macOS without the iOS tooling, only the Android target is built by default (override with `-p:TargetFrameworks=...`).
+
+NOTE: Because the app depends on the Onewheels low-energy Bluetooth, it will not function correctly in a simulator/emulator. For best results, deploy to a physical device. Debug builds running in a simulator/emulator use `MockOWBLE` to replay sample ride data.
+
+### Project layout
+
+* `OWCE/OWCE/` - the app. Shared code (pages, views, board logic) lives here, platform code lives under `Platforms/Android` and `Platforms/iOS`.
+* `OWCE/OWCE/Platforms/*` - Bluetooth (`OWBLE`), permission prompts and Apple Watch bridge per platform. They are registered with dependency injection in `MauiProgram.cs`.
+* `OWCE/OWCE.WatchOS/` - the Apple Watch app. This is still a legacy Xamarin.watchOS project: .NET MAUI does not support watchOS apps, so it is not part of `OWCE.sln` and can not be built with the .NET 10 SDK. See [Documentation/WatchApplication.md](Documentation/WatchApplication.md).
 
 ## Frequently (or not so frequently) Asked Questions
 

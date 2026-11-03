@@ -1,12 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Application xmlns="http://xamarin.com/schemas/2014/forms"
+<?xml version="1.0" encoding="utf-8"?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:OWCE.Converters"
              xmlns:models="clr-namespace:OWCE.Models"
              xmlns:views="clr-namespace:OWCE.Views"
              x:Class="OWCE.App"
-             xmlns:yummy="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
-             xmlns:xct="clr-namespace:Xamarin.CommunityToolkit.UI.Views;assembly=Xamarin.CommunityToolkit">
+             >
     <Application.Resources>
         <ResourceDictionary>
 
@@ -50,10 +49,6 @@
                 <Setter Property="BackgroundColor" Value="Transparent" />
             </Style>
             
-            <Style TargetType="ListView">
-                <Setter Property="BackgroundColor" Value="Transparent" />
-            </Style>
-            
             <Style TargetType="CollectionView">
                 <Setter Property="BackgroundColor" Value="Transparent" />
             </Style>
@@ -66,15 +61,6 @@
             -->
 
             <converters:DivideByTwo x:Key="divideByTwo" />
-
-             <Style x:Key="PancakeButtonStyle" TargetType="yummy:PancakeView">
-                <Setter Property="Border">
-                    <yummy:Border Color="White" Thickness="1" />
-                </Setter>
-                <Setter Property="Padding" Value="10" />
-                <Setter Property="CornerRadius" Value="20" />
-                <Setter Property="HeightRequest" Value="40" />
-            </Style>
 
             <Style x:Key="LabelButtonStyle" TargetType="Label">
                 <Setter Property="HorizontalOptions" Value="Center" />
@@ -115,20 +101,15 @@
                 <Setter Property="CharacterSpacing" Value="0.29" />
             </Style>
 
-             <Style x:Key="BoardDetailBlockBaseStyle" TargetType="yummy:PancakeView">
+             <Style x:Key="BoardDetailBlockBaseStyle" TargetType="Border">
                 <Setter Property="Margin" Value="16,0" />
                 <Setter Property="Padding" Value="0" />
-                <Setter Property="CornerRadius" Value="11" />
-                <Setter Property="Shadow">
-                    <yummy:DropShadow Color="#000000" Opacity="0.14" Offset="0,1" BlurRadius="9" />
+                <Setter Property="StrokeShape">
+                    <RoundRectangle CornerRadius="11" />
                 </Setter>
-            </Style>
-
-            <Style TargetType="xct:Expander">
-                <Setter Property="ExpandAnimationEasing" Value="{x:Static Easing.CubicIn}" />
-                <Setter Property="ExpandAnimationLength" Value="200" />
-                <Setter Property="CollapseAnimationEasing" Value="{x:Static Easing.CubicOut}" />
-                <Setter Property="CollapseAnimationLength" Value="200" />
+                <Setter Property="Shadow">
+                    <Shadow Brush="#000000" Opacity="0.14" Offset="0,1" Radius="9" />
+                </Setter>
             </Style>
             
             

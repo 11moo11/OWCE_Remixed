@@ -18,6 +18,7 @@ namespace OWCE
         string _sampleRideName;
         List<OWBoardEvent> _events = new List<OWBoardEvent>();
         Thread _messagePumpThread;
+        volatile bool _stopMessagePump = false;
 
         public MockOWBLE()
         {
@@ -67,7 +68,7 @@ namespace OWCE
                         }
 
                     }
-                    while (stream.Position < stream.Length);
+                    while (_stopMessagePump == false && stream.Position < stream.Length);
                 }
             }
             catch (Exception err)
@@ -124,6 +125,7 @@ namespace OWCE
             {
                 _sampleRideName = sampleRideName;
 
+                _stopMessagePump = false;
                 _messagePumpThread = new Thread(MessagePump);
                 _messagePumpThread.Start();
 
@@ -236,7 +238,8 @@ namespace OWCE
         {
             if (_messagePumpThread != null)
             {
-                _messagePumpThread.Abort();
+                // Thread.Abort is not supported on modern .NET, so ask the pump to stop instead.
+                _stopMessagePump = true;
                 _messagePumpThread = null;
             }
         }
