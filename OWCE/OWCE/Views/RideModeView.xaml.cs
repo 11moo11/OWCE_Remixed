@@ -205,7 +205,15 @@ namespace OWCE.Views
         void RefreshCustomShaping()
         {
             var board = _board;
-            var show = board != null && board.CanCustomShape && board.IsInCustomRideMode;
+
+            var canShape = board != null && board.CanCustomShape;
+            CustomShapingDiagnostics.IsVisible = canShape;
+            if (canShape)
+            {
+                TraitsDiagnosticsLabel.Text = $"Board reports ({board.RideModeString}, mode {board.RideMode}): angle {DescribeAngle(board.AngleOffset)}, turn {board.TurnCompensation?.ToString() ?? "?"}, aggressiveness {board.Aggressiveness?.ToString() ?? "?"} (raw values)";
+            }
+
+            var show = canShape && board.IsInCustomRideMode;
             CustomShapingPanel.IsVisible = show;
 
             if (show == false)
@@ -254,6 +262,16 @@ namespace OWCE.Views
         }
 
         bool _isRefreshingCustomShaping = false;
+
+        static string DescribeAngle(int? raw)
+        {
+            if (raw.HasValue == false)
+            {
+                return "?";
+            }
+
+            return raw.Value + " (" + (raw.Value * 0.05).ToString("+0.00;-0.00;0.00", System.Globalization.CultureInfo.InvariantCulture) + "\u00B0)";
+        }
 
         void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
         {

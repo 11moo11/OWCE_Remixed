@@ -33,7 +33,7 @@
 
                 </Grid>
             </toolkit:Expander.Header>
-            <Grid ColumnSpacing="0" RowSpacing="0" RowDefinitions="Auto,76,Auto" Margin="0" Padding="0">
+            <Grid ColumnSpacing="0" RowSpacing="0" RowDefinitions="Auto,76,Auto,Auto" Margin="0" Padding="0">
                 <!--
                 <views:SwitchView Grid.Row="0" HorizontalOptions="Center">
                     <views:SwitchView.IsVisible>
@@ -99,8 +99,12 @@
                         <Slider x:Name="AngleOffsetSlider" Minimum="-3" Maximum="1.5" MinimumTrackColor="Black" MaximumTrackColor="#D0D0D0" ThumbColor="Black" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
                     </VerticalStackLayout>
                     </VerticalStackLayout>
+                </VerticalStackLayout>
 
-                    <Button Text="Reload from board" Style="{StaticResource RoundButtonStyle}" HorizontalOptions="Center" Margin="0,4,0,0" Clicked="ReloadCustomShaping_Clicked" />
+                <!-- Shows what the board reports in any ride mode. Handy for working out what the numbers mean. -->
+                <VerticalStackLayout x:Name="CustomShapingDiagnostics" Grid.Row="3" IsVisible="False" Padding="20,8,20,16" Spacing="8" BackgroundColor="White">
+                    <Label x:Name="TraitsDiagnosticsLabel" FontFamily="SairaExtraCondensed-SemiBold" TextColor="#7F7F7F" FontSize="14" />
+                    <Button Text="Reload from board" Style="{StaticResource RoundButtonStyle}" HorizontalOptions="Center" Margin="0" Clicked="ReloadCustomShaping_Clicked" />
                 </VerticalStackLayout>
             </Grid>
         </toolkit:Expander>

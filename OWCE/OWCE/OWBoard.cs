@@ -1265,6 +1265,8 @@ namespace OWCE
             {
                 if (CustomShaping.TryParseFrame(data, out var rideTrait, out var rideTraitValue))
                 {
+                    Debug.WriteLine($"RideTraits frame {BitConverter.ToString(data)}: {rideTrait} = {rideTraitValue} (ride mode {RideMode})");
+
                     if (CustomShaping.IsShapingTrait(rideTrait))
                     {
                         // Outside of range values are kept as the board reports them, but are clamped when shown.
@@ -1314,7 +1316,14 @@ namespace OWCE
                     RPM = value;
                     break;
                 case RideModeUUID:
+                    var previousRideMode = RideMode;
                     RideMode = value;
+
+                    // The board's shaping values can differ per ride mode, so ask for them again when the mode changes.
+                    if (CanCustomShape && previousRideMode != 0 && previousRideMode != value)
+                    {
+                        RequestCustomShapingValuesAsync().SafeFireAndForget();
+                    }
                     break;
                 case LightModeUUID:
                     LightMode = (value == 1);
