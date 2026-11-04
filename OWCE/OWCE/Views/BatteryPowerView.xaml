@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:views="clr-namespace:OWCE.Views"
+    xmlns:converters="clr-namespace:OWCE.Converters"
+    x:Class="OWCE.Views.BatteryPowerView">
+
+    <!-- Battery and current in one panel. The left half is the battery, the right half is the current. This view is bound
+         straight to the board (its BindingContext is the OWBoard). Tap to show the individual cell voltages. -->
+
+    <ContentView.Resources>
+        <converters:AnyTrueMultiConverter x:Key="AnyTrueConverter" />
+        <converters:IsBoardTypeConverter x:Key="IsBoardTypeConverter" />
+    </ContentView.Resources>
+
+    <Border BackgroundColor="{DynamicResource BatteryPanel}" Style="{DynamicResource BoardDetailBlockBaseStyle}">
+
+        <toolkit:Expander x:Name="ExpanderView" HorizontalOptions="Fill" PropertyChanged="ExpanderView_PropertyChanged">
+            <toolkit:Expander.IsEnabled>
+                <MultiBinding Converter="{StaticResource AnyTrueConverter}">
+                    <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="V1" />
+                    <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="Plus" />
+                    <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="XR" />
+                    <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="Pint" />
+                    <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="PintX" />
+                </MultiBinding>
+            </toolkit:Expander.IsEnabled>
+
+            <toolkit:Expander.Header>
+                <Grid ColumnDefinitions="*,*" RowDefinitions="121" ColumnSpacing="0">
+
+                    <!-- Battery -->
+                    <Grid x:Name="BatteryHalf" Grid.Column="0" BackgroundColor="{DynamicResource BatteryHeader}" SizeChanged="Halves_SizeChanged">
+                        <BoxView x:Name="BatteryBar" BackgroundColor="{DynamicResource BatteryBar}" VerticalOptions="Fill" HorizontalOptions="Start" WidthRequest="0" />
+
+                        <Label Text="BATTERY" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnBattery}" CharacterSpacing="0.26" FontSize="16" Margin="16,6,0,0" />
+                        <Label Text="{Binding BatteryPercent, StringFormat='{0}%'}" TextColor="{DynamicResource OnBattery}" FontFamily="SairaExtraCondensed-Black" FontSize="60" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,22,0,0" />
+
+                        <VerticalStackLayout VerticalOptions="End" Margin="16,0,8,6" Spacing="0">
+                            <VerticalStackLayout.IsVisible>
+                                <MultiBinding Converter="{StaticResource AnyTrueConverter}">
+                                    <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="V1" />
+                                    <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="Plus" />
+                                    <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="XR" />
+                                    <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="Pint" />
+                                    <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="PintX" />
+                                </MultiBinding>
+                            </VerticalStackLayout.IsVisible>
+                            <Label Text="{Binding BatteryVoltage, StringFormat='{0:F2}V'}" TextColor="{DynamicResource OnBattery}" FontSize="16" FontFamily="SairaExtraCondensed-Medium" />
+                            <Label TextColor="{DynamicResource OnBattery}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding BatteryCells.LowestCellVoltage, StringFormat='{0:F2}-'}" FontSize="14" FontFamily="SairaExtraCondensed-Medium" />
+                                        <Span Text="{Binding BatteryCells.HighestCellVoltage, StringFormat='{0:F2}V'}" FontSize="14" FontFamily="SairaExtraCondensed-Medium" />
+                                        <Span Text=" cells" FontSize="14" FontFamily="SairaExtraCondensed-Light" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Current -->
+                    <Grid x:Name="PowerHalf" Grid.Column="1" BackgroundColor="{DynamicResource PowerPanel}" SizeChanged="Halves_SizeChanged">
+                        <BoxView x:Name="PowerBar" BackgroundColor="{DynamicResource PowerBar}" VerticalOptions="Fill" HorizontalOptions="Start" WidthRequest="0" />
+
+                        <Label Text="CURRENT" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnPower}" CharacterSpacing="0.26" FontSize="16" Margin="16,6,0,0" />
+                        <Label Text="{Binding CurrentAmps, StringFormat='{0:F1}A'}" TextColor="{DynamicResource OnPower}" FontFamily="SairaExtraCondensed-Black" FontSize="60" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,22,0,0" />
+
+                        <VerticalStackLayout VerticalOptions="End" Margin="8,0,16,6" Spacing="0">
+                            <Label HorizontalTextAlignment="End" TextColor="{DynamicResource OnPower}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding TripAmpHours, StringFormat='{0:F2} Ah'}" FontSize="14" FontFamily="SairaExtraCondensed-Medium" />
+                                        <Span Text=" trip" FontSize="14" FontFamily="SairaExtraCondensed-Light" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label HorizontalTextAlignment="End" TextColor="{DynamicResource OnPower}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="regen " FontSize="14" FontFamily="SairaExtraCondensed-Light" />
+                                        <Span Text="{Binding TripRegenAmpHours, StringFormat='{0:F2} Ah'}" FontSize="14" FontFamily="SairaExtraCondensed-Medium" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <views:ExpanderArrowView x:Name="ExpanderArrow" Grid.ColumnSpan="2" ArrowColor="{DynamicResource OnPower}" HorizontalOptions="End" VerticalOptions="Start" Margin="17,13">
+                        <views:ExpanderArrowView.IsVisible>
+                            <MultiBinding Converter="{StaticResource AnyTrueConverter}">
+                                <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="V1" />
+                                <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="Plus" />
+                                <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="XR" />
+                                <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="Pint" />
+                                <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="PintX" />
+                            </MultiBinding>
+                        </views:ExpanderArrowView.IsVisible>
+                    </views:ExpanderArrowView>
+                </Grid>
+            </toolkit:Expander.Header>
+
+            <views:BatteryCellsView BindingContext="{Binding BatteryCells}" />
+
+        </toolkit:Expander>
+    </Border>
+</ContentView>

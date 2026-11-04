@@ -36,6 +36,9 @@ namespace OWCE.Pages
         IAsyncRelayCommand _startRecordRideCommand = null;
         public IAsyncRelayCommand StartRecordRideCommand => _startRecordRideCommand ??= new AsyncRelayCommand(StartRecordingAsync);
 
+        IAsyncRelayCommand _editPanelsCommand = null;
+        public IAsyncRelayCommand EditPanelsCommand => _editPanelsCommand ??= new AsyncRelayCommand(EditPanelsAsync);
+
         IAsyncRelayCommand _stopRecordRideCommand = null;
         public IAsyncRelayCommand StopRecordRideCommand => _stopRecordRideCommand ??= new AsyncRelayCommand(StopRecordingAsync);
 
@@ -47,6 +50,8 @@ namespace OWCE.Pages
 
             InitializeComponent();
             BindingContext = board;
+
+            SetupPanels();
 
             AppVersionLabel.Text = $"{AppInfo.Current.VersionString} (build {AppInfo.Current.BuildString})";
 
@@ -194,6 +199,32 @@ namespace OWCE.Pages
             Preferences.Set("metric_display", !isToggled);
 
             WeakReferenceMessenger.Default.Send(new UnitDisplayUpdatedMessage());
+        }
+
+        // Hands the panels declared in the XAML to the PanelBoard, which arranges them and saves how the user arranged them.
+        void SetupPanels()
+        {
+            var panels = new (string Id, string Title, View Panel)[]
+            {
+                ("speed", "Speed", SpeedRangeDistanceView),
+                ("battery", "Battery and current", BatteryPowerPanel),
+                ("temperature", "Temperatures", TemperatureView),
+                ("ride-mode", "Ride mode", RideModePanel),
+                ("lights", "Lights", LightsPanel),
+            };
+
+            foreach (var panel in panels)
+            {
+                PanelSource.Children.Remove(panel.Panel);
+            }
+
+            Panels.Configure(panels.Select(x => new PanelDefinition(x.Id, x.Title, x.Panel)));
+        }
+
+        async Task EditPanelsAsync()
+        {
+            await Popup.SideMenuPopup.Instance.CloseCommand_Clicked();
+            Panels.StartEditing();
         }
 
         async Task StartRecordingAsync()

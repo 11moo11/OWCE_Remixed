@@ -7,6 +7,7 @@
     <Color x:Key="BackgroundGradientStart">#0B3D91</Color>
     <Color x:Key="BackgroundGradientEnd">#0A1F5C</Color>
     <Color x:Key="OnBackgroundColor">#FFFFFF</Color>
+    <SolidColorBrush x:Key="OnBackgroundBrush" Color="#FFFFFF" />
     <Color x:Key="SurfaceColor">#0F2A6B</Color>
     <Color x:Key="OnSurfaceColor">#FFFFFF</Color>
     <Color x:Key="MutedTextColor">#B7CBF7</Color>
@@ -19,6 +20,7 @@
     <Color x:Key="ButtonColor">#15398A</Color>
     <Color x:Key="OnButtonColor">#FFFFFF</Color>
     <Color x:Key="ButtonBorderColor">#5C8DFF</Color>
+    <SolidColorBrush x:Key="ButtonBorderBrush" Color="#5C8DFF" />
     <Color x:Key="SelectedButtonColor">#FF8A00</Color>
     <Color x:Key="OnSelectedButtonColor">#1A0F00</Color>
     <Color x:Key="SliderActiveColor">#FF8A00</Color>
@@ -45,7 +47,7 @@
 
     <!-- The panels on the board screen. -->
     <Style x:Key="BoardDetailBlockBaseStyle" TargetType="Border">
-        <Setter Property="Margin" Value="16,0" />
+        <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="StrokeShape">
             <RoundRectangle CornerRadius="22" />

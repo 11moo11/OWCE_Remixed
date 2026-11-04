@@ -35,6 +35,16 @@
                         <Label Grid.Row="0" Grid.Column="1" Text="Stop recording ride" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18"/>
                     </Grid>
 
+                    <Grid Grid.Row="2" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding EditPanelsCommand}" />
+                        </Grid.GestureRecognizers>
+                        <Image Grid.Row="0" Grid.Column="0" Source="menu_settings" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
+                            <Image.Behaviors><views:ThemedIconTint ThemeColorKey="OnSurfaceColor" /></Image.Behaviors>
+                        </Image>
+                        <Label Grid.Row="0" Grid.Column="1" Text="Edit panels" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18"/>
+                    </Grid>
+
                     <!--
                     <BoxView Grid.Row="1" BackgroundColor="{DynamicResource DividerColor}" HeightRequest="1" />
 
@@ -108,12 +118,16 @@
 
         <ScrollView>
             <StackLayout Spacing="16" Margin="0,16,0,0">
-                <views:SpeedRangeDistanceView x:Name="SpeedRangeDistanceView" HeightRequest="180" RPM="{Binding RPM}" WheelCircumference="{Binding WheelCircumference}" LifetimeOdometer="{Binding LifetimeOdometer}" TripOdometer="{Binding TripOdometer}" />
-                <views:BatteryView BindingContext="{Binding .}"  BoardType="{Binding BoardType}" BatteryPercent="{Binding BatteryPercent}" BatteryVoltage="{Binding BatteryVoltage}" BatteryCells="{Binding BatteryCells}"  />
-                <views:PowerView BindingContext="{Binding .}" CurrentAmps="{Binding CurrentAmps}" IsRegen="{Binding IsRegen}" TripAmpHours="{Binding TripAmpHours}" TripRegenAmpHours="{Binding TripRegenAmpHours}" />
-                <views:TemperatureView x:Name="TemperatureView" BindingContext="{Binding .}" ControllerTemp="{Binding ControllerTemperature}" MotorTemp="{Binding MotorTemperature}" BatteryTemp="{Binding BatteryTemperature}" />
-                <views:RideModeView BindingContext="{Binding .}" BoardType="{Binding BoardType}" SimpleStopEnabled="{Binding SimpleStopEnabled}" />
-                <views:LightsView BindingContext="{Binding .}" />
+                <!-- The panels are created here, with their bindings, and then handed to the PanelBoard (see SetupPanels),
+                     which lets the user move and resize them. This container is never shown. -->
+                <VerticalStackLayout x:Name="PanelSource" IsVisible="False">
+                    <views:SpeedRangeDistanceView x:Name="SpeedRangeDistanceView" HeightRequest="180" RPM="{Binding RPM}" WheelCircumference="{Binding WheelCircumference}" LifetimeOdometer="{Binding LifetimeOdometer}" TripOdometer="{Binding TripOdometer}" />
+                    <views:BatteryPowerView x:Name="BatteryPowerPanel" BindingContext="{Binding .}" />
+                    <views:TemperatureView x:Name="TemperatureView" BindingContext="{Binding .}" ControllerTemp="{Binding ControllerTemperature}" MotorTemp="{Binding MotorTemperature}" BatteryTemp="{Binding BatteryTemperature}" />
+                    <views:RideModeView x:Name="RideModePanel" BindingContext="{Binding .}" BoardType="{Binding BoardType}" SimpleStopEnabled="{Binding SimpleStopEnabled}" />
+                    <views:LightsView x:Name="LightsPanel" BindingContext="{Binding .}" />
+                </VerticalStackLayout>
+                <views:PanelBoard x:Name="Panels" />
                 <!--
                 These are removed for now to make way for bluetooth subscription limits on Android.
                 They may come back later in the way of a diagnostics screen.
