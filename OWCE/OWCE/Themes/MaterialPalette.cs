@@ -60,8 +60,13 @@ namespace OWCE.Themes
             Color Vp(double l) => Color.FromHsla(hue, primarySat, (float)l);
             Color Vs(double l) => Color.FromHsla(secondaryHue, secondarySat, (float)l);
             Color Vt(double l) => Color.FromHsla(accentHue, accentSat, (float)l);
-            Color N(double tone) => Tone(hue, 0.07f, tone);
-            Color V(double tone) => Tone(hue, 0.12f, tone);
+
+            // The page's surfaces and greys carry the primary colour (a dark theme from a green is dark green, not grey), more
+            // strongly the more vivid the primary is.
+            var neutralSat = dark ? Math.Clamp(primarySat * 0.5f, 0.08f, 0.5f) : Math.Clamp(primarySat * 0.35f, 0.05f, 0.4f);
+            var variantSat = Math.Clamp(neutralSat * 1.3f, 0.1f, 0.55f);
+            Color N(double tone) => Color.FromHsla(hue, neutralSat, (float)(tone / 100));
+            Color V(double tone) => Color.FromHsla(hue, variantSat, (float)(tone / 100));
 
             var c = new Dictionary<string, Color>();
 
