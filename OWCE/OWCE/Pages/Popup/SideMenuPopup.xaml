@@ -7,6 +7,7 @@
     x:Class="OWCE.Pages.Popup.SideMenuPopup"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:popup="clr-namespace:OWCE.Pages.Popup"
+    xmlns:views="clr-namespace:OWCE.Views"
     x:DataType="popup:SideMenuPopup"
     >
 
@@ -46,7 +47,7 @@
             </Grid.GestureRecognizers>
             <Image Source="menu_cancel" WidthRequest="16" HeightRequest="16" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True">
                 <Image.Behaviors>
-                    <toolkit:IconTintColorBehavior TintColor="{DynamicResource OnSurfaceColor}" />
+                    <views:ThemedIconTint ThemeColorKey="OnSurfaceColor" />
                 </Image.Behaviors>
             </Image>
         </Grid>
@@ -60,14 +61,18 @@
         <Grid x:Name="SettingsRow" Grid.Row="4" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0">
 <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding SettingsCommand}" CommandParameter="{x:Reference SettingsRow}" /></Grid.GestureRecognizers>
             <Image Grid.Row="0" Grid.Column="0" Source="menu_settings" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
-<Image.Behaviors><toolkit:IconTintColorBehavior TintColor="{DynamicResource OnSurfaceColor}" /></Image.Behaviors>
+<Image.Behaviors><views:ThemedIconTint ThemeColorKey="OnSurfaceColor" /></Image.Behaviors>
 </Image>
             <Label Grid.Row="0" Grid.Column="1" Text="Settings" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" />
         </Grid>
 
         <Grid x:Name="AboutRow" Grid.Row="5" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0">
 <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding AboutCommand}" CommandParameter="{x:Reference AboutRow}" /></Grid.GestureRecognizers>
-            <Image Grid.Row="0" Grid.Column="0" Source="settings_info" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center"/>
+            <Image Grid.Row="0" Grid.Column="0" Source="settings_info" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
+                <Image.Behaviors>
+                    <views:ThemedIconTint ThemeColorKey="OnSurfaceColor" />
+                </Image.Behaviors>
+            </Image>
             <Label Grid.Row="0" Grid.Column="1" Text="About this app" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" />
         </Grid>
 

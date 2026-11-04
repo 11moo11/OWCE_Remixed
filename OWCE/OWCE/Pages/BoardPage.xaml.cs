@@ -70,7 +70,9 @@ namespace OWCE.Pages
             var sideMenuItem = new CustomToolbarItem()
             {
                 Position = CustomToolbarItemPosition.Left,
-                IconImageSource = "burger_menu",
+                IconColorKey = "OnMenuButtonColor",
+                IconBackgroundKey = "MenuButtonColor",
+                IconImageSource = "hamburger",
                 Command = new AsyncRelayCommand(async () =>
                 {
                     await MopupService.Instance.PushAsync(Popup.SideMenuPopup.Instance);

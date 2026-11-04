@@ -40,6 +40,8 @@
     <Color x:Key="OnRideModePanel">#FFFFFF</Color>
     <Color x:Key="LightsPanel">#FF8C00</Color>
     <Color x:Key="OnLights">#000000</Color>
+    <Color x:Key="MenuButtonColor">#0000FF</Color>
+    <Color x:Key="OnMenuButtonColor">#FFFFFF</Color>
 
     <!-- The panels on the board screen. -->
     <Style x:Key="BoardDetailBlockBaseStyle" TargetType="Border">

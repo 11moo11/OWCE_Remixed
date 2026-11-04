@@ -29,7 +29,7 @@
                     <Label.Text>OWCE needs help to
 connect to your board</Label.Text>
                 </Label>
-                <Grid Grid.Row="1" Padding="20,10" RowSpacing="10" ColumnSpacing="20" ColumnDefinitions="Auto,*">
+                <Grid Grid.Row="1" Padding="20,10" RowSpacing="10" ColumnSpacing="20" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*">
                     <Label Grid.Row="0" Grid.Column="0" VerticalOptions="Start" VerticalTextAlignment="Start" Text="1" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnCardColor}" FontSize="24" CharacterSpacing="0.26" />
                     <Label Grid.Row="1" Grid.Column="0" VerticalOptions="Start" VerticalTextAlignment="Start" Text="2" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnCardColor}" FontSize="24" CharacterSpacing="0.26" />
                     <Label Grid.Row="2" Grid.Column="0" VerticalOptions="Start" VerticalTextAlignment="Start" Text="3" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnCardColor}" FontSize="24" CharacterSpacing="0.26" />

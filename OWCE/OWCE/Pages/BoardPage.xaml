@@ -21,13 +21,17 @@
                     
                     <Grid Grid.Row="0" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0" IsVisible="{Binding Board.IsRecordingRide, Converter={StaticResource InvertedBoolConverter}}">
 <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding StartRecordRideCommand}" /></Grid.GestureRecognizers>
-                        <Image Grid.Row="0" Grid.Column="0" Source="settings_start_recording" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center" />
+                        <Image Grid.Row="0" Grid.Column="0" Source="settings_start_recording" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
+<Image.Behaviors><views:ThemedIconTint ThemeColorKey="OnSurfaceColor" /></Image.Behaviors>
+</Image>
                         <Label Grid.Row="0" Grid.Column="1" Text="Record ride" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18"/>
                     </Grid>
                                         
                     <Grid Grid.Row="0" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0" IsVisible="{Binding Board.IsRecordingRide}">
 <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding StopRecordRideCommand}" /></Grid.GestureRecognizers>
-                        <Image Grid.Row="0" Grid.Column="0" Source="settings_stop_recording" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center" />
+                        <Image Grid.Row="0" Grid.Column="0" Source="settings_stop_recording" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
+<Image.Behaviors><views:ThemedIconTint ThemeColorKey="OnSurfaceColor" /></Image.Behaviors>
+</Image>
                         <Label Grid.Row="0" Grid.Column="1" Text="Stop recording ride" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18"/>
                     </Grid>
 
@@ -57,7 +61,9 @@
 
                     <Grid Grid.Row="4" VerticalOptions="End" RowDefinitions="Auto" ColumnSpacing="0" ColumnDefinitions="60,*">
 
-                        <Image Grid.Row="0" Grid.Column="0" Source="settings_disconnect" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center" />
+                        <Image Grid.Row="0" Grid.Column="0" Source="settings_disconnect" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
+<Image.Behaviors><views:ThemedIconTint ThemeColorKey="OnSurfaceColor" /></Image.Behaviors>
+</Image>
                         <Label Grid.Row="0" Grid.Column="1" Text="Disconnect from board" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="Disconnect_Tapped" />
@@ -114,7 +120,7 @@
                 <views:AngleView IsVisible="false" BindingContext="{Binding .}" Pitch="{Binding Pitch}" Yaw="{Binding Yaw}" Roll="{Binding Roll}"   />
                 <views:FootpadsView IsVisible="false" />
                 -->
-                <Grid Padding="20,0">
+                <Grid Padding="20,0" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto">
                     <Label Grid.Row="0" Grid.Column="0" Text="Serial number" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
                     <Label Grid.Row="1" Grid.Column="0" Text="Battery serial number" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
                     <Label Grid.Row="2" Grid.Column="0" Text="Hardware revision" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />

@@ -19,7 +19,7 @@
                     <Grid Grid.Row="0" VerticalOptions="End" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0">
 <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding PastRidesCommand}" /></Grid.GestureRecognizers>
                         <Image Grid.Row="0" Grid.Column="0" Source="menu_myrides" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
-<Image.Behaviors><toolkit:IconTintColorBehavior TintColor="{DynamicResource OnSurfaceColor}" /></Image.Behaviors>
+<Image.Behaviors><views:ThemedIconTint ThemeColorKey="OnSurfaceColor" /></Image.Behaviors>
 </Image>
                         <Label Grid.Row="0" Grid.Column="1" Text="Past Rides" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" />
                     </Grid>

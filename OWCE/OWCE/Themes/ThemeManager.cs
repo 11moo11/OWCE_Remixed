@@ -28,6 +28,9 @@ namespace OWCE.Themes
             new ThemeInfo("codec", "Codec", "Inspired by Metal Gear Solid: green phosphor on black.", () => new CodecTheme()),
             new ThemeInfo("underground", "Underground", "Inspired by Need for Speed Underground: night city neon.", () => new UndergroundTheme()),
             new ThemeInfo("nanotech", "Nanotech", "Inspired by Ratchet & Clank: deep blue with bright orange.", () => new NanotechTheme()),
+            new ThemeInfo("master-thief", "Master Thief", "Inspired by Sly Cooper: rooftop-at-night indigo with gold.", () => new MasterThiefTheme()),
+            new ThemeInfo("keyblade", "Keyblade", "Inspired by Kingdom Hearts II: command-menu navy and sky blue with gold.", () => new KeybladeTheme()),
+            new ThemeInfo("city-escape", "City Escape", "Inspired by Sonic Adventure 2: black and yellow with hero blue and rival red.", () => new CityEscapeTheme()),
         };
 
         static ResourceDictionary _current;

@@ -50,6 +50,30 @@ namespace OWCE.Views
 		}
 
         
+        // Optional theme colours for the icon (names of theme colours, eg "OnMenuButtonColor"). When IconBackgroundKey is set the
+        // icon is drawn on a circle of that colour. This is how the burger button follows the theme.
+        public static readonly BindableProperty IconColorKeyProperty = BindableProperty.Create(
+            propertyName: nameof(IconColorKey),
+            returnType: typeof(string),
+            declaringType: typeof(CustomToolbarItem));
+
+        public string IconColorKey
+        {
+            get { return (string)GetValue(IconColorKeyProperty); }
+            set { SetValue(IconColorKeyProperty, value); }
+        }
+
+        public static readonly BindableProperty IconBackgroundKeyProperty = BindableProperty.Create(
+            propertyName: nameof(IconBackgroundKey),
+            returnType: typeof(string),
+            declaringType: typeof(CustomToolbarItem));
+
+        public string IconBackgroundKey
+        {
+            get { return (string)GetValue(IconBackgroundKeyProperty); }
+            set { SetValue(IconBackgroundKeyProperty, value); }
+        }
+
         public static readonly BindableProperty TextProperty = BindableProperty.Create(
             propertyName: nameof(Text),
             returnType: typeof(string),
@@ -110,9 +134,14 @@ namespace OWCE.Views
             {
                 UpdateIsEnabled();
             }
-            else if (IconImageSourceProperty.PropertyName.Equals(propertyName))
+            else if (IconImageSourceProperty.PropertyName.Equals(propertyName)
+                || IconColorKeyProperty.PropertyName.Equals(propertyName)
+                || IconBackgroundKeyProperty.PropertyName.Equals(propertyName))
             {
-                UpdateIconImage();
+                if (IconImageSource != null)
+                {
+                    UpdateIconImage();
+                }
             }
             else if (TextProperty.PropertyName.Equals(propertyName))
             {
@@ -140,9 +169,37 @@ namespace OWCE.Views
                     VerticalOptions = LayoutOptions.Center,
                     HorizontalOptions = LayoutOptions.Center,
                 };
+            }
+
+            _image.Source = IconImageSource;
+
+            // Tint the icon with a theme colour (the tint follows theme changes).
+            _image.Behaviors.Clear();
+            if (string.IsNullOrEmpty(IconColorKey) == false)
+            {
+                _image.Behaviors.Add(new ThemedIconTint() { ThemeColorKey = IconColorKey });
+            }
+
+            if (string.IsNullOrEmpty(IconBackgroundKey))
+            {
                 Content = _image;
             }
-            _image.Source = IconImageSource;
+            else
+            {
+                // The icon sits on a circle in a theme colour, like the burger button.
+                var circle = new Border()
+                {
+                    WidthRequest = 40,
+                    HeightRequest = 40,
+                    StrokeThickness = 0,
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.Ellipse(),
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center,
+                    Content = _image,
+                };
+                circle.SetDynamicResource(VisualElement.BackgroundColorProperty, IconBackgroundKey);
+                Content = circle;
+            }
         }
 
         void UpdateText()

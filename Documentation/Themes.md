@@ -11,6 +11,9 @@ the page) puts the old one back.
 | Codec | Metal Gear Solid codec screens: green phosphor on black, thin outlines, no rounding. |
 | Underground | Need for Speed Underground: night city, hot pink, cyan and amber neon. |
 | Nanotech | Ratchet & Clank: deep sci-fi blue with bright orange, yellow and cyan, very round. |
+| Master Thief | Sly Cooper: rooftop-at-night indigo with gold, a teal accent and a gold outline. |
+| Keyblade | Kingdom Hearts II: command-menu navy and sky blue with a gold highlight and a blue glow. |
+| City Escape | Sonic Adventure 2: black and yellow with hero blue and rival red. |
 
 The PS2-inspired palettes are interpretations of each game's general look, not copies of their UIs. The sources I could
 find confirm structure (for example [Devil May Cry's orb and vitality gauge HUD](https://devilmaycry.fandom.com/wiki/Orbs),
@@ -27,6 +30,7 @@ A theme is a `ResourceDictionary` in [OWCE/OWCE/Themes](../OWCE/OWCE/Themes). Ev
   `OnSelectedButtonColor`, `SliderActiveColor`, `SliderInactiveColor`
 * each panel: `SpeedPanel`, `BatteryPanel`/`BatteryHeader`/`BatteryBar`, `PowerPanel`/`PowerBar`,
   `TempPanel`/`TempTrack`/`TempBar`, `RideModePanel`, `LightsPanel`, each with an `On...` text colour
+* the burger menu button: `MenuButtonColor` (the circle) and `OnMenuButtonColor` (the lines)
 * styles: `BoardDetailBlockBaseStyle` (the panels' shape, outline and shadow), `RoundButtonStyle`, `SelectedRoundButtonStyle`
 
 The rest of the app refers to those keys with `{DynamicResource ...}`, so applying a theme restyles what is already on
@@ -40,6 +44,17 @@ a theme change. Names starting with `On` are text drawn on the matching backgrou
 3. Check that every text colour is readable on the colour it sits on (aim for a contrast ratio of 4.5:1 or more).
 
 Colours that come from a theme must use `DynamicResource`. A `StaticResource` or hardcoded colour will not change with the theme.
+
+Icons are black images. To make one follow the theme, tint it with `ThemedIconTint` (not a plain
+`IconTintColorBehavior` with a `DynamicResource`, which does not update when the theme changes):
+
+```xml
+<Image Source="menu_settings">
+    <Image.Behaviors>
+        <views:ThemedIconTint ThemeColorKey="OnSurfaceColor" />
+    </Image.Behaviors>
+</Image>
+```
 
 ## Not themed
 
