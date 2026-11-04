@@ -27,8 +27,8 @@
     <Grid
           x:Name="MainGrid"
           BackgroundColor="White"
-          HorizontalOptions="Start"
-          WidthRequest="500"
+          HorizontalOptions="Fill"
+          MaximumWidthRequest="500"
           ColumnSpacing="0"
           RowSpacing="12"
           Padding="0,16,0,16"
@@ -39,10 +39,17 @@
 
 
 
-        <Image Grid.Row="0" Source="menu_cancel" WidthRequest="16" HeightRequest="16" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,16,0">
-<Image.Behaviors><toolkit:IconTintColorBehavior TintColor="Black" /></Image.Behaviors>
-<Image.GestureRecognizers><TapGestureRecognizer Command="{Binding CloseCommand}" /></Image.GestureRecognizers>
-</Image>
+        <!-- Close button. The touch area is bigger than the 16 unit icon so it is easy to hit. -->
+        <Grid Grid.Row="0" WidthRequest="44" HeightRequest="44" HorizontalOptions="End" VerticalOptions="Center" Margin="0,-12,4,-12" BackgroundColor="Transparent">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CloseCommand}" />
+            </Grid.GestureRecognizers>
+            <Image Source="menu_cancel" WidthRequest="16" HeightRequest="16" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True">
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="Black" />
+                </Image.Behaviors>
+            </Image>
+        </Grid>
 
         <BoxView Grid.Row="1" Background="#E4E4E4" HeightRequest="1" />
 
