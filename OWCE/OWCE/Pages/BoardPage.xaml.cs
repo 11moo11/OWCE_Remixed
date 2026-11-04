@@ -81,6 +81,10 @@ namespace OWCE.Pages
             Pager.TabSelected += (index, fromDrag) =>
             {
                 _tab = index;
+                if (index == 2)
+                {
+                    EnsureSettings();
+                }
 
                 // Tapping a tab makes its contents spring in as the screen slides across. (A drag has already
                 // shown the page, so it is left alone.)
@@ -96,7 +100,7 @@ namespace OWCE.Pages
                     }
                     else
                     {
-                        SettingsTab.PlayEntrance();
+                        EnsureSettings().PlayEntrance();
                     }
                 }
             };
@@ -140,6 +144,19 @@ namespace OWCE.Pages
             }
         }
 
+        SettingsView _settings;
+
+        SettingsView EnsureSettings()
+        {
+            if (_settings == null)
+            {
+                _settings = new SettingsView();
+                SettingsHost.Content = _settings;
+            }
+
+            return _settings;
+        }
+
         bool _hasAppeared = false;
 
         protected override void OnAppearing()
@@ -151,6 +168,9 @@ namespace OWCE.Pages
                 _hasAppeared = true;
                 Nav.PlayEntrance();
                 Panels.PlayEntrance();
+
+                // Build the settings in a quiet moment so the first visit to that tab does not stutter.
+                Dispatcher.DispatchDelayed(TimeSpan.FromSeconds(2), () => EnsureSettings());
             }
         }
 

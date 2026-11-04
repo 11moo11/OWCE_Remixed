@@ -109,7 +109,8 @@
 
 
         <!-- Settings tab (with About at the bottom) -->
-        <views:SettingsView x:Name="SettingsTab" />
+        <!-- The settings are built when first needed (or a moment after the page opens), not while the page loads. -->
+        <ContentView x:Name="SettingsHost" />
 
         </views:TabPager>
 

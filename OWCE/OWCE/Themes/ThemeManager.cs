@@ -186,6 +186,13 @@ namespace OWCE.Themes
             WeakReferenceMessenger.Default.Send(new ThemeChangedMessage());
         }
 
+        /// <summary>The colours of a spec, for drawing a preview. (Much cheaper than <see cref="CreateDictionary"/>.)</summary>
+        public static Dictionary<string, Color> PreviewColors(ThemeSpec spec)
+        {
+            return ColorScheme.Generate(
+                Color.FromArgb(spec.Background), Color.FromArgb(spec.Text), Color.FromArgb(spec.Primary), Color.FromArgb(spec.Secondary), Color.FromArgb(spec.Accent));
+        }
+
         /// <summary>Builds the resources for a spec: the preset's palette, then the font, corners and depth on top.</summary>
         public static ResourceDictionary CreateDictionary(ThemeSpec spec)
         {

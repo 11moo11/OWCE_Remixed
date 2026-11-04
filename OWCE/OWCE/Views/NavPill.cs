@@ -164,6 +164,7 @@ namespace OWCE.Views
             }
 
             _cell = _root.Width / _list.Count;
+            _indicator.WidthRequest = _cell - 4;
             SetPosition(_position);
         }
 
@@ -179,13 +180,11 @@ namespace OWCE.Views
             }
 
             // The pill stretches when it is between two items, and is its normal size on an item.
-            var baseWidth = _cell - 4;
+            // Only transforms change as it moves (a width change would lay the bar out again on every frame).
             var frac = position - Math.Floor(position);
             var stretch = Math.Sin(Math.PI * frac);
-            var width = baseWidth * (1 + 0.28 * stretch);
-
-            _indicator.WidthRequest = width;
-            _indicator.TranslationX = position * _cell + 2 - (width - baseWidth) / 2;
+            _indicator.ScaleX = 1 + 0.28 * stretch;
+            _indicator.TranslationX = position * _cell + 2;
 
             var nearest = Math.Clamp((int)Math.Round(position), 0, _list.Count - 1);
             for (var i = 0; i < _list.Count; ++i)

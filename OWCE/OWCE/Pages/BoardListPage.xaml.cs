@@ -156,9 +156,13 @@ namespace OWCE.Pages
                 {
                     PastRidesTab.Refresh();
                 }
-                else if (index == 2 && fromDrag == false)
+                else if (index == 2)
                 {
-                    SettingsTab.PlayEntrance();
+                    var settings = EnsureSettings();
+                    if (fromDrag == false)
+                    {
+                        settings.PlayEntrance();
+                    }
                 }
             };
 
@@ -176,6 +180,19 @@ namespace OWCE.Pages
 
         Thickness _safeInsets;
 
+        SettingsView _settings;
+
+        SettingsView EnsureSettings()
+        {
+            if (_settings == null)
+            {
+                _settings = new SettingsView();
+                SettingsHost.Content = _settings;
+            }
+
+            return _settings;
+        }
+
         bool _hasAppeared = false;
 
         protected override async void OnAppearing()
@@ -185,6 +202,7 @@ namespace OWCE.Pages
             if (_hasAppeared == false)
             {
                 Nav.PlayEntrance();
+                Dispatcher.DispatchDelayed(TimeSpan.FromSeconds(2), () => EnsureSettings());
             }
 
             //App.Current.OWBLE.BLEStateChanged += OWBLE_BLEStateChanged;

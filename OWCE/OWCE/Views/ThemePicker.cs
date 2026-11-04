@@ -123,8 +123,8 @@ namespace OWCE.Views
             // Read the theme's colours without applying it.
             // The theme in use is drawn with the changes made to it so far.
             var shown = theme.Id == ThemeManager.Current.Id ? ThemeManager.Current : theme;
-            var colors = ThemeManager.CreateDictionary(shown);
-            Color Colour(string key) => colors.TryGetValue(key, out var value) && value is Color color ? color : Colors.Gray;
+            var colors = ThemeManager.PreviewColors(shown);
+            Color Colour(string key) => colors.TryGetValue(key, out var value) ? value : Colors.Gray;
 
             Border Block(string key) => new Border()
             {

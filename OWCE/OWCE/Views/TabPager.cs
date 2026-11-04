@@ -3,7 +3,7 @@ namespace OWCE.Views
     /// <summary>
     /// Holds a few views side by side as one wide strip and shows a window onto it, so changing tab slides the whole view sideways
     /// in the direction of the tab. The position is a fractional tab number (1.5 is half way between tab 1 and tab 2), which
-    /// lets a finger drag it, and lets it spring past its target and settle. Pages in the distance fade and shrink a little.
+    /// lets a finger drag it, and lets it spring past its target and settle. 
     /// </summary>
     public class TabPager : Grid
     {
@@ -49,12 +49,10 @@ namespace OWCE.Views
                 var near = Math.Abs(distance) < 1;
 
                 page.IsVisible = near;
+                // Only the position changes while sliding (cheap). Fading or scaling a whole page each frame is slow.
                 if (near)
                 {
-                    var amount = Math.Abs(distance);
                     page.TranslationX = distance * width;
-                    page.Opacity = 1 - 0.7 * amount;
-                    page.Scale = 1 - 0.06 * amount;
                 }
             }
 
