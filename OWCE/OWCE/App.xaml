@@ -18,6 +18,9 @@
             <Color x:Key="darkBackgroundColor">#1C2D41</Color>
             <Color x:Key="textColor">White</Color>
 
+            <!-- The font the theme builder picked. Empty means the system font. ThemeManager sets this with each theme. -->
+            <x:String x:Key="AppFontFamily"></x:String>
+
             <Style TargetType="NavigationPage">
                 <Setter Property="BarTextColor" Value="{DynamicResource OnBackgroundColor}" />
                 <Setter Property="BackgroundColor" Value="{DynamicResource BackgroundGradientStart}" />
@@ -46,20 +49,24 @@
 
             <!-- Text that does not set its own colour sits on the page, so it uses the page's text colour. -->
             <Style TargetType="Label">
+                <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
                 <Setter Property="TextColor" Value="{DynamicResource OnBackgroundColor}" />
             </Style>
 
             <Style TargetType="Entry">
+                <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
                 <Setter Property="TextColor" Value="{DynamicResource OnBackgroundColor}" />
                 <Setter Property="PlaceholderColor" Value="{DynamicResource MutedTextColor}" />
             </Style>
 
             <Style TargetType="Editor">
+                <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
                 <Setter Property="TextColor" Value="{DynamicResource OnBackgroundColor}" />
                 <Setter Property="PlaceholderColor" Value="{DynamicResource MutedTextColor}" />
             </Style>
 
             <Style TargetType="Picker">
+                <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
                 <Setter Property="TextColor" Value="{DynamicResource OnBackgroundColor}" />
                 <Setter Property="TitleColor" Value="{DynamicResource MutedTextColor}" />
             </Style>
@@ -68,6 +75,7 @@
 
             <!-- The look of the settings style screens: rounded groups of items under small accent coloured headings. -->
             <Style x:Key="SectionHeaderStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
                 <Setter Property="TextColor" Value="{DynamicResource AccentColor}" />
                 <Setter Property="FontSize" Value="14" />
                 <Setter Property="FontAttributes" Value="Bold" />
@@ -81,6 +89,7 @@
 
             <!-- The small heading at the top of a dashboard panel. -->
             <Style x:Key="PanelCaptionStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
                 <Setter Property="FontAttributes" Value="Bold" />
                 <Setter Property="FontSize" Value="14" />
                 <Setter Property="CharacterSpacing" Value="1.4" />
@@ -90,6 +99,7 @@
 
             <!-- Text buttons for dialogs. -->
             <Style x:Key="DialogButtonStyle" TargetType="Button">
+                <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
                 <Setter Property="BackgroundColor" Value="Transparent" />
                 <Setter Property="TextColor" Value="{DynamicResource AccentColor}" />
                 <Setter Property="FontSize" Value="15" />
@@ -102,6 +112,7 @@
             </Style>
 
             <Style x:Key="LabelButtonStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
                 <Setter Property="HorizontalOptions" Value="Center" />
                 <Setter Property="FontAttributes" Value="Bold" />
             </Style>

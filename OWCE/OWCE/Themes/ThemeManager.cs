@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.Messaging;
 
 namespace OWCE.Themes
 {
-    public sealed record ThemeInfo(string Id, string Name, string Description, Func<ResourceDictionary> Create);
+    public sealed record ThemeInfo(string Id, string Name, string Description, Func<ResourceDictionary> Create, CornerStyle Corners, DepthStyle Depth);
 
     /// <summary>Sent after a different theme has been applied.</summary>
     public sealed class ThemeChangedMessage
@@ -18,41 +18,151 @@ namespace OWCE.Themes
     public static class ThemeManager
     {
         public const string DefaultThemeId = "default";
-        const string PreferenceKey = "theme";
 
+        /// <summary>The built in presets. Each is a colour palette plus default corners and depth.</summary>
         public static IReadOnlyList<ThemeInfo> Themes { get; } = new List<ThemeInfo>
         {
-            new ThemeInfo(DefaultThemeId, "Default", "The original OWCE look.", () => new DefaultTheme()),
-            new ThemeInfo("material", "Material", "Material Design 3: tonal purple surfaces and large rounded corners.", () => MaterialTheme.Create()),
-            new ThemeInfo("devil-trigger", "Devil Trigger", "Inspired by Devil May Cry: black, crimson and bone with hard edges.", () => new DevilTriggerTheme()),
-            new ThemeInfo("codec", "Codec", "Inspired by Metal Gear Solid: green phosphor on black.", () => new CodecTheme()),
-            new ThemeInfo("underground", "Underground", "Inspired by Need for Speed Underground: night city neon.", () => new UndergroundTheme()),
-            new ThemeInfo("nanotech", "Nanotech", "Inspired by Ratchet & Clank: deep blue with bright orange.", () => new NanotechTheme()),
-            new ThemeInfo("master-thief", "Master Thief", "Inspired by Sly Cooper: rooftop-at-night indigo with gold.", () => new MasterThiefTheme()),
-            new ThemeInfo("keyblade", "Keyblade", "Inspired by Kingdom Hearts II: command-menu navy and sky blue with gold.", () => new KeybladeTheme()),
-            new ThemeInfo("city-escape", "City Escape", "Inspired by Sonic Adventure 2: black and yellow with hero blue and rival red.", () => new CityEscapeTheme()),
+            new ThemeInfo(DefaultThemeId, "Default", "The original OWCE look.", () => new DefaultTheme(), CornerStyle.VeryRound, DepthStyle.DropShadow),
+            new ThemeInfo("material", "Material", "Material Design 3: tonal surfaces and large rounded corners. Pick any colour, and dark mode.", () => MaterialTheme.Create(MaterialPalette.DefaultSeed, false), CornerStyle.VeryRound, DepthStyle.DropShadow),
+            new ThemeInfo("devil-trigger", "Devil Trigger", "Inspired by Devil May Cry: black, crimson and bone with hard edges.", () => new DevilTriggerTheme(), CornerStyle.Sharp, DepthStyle.EdgeLight),
+            new ThemeInfo("codec", "Codec", "Inspired by Metal Gear Solid: green phosphor on black.", () => new CodecTheme(), CornerStyle.Sharp, DepthStyle.EdgeLight),
+            new ThemeInfo("underground", "Underground", "Inspired by Need for Speed Underground: night city neon.", () => new UndergroundTheme(), CornerStyle.Sharp, DepthStyle.EdgeLight),
+            new ThemeInfo("nanotech", "Nanotech", "Inspired by Ratchet & Clank: deep blue with bright orange.", () => new NanotechTheme(), CornerStyle.VeryRound, DepthStyle.DropShadow),
+            new ThemeInfo("master-thief", "Master Thief", "Inspired by Sly Cooper: rooftop-at-night indigo with gold.", () => new MasterThiefTheme(), CornerStyle.Round, DepthStyle.EdgeLight),
+            new ThemeInfo("keyblade", "Keyblade", "Inspired by Kingdom Hearts II: command-menu navy and sky blue with gold.", () => new KeybladeTheme(), CornerStyle.Round, DepthStyle.EdgeLight),
+            new ThemeInfo("city-escape", "City Escape", "Inspired by Sonic Adventure 2: black and yellow with hero blue and rival red.", () => new CityEscapeTheme(), CornerStyle.Sharp, DepthStyle.EdgeLight),
         };
 
+        const string CurrentKey = "theme_current";
+        const string UserStylesKey = "theme_user_styles";
+
         static ResourceDictionary _current;
+        static List<ThemeSpec> _userStyles;
 
-        public static string CurrentId { get; private set; } = DefaultThemeId;
+        /// <summary>The theme in use, including any changes made to it that have not been saved as a style.</summary>
+        public static ThemeSpec Current { get; private set; } = PresetSpec(DefaultThemeId);
 
-        /// <summary>The theme saved in preferences.</summary>
-        public static string SavedId => Preferences.Get(PreferenceKey, DefaultThemeId);
-
-        public static void Save(string id) => Preferences.Set(PreferenceKey, Find(id).Id);
+        public static string CurrentId => Current.Id;
 
         public static ThemeInfo Find(string id) => Themes.FirstOrDefault(x => x.Id == id) ?? Themes[0];
 
-        /// <summary>Applies a theme to the running app. Must be called on the UI thread.</summary>
-        public static void Apply(string id)
+        /// <summary>A preset as a spec: its palette with its default corners and depth, and the system font.</summary>
+        public static ThemeSpec PresetSpec(string id)
         {
-            var theme = Find(id);
+            var info = Find(id);
+            return new ThemeSpec() { Id = info.Id, Name = info.Name, BaseId = info.Id, Corners = info.Corners, Depth = info.Depth };
+        }
+
+        /// <summary>The styles the user has saved.</summary>
+        public static IReadOnlyList<ThemeSpec> UserStyles => LoadUserStyles();
+
+        /// <summary>The presets followed by the user's saved styles.</summary>
+        public static IEnumerable<ThemeSpec> AllSpecs => Themes.Select(x => PresetSpec(x.Id)).Concat(LoadUserStyles());
+
+        public static bool IsUserStyle(string id) => LoadUserStyles().Any(x => x.Id == id);
+
+        /// <summary>The spec for a preset or saved style, or null.</summary>
+        public static ThemeSpec FindSpec(string id) => AllSpecs.FirstOrDefault(x => x.Id == id);
+
+        static List<ThemeSpec> LoadUserStyles()
+        {
+            if (_userStyles != null)
+            {
+                return _userStyles;
+            }
+
+            _userStyles = new List<ThemeSpec>();
+            try
+            {
+                var json = Preferences.Get(UserStylesKey, string.Empty);
+                if (string.IsNullOrEmpty(json) == false)
+                {
+                    var maps = System.Text.Json.JsonSerializer.Deserialize<List<Dictionary<string, string>>>(json);
+                    _userStyles.AddRange(maps.Select(ThemeSpec.FromMap));
+                }
+            }
+            catch (Exception)
+            {
+                // Unreadable saved styles are ignored.
+            }
+
+            return _userStyles;
+        }
+
+        static void SaveUserStyles()
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(LoadUserStyles().Select(x => x.ToMap()).ToList());
+            Preferences.Set(UserStylesKey, json);
+        }
+
+        /// <summary>Saves the theme in use as a new style with this name, and makes it the current one.</summary>
+        public static ThemeSpec SaveAsNewStyle(string name)
+        {
+            var style = Current.Clone();
+            style.Id = "user-" + Guid.NewGuid().ToString("N");
+            style.Name = name;
+            LoadUserStyles().Add(style);
+            SaveUserStyles();
+
+            Apply(style);
+            return style;
+        }
+
+        /// <summary>Saves the changes made to the current saved style.</summary>
+        public static void UpdateCurrentStyle()
+        {
+            var styles = LoadUserStyles();
+            var index = styles.FindIndex(x => x.Id == Current.Id);
+            if (index >= 0)
+            {
+                styles[index] = Current.Clone();
+                SaveUserStyles();
+            }
+        }
+
+        public static void DeleteStyle(string id)
+        {
+            LoadUserStyles().RemoveAll(x => x.Id == id);
+            SaveUserStyles();
+
+            if (Current.Id == id)
+            {
+                Apply(PresetSpec(DefaultThemeId));
+            }
+        }
+
+        /// <summary>Applies the theme from the last run (called at startup).</summary>
+        public static void ApplySaved()
+        {
+            ThemeSpec spec = null;
+            try
+            {
+                var json = Preferences.Get(CurrentKey, string.Empty);
+                if (string.IsNullOrEmpty(json) == false)
+                {
+                    spec = ThemeSpec.FromMap(System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json));
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            // Before the builder existed only a preset id was saved.
+            spec ??= PresetSpec(Preferences.Get("theme", DefaultThemeId));
+            Apply(spec);
+        }
+
+        /// <summary>Applies a preset (or saved style) by id, with its own settings.</summary>
+        public static void Apply(string id) => Apply((FindSpec(id) ?? PresetSpec(DefaultThemeId)).Clone());
+
+        /// <summary>Applies a theme to the running app and remembers it. Must be called on the UI thread.</summary>
+        public static void Apply(ThemeSpec spec)
+        {
             var merged = Application.Current.Resources.MergedDictionaries;
 
             // Add the new theme before removing the old one: the last dictionary added wins, so everything switches in one go
             // without a moment where the theme's keys are missing.
-            var next = theme.Create();
+            var next = CreateDictionary(spec);
             merged.Add(next);
 
             if (_current != null)
@@ -61,9 +171,85 @@ namespace OWCE.Themes
             }
 
             _current = next;
-            CurrentId = theme.Id;
+            Current = spec.Clone();
+
+            try
+            {
+                Preferences.Set(CurrentKey, System.Text.Json.JsonSerializer.Serialize(Current.ToMap()));
+            }
+            catch (Exception)
+            {
+            }
 
             WeakReferenceMessenger.Default.Send(new ThemeChangedMessage());
+        }
+
+        /// <summary>Builds the resources for a spec: the preset's palette, then the font, corners and depth on top.</summary>
+        public static ResourceDictionary CreateDictionary(ThemeSpec spec)
+        {
+            var preset = Find(spec.BaseId);
+            var dictionary = spec.BaseId == "material"
+                ? MaterialTheme.Create(spec.Seed, spec.Dark)
+                : preset.Create();
+
+            dictionary["AppFontFamily"] = spec.Font ?? string.Empty;
+
+            // A preset's own panel style is kept as it is, unless the corners or depth were changed.
+            if (spec.Corners != preset.Corners || spec.Depth != preset.Depth)
+            {
+                dictionary["BoardDetailBlockBaseStyle"] = BuildPanelStyle(spec, dictionary);
+            }
+
+            return dictionary;
+        }
+
+        public static double CornerRadiusFor(CornerStyle corners) => corners switch
+        {
+            CornerStyle.VeryRound => 28,
+            CornerStyle.Round => 14,
+            _ => 2,
+        };
+
+        static Style BuildPanelStyle(ThemeSpec spec, ResourceDictionary colors)
+        {
+            var accent = colors.TryGetValue("AccentColor", out var value) && value is Color color ? color : Colors.Gray;
+
+            var style = new Style(typeof(Microsoft.Maui.Controls.Border));
+            style.Setters.Add(new Setter() { Property = View.MarginProperty, Value = new Thickness(0) });
+            style.Setters.Add(new Setter() { Property = Microsoft.Maui.Controls.Border.PaddingProperty, Value = new Thickness(0) });
+            style.Setters.Add(new Setter()
+            {
+                Property = Microsoft.Maui.Controls.Border.StrokeShapeProperty,
+                Value = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = new CornerRadius(CornerRadiusFor(spec.Corners)) },
+            });
+
+            switch (spec.Depth)
+            {
+                case DepthStyle.DropShadow:
+                    style.Setters.Add(new Setter() { Property = Microsoft.Maui.Controls.Border.StrokeThicknessProperty, Value = 0.0 });
+                    style.Setters.Add(new Setter()
+                    {
+                        Property = VisualElement.ShadowProperty,
+                        Value = new Shadow() { Brush = new SolidColorBrush(Colors.Black), Opacity = 0.28f, Offset = new Point(0, 4), Radius = 10 },
+                    });
+                    break;
+
+                case DepthStyle.EdgeLight:
+                    style.Setters.Add(new Setter() { Property = Microsoft.Maui.Controls.Border.StrokeProperty, Value = new SolidColorBrush(accent) });
+                    style.Setters.Add(new Setter() { Property = Microsoft.Maui.Controls.Border.StrokeThicknessProperty, Value = 2.0 });
+                    style.Setters.Add(new Setter()
+                    {
+                        Property = VisualElement.ShadowProperty,
+                        Value = new Shadow() { Brush = new SolidColorBrush(accent), Opacity = 0.55f, Offset = new Point(0, 0), Radius = 14 },
+                    });
+                    break;
+
+                default:
+                    style.Setters.Add(new Setter() { Property = Microsoft.Maui.Controls.Border.StrokeThicknessProperty, Value = 0.0 });
+                    break;
+            }
+
+            return style;
         }
 
         /// <summary>Looks up a theme colour. (ResourceDictionary's indexer does not search merged dictionaries.)</summary>

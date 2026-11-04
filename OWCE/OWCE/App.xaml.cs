@@ -57,7 +57,7 @@ namespace OWCE
             InitializeComponent();
 
             // The colours and panel/button styles come from the theme, so it has to be applied before any page is created.
-            ThemeManager.Apply(ThemeManager.SavedId);
+            ThemeManager.ApplySaved();
         }
 
         protected override Window CreateWindow(IActivationState activationState)

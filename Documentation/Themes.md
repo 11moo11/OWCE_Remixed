@@ -105,3 +105,22 @@ not the exact colour science. Every text colour is checked against what it sits 
 (4.5 : 1). The default purple in light mode is the hand written baseline in `MaterialTheme.xaml`. The choices are
 saved as `material_seed` and `material_dark`. `MaterialTheme.xaml.cs` is hand written (not generated) because it applies
 the palette, so keep it if you regenerate the other themes.
+
+
+## The theme builder
+
+Every theme is a `ThemeSpec` ([ThemeSpec.cs](../OWCE/OWCE/Themes/ThemeSpec.cs)): a colour palette (one of the presets above)
+plus a few simple settings:
+
+* **Panel corners:** Very round, Round or Sharp (28, 14 or 2 units).
+* **Panel effect:** None, Drop shadow, or Edge light (a thin accent outline with a glow).
+* **Font:** the system font or one of the bundled Google Fonts, see [Fonts.md](Fonts.md).
+* **Material colour and dark mode,** when the Material palette is used.
+
+The presets are specs too (each with its own default corners and effect; all use the system font). Change any setting under
+**Settings > Build your own** and it applies straight away. **Save as a new style** keeps your version, which then appears
+next to the presets; **Save changes** updates it and **Delete** removes it. Saved styles and the theme in use are kept
+in preferences (`theme_user_styles`, `theme_current`). A preset whose corners and effect are left alone keeps its hand
+made panel style exactly; changing either builds the panel style from the settings.
+
+Corners and effect apply to the dashboard panels. The settings cards, buttons and the bottom bar keep their own shapes.

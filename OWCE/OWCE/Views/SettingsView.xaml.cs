@@ -52,13 +52,15 @@ namespace OWCE.Views
             ImperialSwitch.IsToggled = App.Current.MetricDisplay == false;
             AutoRecordSwitch.IsToggled = Preferences.Get("auto_ride_recording", false);
 
-            var themeId = ThemeManager.CurrentId;
-            ThemePicker.Select(themeId);
-            ThemeDescriptionLabel.Text = ThemeManager.Find(themeId).Description;
-            ThemePicker.ThemeSelected += ThemePicker_ThemeSelected;
+            CornersControl.SetItems("Very round", "Round", "Sharp");
+            DepthControl.SetItems("None", "Drop shadow", "Edge light");
+            CornersControl.SelectionChanged += index => Change(spec => spec.Corners = (CornerStyle)index);
+            DepthControl.SelectionChanged += index => Change(spec => spec.Depth = (DepthStyle)index);
 
+            BuildFontChips();
             BuildMaterialOptions();
-            UpdateMaterialOptions(false);
+            ThemePicker.ThemeSelected += ThemePicker_ThemeSelected;
+            LoadFromCurrent();
 
             _loading = false;
             BindingContext = this;
@@ -67,18 +69,136 @@ namespace OWCE.Views
         /// <summary>The first sections spring up into place one after another.</summary>
         public void PlayEntrance() => Motion.StaggerIn(ContentStack.Children.OfType<VisualElement>().Take(8), 55, 30);
 
-        void ThemePicker_ThemeSelected(string themeId)
-        {
-            ThemeDescriptionLabel.Text = ThemeManager.Find(themeId).Description;
-            ThemeManager.Apply(themeId);
-            ThemeManager.Save(themeId);
-            UpdateMaterialOptions(true);
-        }
-
-        // ---- Material colours ----
+        // ---- Theme builder ----
 
         readonly List<Border> _seedSwatches = new List<Border>();
+        readonly List<(Border Chip, Label Label, string Family)> _fontChips = new List<(Border, Label, string)>();
         DateTime _lastHueApply = DateTime.MinValue;
+
+        // Changes the theme in use (keeping the rest of it as it is) and applies it.
+        void Change(Action<ThemeSpec> edit)
+        {
+            if (_loading)
+            {
+                return;
+            }
+
+            var spec = ThemeManager.Current.Clone();
+            edit(spec);
+            ThemeManager.Apply(spec);
+            ThemePicker.Rebuild();
+            LoadFromCurrent();
+        }
+
+        void ThemePicker_ThemeSelected(string themeId)
+        {
+            ThemeManager.Apply(themeId);
+            LoadFromCurrent();
+        }
+
+        // Shows the theme in use in all the controls.
+        void LoadFromCurrent()
+        {
+            var spec = ThemeManager.Current;
+            var wasLoading = _loading;
+            _loading = true;
+
+            ThemePicker.Select(spec.Id);
+            ThemeDescriptionLabel.Text = ThemeManager.IsUserStyle(spec.Id) ? $"Your style, based on {ThemeManager.Find(spec.BaseId).Name}." : ThemeManager.Find(spec.Id).Description;
+
+            CornersControl.SelectedIndex = (int)spec.Corners;
+            DepthControl.SelectedIndex = (int)spec.Depth;
+            MarkSelectedFont();
+
+            MaterialDarkSwitch.IsToggled = spec.Dark;
+            HueSlider.Value = Color.FromArgb(spec.Seed).GetHue() * 360;
+            MarkSelectedSwatch();
+
+            ShowMaterialOptions(spec.BaseId == "material");
+            StyleActions.IsVisible = ThemeManager.IsUserStyle(spec.Id);
+
+            _loading = wasLoading;
+        }
+
+        void ShowMaterialOptions(bool show)
+        {
+            if (show == MaterialOptions.IsVisible)
+            {
+                return;
+            }
+
+            if (show)
+            {
+                MaterialOptions.Opacity = 0;
+                MaterialOptions.IsVisible = true;
+                _ = MaterialOptions.FadeToAsync(1, 300, Easing.CubicOut);
+            }
+            else
+            {
+                MaterialOptions.IsVisible = false;
+            }
+        }
+
+        void BuildFontChips()
+        {
+            foreach (var font in FontCatalog.Fonts)
+            {
+                var family = font.Family;
+
+                // Each name is written in its own font.
+                var label = new Label()
+                {
+                    Text = font.Name,
+                    FontFamily = family,
+                    FontSize = 16,
+                    InputTransparent = true,
+                    VerticalOptions = LayoutOptions.Center,
+                };
+                var chip = new Border()
+                {
+                    Margin = new Thickness(0, 0, 8, 8),
+                    Padding = new Thickness(16, 10),
+                    StrokeThickness = 1.5,
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 20 },
+                    Content = label,
+                };
+                chip.GestureRecognizers.Add(new TapGestureRecognizer()
+                {
+                    Command = new Command(() =>
+                    {
+                        Motion.Tick();
+                        _ = Motion.SquishAsync(chip, 0.9);
+                        Change(spec => spec.Font = family);
+                    }),
+                });
+
+                _fontChips.Add((chip, label, family));
+                FontChips.Children.Add(chip);
+            }
+        }
+
+        void MarkSelectedFont()
+        {
+            var selected = ThemeManager.Current.Font ?? string.Empty;
+            foreach (var (chip, label, family) in _fontChips)
+            {
+                var on = family == selected;
+                chip.RemoveDynamicResource(VisualElement.BackgroundColorProperty);
+                chip.RemoveDynamicResource(Border.StrokeProperty);
+                if (on)
+                {
+                    chip.SetDynamicResource(VisualElement.BackgroundColorProperty, "AccentColor");
+                    chip.SetDynamicResource(Border.StrokeProperty, "AccentBrush");
+                    label.SetDynamicResource(Label.TextColorProperty, "OnAccentColor");
+                }
+                else
+                {
+                    chip.BackgroundColor = Colors.Transparent;
+                    chip.SetDynamicResource(Border.StrokeProperty, "DividerBrush");
+                    label.SetDynamicResource(Label.TextColorProperty, "OnSurfaceColor");
+                }
+            }
+        }
 
         void BuildMaterialOptions()
         {
@@ -109,7 +229,7 @@ namespace OWCE.Views
                     {
                         Motion.Tick();
                         _ = Motion.SquishAsync(swatch, 0.8);
-                        SetSeed(color, true);
+                        Change(spec => spec.Seed = color.ToRgbaHex());
                     }),
                 });
                 _seedSwatches.Add(swatch);
@@ -117,73 +237,22 @@ namespace OWCE.Views
             }
         }
 
-        // Shows the options only for the Material theme, and loads the saved choices into the controls.
-        void UpdateMaterialOptions(bool animate)
-        {
-            var show = ThemePicker.SelectedThemeId == "material";
-
-            _loading = true;
-            MaterialDarkSwitch.IsToggled = MaterialTheme.IsDark;
-            HueSlider.Value = MaterialTheme.Seed.GetHue() * 360;
-            _loading = false;
-            MarkSelectedSwatch();
-
-            if (show == MaterialOptions.IsVisible)
-            {
-                return;
-            }
-
-            if (show && animate)
-            {
-                MaterialOptions.Opacity = 0;
-                MaterialOptions.IsVisible = true;
-                _ = MaterialOptions.FadeToAsync(1, 300, Easing.CubicOut);
-            }
-            else
-            {
-                MaterialOptions.Opacity = 1;
-                MaterialOptions.IsVisible = show;
-            }
-        }
-
         void MarkSelectedSwatch()
         {
-            var seed = MaterialTheme.Seed.ToRgbaHex();
+            var seed = Color.FromArgb(ThemeManager.Current.Seed).ToRgbaHex();
             for (var i = 0; i < _seedSwatches.Count; ++i)
             {
                 var selected = Color.FromArgb(MaterialPalette.SeedChoices[i]).ToRgbaHex() == seed;
+                _seedSwatches[i].RemoveDynamicResource(Border.StrokeProperty);
                 if (selected)
                 {
                     _seedSwatches[i].SetDynamicResource(Border.StrokeProperty, "OnBackgroundBrush");
                 }
                 else
                 {
-                    _seedSwatches[i].RemoveDynamicResource(Border.StrokeProperty);
                     _seedSwatches[i].Stroke = Brush.Transparent;
                 }
             }
-        }
-
-        // Saves the colour and re-applies the Material theme.
-        void SetSeed(Color seed, bool updateSlider)
-        {
-            MaterialTheme.Seed = seed;
-
-            if (updateSlider)
-            {
-                _loading = true;
-                HueSlider.Value = seed.GetHue() * 360;
-                _loading = false;
-            }
-
-            ApplyMaterial();
-            MarkSelectedSwatch();
-        }
-
-        void ApplyMaterial()
-        {
-            ThemeManager.Apply("material");
-            ThemePicker.Rebuild();
         }
 
         void HueSlider_ValueChanged(object sender, ValueChangedEventArgs e)
@@ -193,31 +262,56 @@ namespace OWCE.Views
                 return;
             }
 
-            MaterialTheme.Seed = Color.FromHsla((float)(e.NewValue / 360), 0.6f, 0.5f);
-
             // The whole app is restyled for each step, so not on every single movement.
             if ((DateTime.UtcNow - _lastHueApply).TotalMilliseconds > 120)
             {
                 _lastHueApply = DateTime.UtcNow;
-                ThemeManager.Apply("material");
+                var spec = ThemeManager.Current.Clone();
+                spec.Seed = Color.FromHsla((float)(e.NewValue / 360), 0.6f, 0.5f).ToRgbaHex();
+                ThemeManager.Apply(spec);
             }
         }
 
         void HueSlider_DragCompleted(object sender, EventArgs e)
         {
-            ApplyMaterial();
-            MarkSelectedSwatch();
+            Change(spec => spec.Seed = Color.FromHsla((float)(HueSlider.Value / 360), 0.6f, 0.5f).ToRgbaHex());
         }
 
         void MaterialDarkSwitch_Toggled(object sender, ToggledEventArgs e)
         {
-            if (_loading)
+            Change(spec => spec.Dark = e.Value);
+        }
+
+        static Page CurrentPage => App.Current.RootPage;
+
+        async void SaveStyle_Tapped(object sender, EventArgs e)
+        {
+            var name = await CurrentPage.DisplayPromptAsync("Save style", "Give your style a name.", "Save", "Cancel", maxLength: 24, placeholder: "My style");
+            if (string.IsNullOrWhiteSpace(name))
             {
                 return;
             }
 
-            MaterialTheme.IsDark = e.Value;
-            ApplyMaterial();
+            ThemeManager.SaveAsNewStyle(name.Trim());
+            ThemePicker.Rebuild();
+            LoadFromCurrent();
+        }
+
+        void UpdateStyle_Tapped(object sender, EventArgs e)
+        {
+            ThemeManager.UpdateCurrentStyle();
+            ThemePicker.Rebuild();
+        }
+
+        async void DeleteStyle_Tapped(object sender, EventArgs e)
+        {
+            var spec = ThemeManager.Current;
+            if (await CurrentPage.DisplayAlertAsync("Delete style", $"Delete \"{spec.Name}\"?", "Delete", "Cancel"))
+            {
+                ThemeManager.DeleteStyle(spec.Id);
+                ThemePicker.Rebuild();
+                LoadFromCurrent();
+            }
         }
 
         void ImperialSwitch_Toggled(object sender, ToggledEventArgs e)

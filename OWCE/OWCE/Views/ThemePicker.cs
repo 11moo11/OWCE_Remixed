@@ -42,7 +42,7 @@ namespace OWCE.Views
                 grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
             }
 
-            var themes = ThemeManager.Themes;
+            var themes = ThemeManager.AllSpecs.ToList();
             for (var i = 0; i < themes.Count; ++i)
             {
                 if (i % Columns == 0)
@@ -91,17 +91,19 @@ namespace OWCE.Views
             }
         }
 
-        View BuildSwatch(ThemeInfo theme)
+        View BuildSwatch(ThemeSpec theme)
         {
             // Read the theme's colours without applying it.
-            var colors = theme.Create();
+            // The theme in use is drawn with the changes made to it so far.
+            var shown = theme.Id == ThemeManager.Current.Id ? ThemeManager.Current : theme;
+            var colors = ThemeManager.CreateDictionary(shown);
             Color Colour(string key) => colors.TryGetValue(key, out var value) && value is Color color ? color : Colors.Gray;
 
             Border Block(string key) => new Border()
             {
                 BackgroundColor = Colour(key),
                 StrokeThickness = 0,
-                StrokeShape = new RoundRectangle() { CornerRadius = 6 },
+                StrokeShape = new RoundRectangle() { CornerRadius = Math.Min(6, ThemeManager.CornerRadiusFor(shown.Corners) / 4) },
             };
 
             // A tiny picture of the dashboard: four panels on the theme's background.

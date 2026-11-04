@@ -55,7 +55,9 @@
     <MauiImage Include="Resources\Images\swipe_rename.png" Resize="true" BaseSize="24,24" />
     <MauiImage Include="Resources\Images\splash_image.png" Resize="true" BaseSize="255,440" />
 
-    <!-- No custom fonts: the whole app uses the system font. -->
+    <!-- Google Fonts (all under the SIL Open Font License, see Documentation/Fonts.md) that the theme builder can use.
+         Each file is registered under its file name, eg Orbitron.ttf is the font family "Orbitron". -->
+    <MauiFont Include="Resources\Fonts\*" />
 
     <!-- Sample ride data used by MockOWBLE when running on a simulator/emulator in Debug. -->
     <EmbeddedResource Include="Resources\SampleRideData\*.bin" />
