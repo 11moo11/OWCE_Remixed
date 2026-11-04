@@ -8,85 +8,85 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_purple" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_purple" android:roundIcon="@mipmap/appicon_purple_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_purple" android:targetActivity="com.owcommunity.owce.MainActivity_purple" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_purple" android:roundIcon="@mipmap/appicon_purple_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_indigo" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_indigo" android:roundIcon="@mipmap/appicon_indigo_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_indigo" android:targetActivity="com.owcommunity.owce.MainActivity_indigo" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_indigo" android:roundIcon="@mipmap/appicon_indigo_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_blue" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_blue" android:roundIcon="@mipmap/appicon_blue_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_blue" android:targetActivity="com.owcommunity.owce.MainActivity_blue" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_blue" android:roundIcon="@mipmap/appicon_blue_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_teal" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_teal" android:roundIcon="@mipmap/appicon_teal_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_teal" android:targetActivity="com.owcommunity.owce.MainActivity_teal" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_teal" android:roundIcon="@mipmap/appicon_teal_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_green" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_green" android:roundIcon="@mipmap/appicon_green_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_green" android:targetActivity="com.owcommunity.owce.MainActivity_green" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_green" android:roundIcon="@mipmap/appicon_green_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_lime" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_lime" android:roundIcon="@mipmap/appicon_lime_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_lime" android:targetActivity="com.owcommunity.owce.MainActivity_lime" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_lime" android:roundIcon="@mipmap/appicon_lime_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_amber" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_amber" android:roundIcon="@mipmap/appicon_amber_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_amber" android:targetActivity="com.owcommunity.owce.MainActivity_amber" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_amber" android:roundIcon="@mipmap/appicon_amber_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_orange" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_orange" android:roundIcon="@mipmap/appicon_orange_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_orange" android:targetActivity="com.owcommunity.owce.MainActivity_orange" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_orange" android:roundIcon="@mipmap/appicon_orange_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_red" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_red" android:roundIcon="@mipmap/appicon_red_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_red" android:targetActivity="com.owcommunity.owce.MainActivity_red" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_red" android:roundIcon="@mipmap/appicon_red_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_pink" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_pink" android:roundIcon="@mipmap/appicon_pink_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_pink" android:targetActivity="com.owcommunity.owce.MainActivity_pink" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_pink" android:roundIcon="@mipmap/appicon_pink_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_brown" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_brown" android:roundIcon="@mipmap/appicon_brown_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_brown" android:targetActivity="com.owcommunity.owce.MainActivity_brown" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_brown" android:roundIcon="@mipmap/appicon_brown_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_slate" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_slate" android:roundIcon="@mipmap/appicon_slate_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_slate" android:targetActivity="com.owcommunity.owce.MainActivity_slate" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_slate" android:roundIcon="@mipmap/appicon_slate_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_black" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_black" android:roundIcon="@mipmap/appicon_black_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_black" android:targetActivity="com.owcommunity.owce.MainActivity_black" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_black" android:roundIcon="@mipmap/appicon_black_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity-alias>
-		<activity-alias android:name="com.owcommunity.owce.Icon_white" android:targetActivity="com.owcommunity.owce.MainActivity" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_white" android:roundIcon="@mipmap/appicon_white_round" android:label="OWCE">
+		<activity-alias android:name="com.owcommunity.owce.Icon_white" android:targetActivity="com.owcommunity.owce.MainActivity_white" android:enabled="false" android:exported="true" android:icon="@mipmap/appicon_white" android:roundIcon="@mipmap/appicon_white_round" android:label="OWCE">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />

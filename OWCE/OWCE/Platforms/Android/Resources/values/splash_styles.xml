@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One splash screen per icon colour (see AppIconCatalog): the colour, with the logo in the middle. -->
+<resources>
+  <style name="Splash_classic" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_classic</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_classic</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_black</item>
+  </style>
+  <style name="Splash_purple" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_purple</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_purple</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_white</item>
+  </style>
+  <style name="Splash_indigo" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_indigo</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_indigo</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_white</item>
+  </style>
+  <style name="Splash_blue" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_blue</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_blue</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_black</item>
+  </style>
+  <style name="Splash_teal" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_teal</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_teal</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_black</item>
+  </style>
+  <style name="Splash_green" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_green</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_green</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_white</item>
+  </style>
+  <style name="Splash_lime" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_lime</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_lime</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_black</item>
+  </style>
+  <style name="Splash_amber" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_amber</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_amber</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_black</item>
+  </style>
+  <style name="Splash_orange" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_orange</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_orange</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_black</item>
+  </style>
+  <style name="Splash_red" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_red</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_red</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_white</item>
+  </style>
+  <style name="Splash_pink" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_pink</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_pink</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_white</item>
+  </style>
+  <style name="Splash_brown" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_brown</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_brown</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_white</item>
+  </style>
+  <style name="Splash_slate" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_slate</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_slate</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_white</item>
+  </style>
+  <style name="Splash_black" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_black</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_black</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_white</item>
+  </style>
+  <style name="Splash_white" parent="Maui.SplashTheme">
+    <item name="android:windowBackground">@drawable/splash_bg_white</item>
+    <item name="android:windowSplashScreenBackground">@color/splash_white</item>
+    <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo_black</item>
+  </style>
+</resources>

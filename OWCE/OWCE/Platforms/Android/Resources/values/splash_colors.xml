@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="splash_classic">#F5F500</color>
+  <color name="splash_purple">#6750A4</color>
+  <color name="splash_indigo">#3F5AA6</color>
+  <color name="splash_blue">#1E88E5</color>
+  <color name="splash_teal">#00897B</color>
+  <color name="splash_green">#2E7D32</color>
+  <color name="splash_lime">#9E9D24</color>
+  <color name="splash_amber">#F9A825</color>
+  <color name="splash_orange">#EF6C00</color>
+  <color name="splash_red">#D32F2F</color>
+  <color name="splash_pink">#C2185B</color>
+  <color name="splash_brown">#795548</color>
+  <color name="splash_slate">#546E7A</color>
+  <color name="splash_black">#101010</color>
+  <color name="splash_white">#F5F5F5</color>
+</resources>

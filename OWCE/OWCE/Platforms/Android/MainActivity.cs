@@ -7,7 +7,7 @@ namespace OWCE.Droid
     // so it has a fixed name and is not a launcher itself.
     [Activity(
         Name = "com.owcommunity.owce.MainActivity",
-        Theme = "@style/Maui.SplashTheme",
+        Theme = "@style/Splash_classic",
         MainLauncher = false,
         Exported = true,
         LaunchMode = LaunchMode.SingleTop,

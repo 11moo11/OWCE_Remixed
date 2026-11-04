@@ -147,5 +147,7 @@ On Android the launcher icon follows the theme. There are 15 icons (the original
 Android cannot draw an icon at run time, so a custom colour gets the nearest of the 15. Mechanically, the manifest has one launcher
 entry (an `activity-alias`) per icon, and [AppIconSwitcher](../OWCE/OWCE/Platforms/Android/AppIconSwitcher.cs) turns one on and the
 others off. This happens when the app goes to the background, because some launchers close the app when its icon changes, and the
-launcher can take a few seconds to show the new icon. The splash screen colour is fixed (it is part of the app's theme) and iOS keeps
-its single icon.
+launcher can take a few seconds to show the new icon. The launch splash screen goes with the icon: the same colour with the
+logo in the middle. (A splash screen is part of an Android theme and can't change at run time, so there is one activity per colour in
+[MainActivityVariants.cs](../OWCE/OWCE/Platforms/Android/MainActivityVariants.cs), each with its own `Splash_*` theme, and each
+launcher entry opens its own.) The splash therefore matches the theme from when you last left the app. iOS keeps its single icon.
