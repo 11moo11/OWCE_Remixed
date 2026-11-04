@@ -19,9 +19,9 @@
         <toolkit:Expander x:Name="ExpanderView" Margin="0" Padding="0" HorizontalOptions="Fill" PropertyChanged="ExpanderView_PropertyChanged">
             <toolkit:Expander.Header>
                 <Grid BackgroundColor="{DynamicResource RideModePanel}"  AbsoluteLayout.LayoutFlags="WidthProportional" AbsoluteLayout.LayoutBounds="0,0,1,121">
-                    <Label Text="RIDE MODE" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnRideModePanel}" CharacterSpacing="0.26" FontSize="16" Margin="20,6,0,0" />
+                    <Label Text="RIDE MODE" Style="{StaticResource PanelCaptionStyle}" TextColor="{DynamicResource OnRideModePanel}" />
 
-                    <Label Text="{Binding RideModeString}" FontFamily="SairaExtraCondensed-Black" HorizontalOptions="Center" TextColor="{DynamicResource OnRideModePanel}" CharacterSpacing="2.2" FontSize="60" Padding="0,16,0,16" />
+                    <Label Text="{Binding RideModeString}" FontFamily="SairaExtraCondensed-Black" HorizontalOptions="Start" Margin="20,30,56,20" TextColor="{DynamicResource OnRideModePanel}" CharacterSpacing="1.2" FontSize="52" />
 
 
                     <!--

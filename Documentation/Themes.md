@@ -85,4 +85,14 @@ The Settings, About, Past rides, Submit ride and Raw data screens use a Material
 </views:SettingsGroup>
 ```
 
-The board screen's panels keep their own bold look (and the Saira font), which is part of the app's character.
+## The dashboard panels
+
+The board screen's panels keep their bold colours and the Saira font, which is part of the app's character, but are laid
+out the same modern way:
+
+* a small spaced-out caption (`PanelCaptionStyle`), then the number, left aligned;
+* slim rounded progress bars (battery, current and the three temperatures) instead of filling the whole row;
+* the speed is a semicircle gauge with a rounded track and an arc that grows with the speed;
+* the Lights panel has a switch-style pill that shows on or off;
+* the panels' corner radius, outline and shadow come from the theme (`BoardDetailBlockBaseStyle`): Default and Material
+  are round and soft, Codec and Devil Trigger are sharp.

@@ -40,8 +40,8 @@ namespace OWCE.Views
             }
         }
 
-        // The bars are only as wide as their half of the panel, so they have to be set again when the panel changes size.
-        void Halves_SizeChanged(object sender, EventArgs e)
+        // The bars are only as wide as their track, so they have to be set again when the panel changes size.
+        void Tracks_SizeChanged(object sender, EventArgs e)
         {
             UpdateBars();
         }
@@ -57,9 +57,9 @@ namespace OWCE.Views
             BatteryBar.AnimateWidthPercent(Math.Clamp(_board.BatteryPercent, 0, 100) * 0.01);
 
             // Current: filled to the current out of 20A. Regen (negative) fills the same way.
-            if (PowerHalf.Width > 0)
+            if (PowerTrack.Width > 0)
             {
-                PowerBar.WidthRequest = Math.Clamp(Math.Abs(_board.CurrentAmps) / 20.0, 0, 1) * PowerHalf.Width;
+                PowerBar.WidthRequest = Math.Clamp(Math.Abs(_board.CurrentAmps) / 20.0, 0, 1) * PowerTrack.Width;
             }
         }
 

@@ -3,23 +3,51 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="OWCE.Views.LightsView">
 
+    <!-- Tap anywhere on the panel to turn the lights on or off. The pill on the right shows the state, like a switch. -->
     <Border BackgroundColor="{DynamicResource LightsPanel}" Style="{DynamicResource BoardDetailBlockBaseStyle}">
-        <Grid BackgroundColor="{DynamicResource LightsPanel}" RowDefinitions="121">
+        <Grid BackgroundColor="{DynamicResource LightsPanel}" ColumnDefinitions="*,Auto" MinimumHeightRequest="110">
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnTapped" />
             </Grid.GestureRecognizers>
 
-            <Label Text="LIGHTS" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnLights}" CharacterSpacing="0.26" FontSize="16" Margin="20,6,0,0" />
+            <VerticalStackLayout Grid.Column="0" Spacing="0" Padding="0,0,0,18">
+                <Label Text="LIGHTS" Style="{StaticResource PanelCaptionStyle}" TextColor="{DynamicResource OnLights}" />
+                <Label Text="OFF" FontFamily="SairaExtraCondensed-Black" TextColor="{DynamicResource OnLights}" FontSize="56" Margin="20,0,0,0">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding LightMode}" Value="True">
+                            <Setter Property="Text" Value="ON" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </VerticalStackLayout>
 
-            <Label Text="OFF" FontFamily="SairaExtraCondensed-Black" TextColor="{DynamicResource OnLights}" FontSize="80" HorizontalOptions="Center" VerticalOptions="Start">
-                <Label.Triggers>
-                    <DataTrigger TargetType="Label" Binding="{Binding LightMode}" Value="True">
-                        <Setter Property="Text" Value="ON" />
-                    </DataTrigger>
-                </Label.Triggers>
-            </Label>
-
-            <Label Text="Tap to turn on or off" FontFamily="SairaExtraCondensed-Light" TextColor="{DynamicResource OnLights}" FontSize="16" VerticalOptions="End" Margin="20,0" />
+            <!-- The switch: a faint track with a round knob that moves right when the lights are on. -->
+            <Grid Grid.Column="1" WidthRequest="72" HeightRequest="40" VerticalOptions="Center" Margin="0,0,24,0" InputTransparent="True">
+                <Border StrokeThickness="2" Stroke="{DynamicResource OnLightsBrush}" BackgroundColor="Transparent">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20" />
+                    </Border.StrokeShape>
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding LightMode}" Value="True">
+                            <Setter Property="BackgroundColor" Value="{DynamicResource OnLights}" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                </Border>
+                <Border WidthRequest="22" HeightRequest="22" StrokeThickness="0" HorizontalOptions="Start" VerticalOptions="Center" Margin="9,0,0,0" BackgroundColor="{DynamicResource OnLights}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="11" />
+                    </Border.StrokeShape>
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding LightMode}" Value="True">
+                            <Setter Property="HorizontalOptions" Value="End" />
+                            <Setter Property="Margin" Value="0,0,9,0" />
+                            <Setter Property="WidthRequest" Value="26" />
+                            <Setter Property="HeightRequest" Value="26" />
+                            <Setter Property="BackgroundColor" Value="{DynamicResource LightsPanel}" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                </Border>
+            </Grid>
         </Grid>
     </Border>
 

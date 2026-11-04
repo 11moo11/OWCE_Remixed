@@ -1,35 +1,36 @@
 using System;
 using System.Runtime.CompilerServices;
+using CommunityToolkit.Mvvm.Messaging;
+using OWCE.Themes;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
-using CommunityToolkit.Mvvm.Messaging;
-using OWCE.Themes;
 
 namespace OWCE.Views
 {
+    /// <summary>
+    /// The speed gauge: a semicircle with a rounded track, and a rounded arc on it that grows with the speed.
+    /// It is drawn on the speed panel's colour, in the panel's text colour.
+    /// </summary>
     public class SpeedArcView : SKCanvasView
     {
+        // The gauge is the top half of a circle: 180 degrees, from the left (9 o'clock) over the top to the right.
+        const float GaugeStartAngle = 180f;
+        const float GaugeSweep = 180f;
+
+        // Even at a standstill a dot of arc is shown, so the start of the gauge is visible.
+        const float MinSweepAngle = 0.5f;
+
         SKPaint _backgroundPaint;
-        SKPaint _circlePaint;
+        SKPaint _trackPaint;
         SKPaint _arcPaint;
         float _displayScale;
-        float _circleRadius;
-        float _circleCenterX;
-        float _circleCenterY;
+        float _radius;
+        float _centerX;
+        SKRect _arcRect;
 
-        float _arcEndX;
-        float _arcEndY;
-        SKRect _circleRect;
-        float _endAngle;
-        float _endAngleForArc;
-
-
-        float _currentSweepAngle = 0;
-        float _minSweepAngle = 5;
+        float _currentSweepAngle = MinSweepAngle;
         int _animationNumber = 0;
-
-        float _totalArc;
 
         public static readonly BindableProperty CurrentRPMProperty = BindableProperty.Create(
             propertyName: nameof(CurrentRPM),
@@ -43,7 +44,6 @@ namespace OWCE.Views
             set { SetValue(CurrentRPMProperty, value); }
         }
 
-
         public static readonly BindableProperty MinRPMProperty = BindableProperty.Create(
             propertyName: nameof(MinRPM),
             returnType: typeof(int),
@@ -55,7 +55,6 @@ namespace OWCE.Views
             get { return (int)GetValue(MinRPMProperty); }
             set { SetValue(MinRPMProperty, value); }
         }
-
 
         public static readonly BindableProperty MaxRPMProperty = BindableProperty.Create(
             propertyName: nameof(MaxRPM),
@@ -69,13 +68,14 @@ namespace OWCE.Views
             set { SetValue(MaxRPMProperty, value); }
         }
 
-
         public SpeedArcView()
         {
             _backgroundPaint = new SKPaint();
-            _circlePaint = new SKPaint();
-            _arcPaint = new SKPaint();
+            _trackPaint = new SKPaint() { IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeCap = SKStrokeCap.Round };
+            _arcPaint = new SKPaint() { IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeCap = SKStrokeCap.Round };
             ApplyThemeColors();
+
+            _displayScale = (float)DeviceDisplay.Current.MainDisplayInfo.Density;
 
             // Redraw in the new colours when the theme changes.
             // The handler must not capture "this", or the messenger would keep the view alive forever.
@@ -87,136 +87,97 @@ namespace OWCE.Views
                     recipient.InvalidateSurface();
                 });
             });
-
-            _displayScale = (float)DeviceDisplay.Current.MainDisplayInfo.Density;
-            //_circleRadius = (_displayScale * 278) * 0.5f;
-            //_startAngle = (float)(Math.PI / 180) * 270;
-            //_endAngle = (float)(Math.PI / 180) * 13;
-
-            // Total arc is from 3.318 degrees below the center all the way to 45 degrees past the other center.
-            _totalArc = (3.318f + 180f + 45f);
-
-
-            _endAngle = 45;
-            _endAngleForArc = 90 - _endAngle;
-
-            _currentSweepAngle = _minSweepAngle;
-            //_maxSweepAngle = 270 - _endAngle;
         }
 
-        // The dial is drawn on the speed panel's colour: a circle and arc in the panel's text colour at low opacity.
+        // The track is the panel's text colour at low opacity, the arc is the text colour itself.
         void ApplyThemeColors()
         {
             var panel = ThemeManager.GetColor("SpeedPanel", Colors.Yellow).ToSKColor();
             var on = ThemeManager.GetColor("OnSpeedPanel", Colors.Black).ToSKColor();
 
             _backgroundPaint.Color = panel;
-            _circlePaint.Color = on.WithAlpha(20); // 8% alpha
-            _arcPaint.Color = on.WithAlpha(31); // 12% alpha
+            _trackPaint.Color = on.WithAlpha(38); // 15% alpha
+            _arcPaint.Color = on;
         }
 
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
 
+            if (width <= 0)
+            {
+                return;
+            }
+
             // Scale up for units we use to draw with SkiaSharp.
-            var scaledWidth = width * _displayScale;
+            var scaledWidth = (float)(width * _displayScale);
 
-            // padding magic value of 0.1924 = 66 / 343, to match the designs
+            // The gauge is as wide as the panel, less some padding, and sits at the top of it.
             var padding = scaledWidth * 0.24f;
+            var outerRadius = (scaledWidth - padding) * 0.5f;
 
-            // circle radius is half of (width minus padding)
-            _circleRadius = (float)((scaledWidth - padding) * 0.5f);
+            var strokeWidth = outerRadius * 0.11f;
+            _trackPaint.StrokeWidth = strokeWidth;
+            _arcPaint.StrokeWidth = strokeWidth;
 
-            // Circle is centered horizontally but touches the top vertically
-            _circleCenterX = (float)(scaledWidth * 0.5);
-            _circleCenterY = _circleRadius;
-            _circleRect = new SKRect(_circleCenterX - _circleRadius, 0, _circleCenterX + _circleRadius, _circleRadius * 2);
+            // The stroke is centred on the arc, so keep it inside the circle.
+            _radius = outerRadius - (strokeWidth * 0.5f);
+            _centerX = scaledWidth * 0.5f;
 
-            _arcEndX = _circleCenterX + (_circleRadius * (float)Math.Sin(DegreesToRadians(45))); // 13?
-            _arcEndY = _circleCenterY + (_circleRadius * (float)Math.Cos(DegreesToRadians(45))); // 13?
+            // The circle's centre is on the bottom edge of the panel (the gauge is its top half).
+            var centerY = outerRadius;
+            _arcRect = new SKRect(_centerX - _radius, centerY - _radius, _centerX + _radius, centerY + _radius);
 
-            // Set the height of the widget to the 2.888% increase of the circle radius
-            var screenCircleRadius = (_circleRadius / _displayScale);
-            HeightRequest = (screenCircleRadius + (screenCircleRadius * 0.0288f)); // * 2;
+            // The panel is as tall as the gauge, plus a little for the ends of the arc.
+            var screenOuterRadius = outerRadius / _displayScale;
+            HeightRequest = screenOuterRadius + (screenOuterRadius * 0.0288f);
         }
 
         protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             base.OnPropertyChanged(propertyName);
 
-            if (propertyName == CurrentRPMProperty.PropertyName)
+            if (propertyName == CurrentRPMProperty.PropertyName
+                || propertyName == MinRPMProperty.PropertyName
+                || propertyName == MaxRPMProperty.PropertyName)
             {
                 UpdateTargetArcAngle();
             }
-            else if(propertyName == MinRPMProperty.PropertyName)
-            {
-                UpdateTargetArcAngle();
-            }
-            else if(propertyName == MaxRPMProperty.PropertyName)
-            {
-                UpdateTargetArcAngle();
-            }
-        }
-
-        float DegreesToRadians(float degrees)
-        {
-            return (float)(Math.PI / 180.0) * degrees;
         }
 
         protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
         {
-            //System.Diagnostics.Debug.WriteLine("OnPaintSurface");
             base.OnPaintSurface(e);
 
-            var surface = e.Surface;
-            var canvas = surface.Canvas;
-
+            var canvas = e.Surface.Canvas;
             canvas.Clear(_backgroundPaint.Color);
 
-            canvas.DrawCircle(_circleCenterX, _circleCenterY, _circleRadius, _circlePaint);
+            if (_radius <= 0)
+            {
+                return;
+            }
 
-            using var pathBuilder = new SKPathBuilder();
-            pathBuilder.MoveTo(_circleCenterX, _circleCenterY);
-            pathBuilder.LineTo(_arcEndX, _arcEndY);
-
-            pathBuilder.ArcTo(_circleRect, _endAngleForArc, _currentSweepAngle * -1, false);
-            pathBuilder.Close();
-            using var path = pathBuilder.Detach();
-            canvas.DrawPath(path, _arcPaint);
+            canvas.DrawArc(_arcRect, GaugeStartAngle, GaugeSweep, false, _trackPaint);
+            canvas.DrawArc(_arcRect, GaugeStartAngle, _currentSweepAngle, false, _arcPaint);
         }
 
         void UpdateTargetArcAngle()
         {
-            float oldSweepAngle = _currentSweepAngle;
+            var range = MaxRPM - MinRPM;
+            var fraction = range <= 0 ? 0f : Math.Clamp((CurrentRPM - MinRPM) / (float)range, 0f, 1f);
+            var targetSweepAngle = Math.Max(MinSweepAngle, GaugeSweep * fraction);
 
-            float targetSweepAngle = _totalArc * ((MaxRPM - CurrentRPM) / (float)MaxRPM);
-
-            if (targetSweepAngle < _minSweepAngle)
-            {
-                targetSweepAngle = _minSweepAngle;
-            }
-            else if (targetSweepAngle > _totalArc)
-            {
-                targetSweepAngle = _totalArc;
-            }
+            var oldSweepAngle = _currentSweepAngle;
 
             ++_animationNumber;
-            var animationNumber = _animationNumber;
 
             var animation = new Animation(v =>
             {
                 _currentSweepAngle = (float)v;
                 InvalidateSurface();
-                //MainThread.BeginInvokeOnMainThread(InvalidateSurface);
             }, oldSweepAngle, targetSweepAngle);
 
-            animation.Commit(this, "SimpleAnimation", 16, 250, Easing.Linear, (a, b) =>
-            {
-                //System.Diagnostics.Debug.WriteLine($"Finished: {animationNumber}");
-            });
-
+            animation.Commit(this, "SimpleAnimation", 16, 250, Easing.Linear);
         }
     }
 }
-

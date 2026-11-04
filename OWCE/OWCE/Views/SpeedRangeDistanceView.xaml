@@ -50,7 +50,7 @@
                         </Label.FormattedText>
                     </Label>
 
-                    <Label Text="SPEED" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSpeedPanel}"   CharacterSpacing="0.26" FontSize="16" Margin="20,6,0,0" />
+                    <Label Text="SPEED" Style="{StaticResource PanelCaptionStyle}" TextColor="{DynamicResource OnSpeedPanel}" />
                     <Label Text="{Binding RPM, Converter={StaticResource rpmToSpeedConverter}, ConverterParameter={Binding WheelCircumference}, StringFormat='{0:F0}'}"  TextColor="{DynamicResource OnSpeedPanel}"  FontFamily="SairaExtraCondensed-Black" FontSize="125" HorizontalOptions="Center" VerticalOptions="Start"  />
 
                     <Label TextColor="{DynamicResource OnSpeedPanel}" FontFamily="SairaExtraCondensed-Black" FontSize="30" CharacterSpacing="0.97" HorizontalOptions="Center" VerticalOptions="End" VerticalTextAlignment="End">

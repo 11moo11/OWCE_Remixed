@@ -4,26 +4,40 @@
         <converters:TemperatureConverter x:Key="temperatureConverter" />
     </ContentView.Resources>
     <Border x:Name="MainView" BackgroundColor="{DynamicResource TempPanel}" Style="{DynamicResource BoardDetailBlockBaseStyle}">
-        <Grid BackgroundColor="{DynamicResource TempPanel}"  RowDefinitions="36,36,36,36" RowSpacing="1">
+        <Grid BackgroundColor="{DynamicResource TempPanel}" RowDefinitions="Auto,Auto,Auto,Auto" Padding="0,0,0,18">
 
-            <Label Text="TEMPERATURES" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="16" Margin="20,6,0,0" />
+            <Label Text="TEMPERATURES" Style="{StaticResource PanelCaptionStyle}" TextColor="{DynamicResource OnTemp}" />
 
-            <BoxView Grid.Row="1" BackgroundColor="{DynamicResource TempTrack}" />
-            <BoxView Grid.Row="2" BackgroundColor="{DynamicResource TempTrack}" />
-            <BoxView Grid.Row="3" BackgroundColor="{DynamicResource TempTrack}" />
+            <Grid Grid.Row="1" Margin="20,10,20,0" RowDefinitions="Auto,6" RowSpacing="6" ColumnDefinitions="*,Auto">
+                <Label Text="Controller" VerticalOptions="Center" FontFamily="SairaExtraCondensed-Medium" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="16" />
+                <Label Grid.Column="1" Text="{Binding ControllerTemp, Converter={StaticResource temperatureConverter}}" VerticalOptions="Center" FontFamily="SairaExtraCondensed-Black" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="22" />
 
+                <!-- A slim rounded bar: the track, with the filled part on top of it. -->
+                <Grid Grid.Row="1" Grid.ColumnSpan="2" HeightRequest="6">
+                    <BoxView BackgroundColor="{DynamicResource TempTrack}" CornerRadius="3" />
+                    <BoxView x:Name="ControllerBarView" BackgroundColor="{DynamicResource OnTemp}" CornerRadius="3" HorizontalOptions="Start" WidthRequest="0" />
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="2" Margin="20,10,20,0" RowDefinitions="Auto,6" RowSpacing="6" ColumnDefinitions="*,Auto">
+                <Label Text="Motor" VerticalOptions="Center" FontFamily="SairaExtraCondensed-Medium" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="16" />
+                <Label Grid.Column="1" Text="{Binding MotorTemp, Converter={StaticResource temperatureConverter}}" VerticalOptions="Center" FontFamily="SairaExtraCondensed-Black" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="22" />
 
-            <BoxView x:Name="ControllerBarView" Grid.Row="1" HorizontalOptions="Start" BackgroundColor="{DynamicResource TempBar}" WidthRequest="0" />
-            <BoxView x:Name="MotorBarView" Grid.Row="2" HorizontalOptions="Start" BackgroundColor="{DynamicResource TempBar}" WidthRequest="0" />
-            <BoxView x:Name="BatteryBarView" Grid.Row="3" HorizontalOptions="Start" BackgroundColor="{DynamicResource TempBar}" WidthRequest="0" />
+                <!-- A slim rounded bar: the track, with the filled part on top of it. -->
+                <Grid Grid.Row="1" Grid.ColumnSpan="2" HeightRequest="6">
+                    <BoxView BackgroundColor="{DynamicResource TempTrack}" CornerRadius="3" />
+                    <BoxView x:Name="MotorBarView" BackgroundColor="{DynamicResource OnTemp}" CornerRadius="3" HorizontalOptions="Start" WidthRequest="0" />
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="3" Margin="20,10,20,0" RowDefinitions="Auto,6" RowSpacing="6" ColumnDefinitions="*,Auto">
+                <Label Text="Battery" VerticalOptions="Center" FontFamily="SairaExtraCondensed-Medium" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="16" />
+                <Label Grid.Column="1" Text="{Binding BatteryTemp, Converter={StaticResource temperatureConverter}}" VerticalOptions="Center" FontFamily="SairaExtraCondensed-Black" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="22" />
 
-            <Label Grid.Row="1" Text="Controller" VerticalOptions="Center" FontFamily="SairaExtraCondensed-Medium" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="16" Margin="20,0,0,0" />
-            <Label Grid.Row="2" Text="Motor" VerticalOptions="Center" FontFamily="SairaExtraCondensed-Medium" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="16" Margin="20,0,0,0" />
-            <Label Grid.Row="3" Text="Battery" VerticalOptions="Center" FontFamily="SairaExtraCondensed-Medium" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="16" Margin="20,0,0,0" />
-
-            <Label Grid.Row="1" Text="{Binding ControllerTemp, Converter={StaticResource temperatureConverter}}" VerticalOptions="Center" HorizontalOptions="End" FontFamily="SairaExtraCondensed-Black" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="22" Margin="0,0,20,0" />
-            <Label Grid.Row="2" Text="{Binding MotorTemp, Converter={StaticResource temperatureConverter}}" VerticalOptions="Center" HorizontalOptions="End" FontFamily="SairaExtraCondensed-Black" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="22" Margin="0,0,20,0" />
-            <Label Grid.Row="3" Text="{Binding BatteryTemp, Converter={StaticResource temperatureConverter}}" VerticalOptions="Center" HorizontalOptions="End" FontFamily="SairaExtraCondensed-Black" TextColor="{DynamicResource OnTemp}" CharacterSpacing="0.26" FontSize="22" Margin="0,0,20,0" />
+                <!-- A slim rounded bar: the track, with the filled part on top of it. -->
+                <Grid Grid.Row="1" Grid.ColumnSpan="2" HeightRequest="6">
+                    <BoxView BackgroundColor="{DynamicResource TempTrack}" CornerRadius="3" />
+                    <BoxView x:Name="BatteryBarView" BackgroundColor="{DynamicResource OnTemp}" CornerRadius="3" HorizontalOptions="Start" WidthRequest="0" />
+                </Grid>
+            </Grid>
 
         </Grid>
     </Border>

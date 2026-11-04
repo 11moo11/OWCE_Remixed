@@ -43,6 +43,7 @@
     <Color x:Key="OnRideModePanel">#F5EFF7</Color>
     <Color x:Key="LightsPanel">#625B71</Color>
     <Color x:Key="OnLights">#FFFFFF</Color>
+    <SolidColorBrush x:Key="OnLightsBrush" Color="#FFFFFF" />
     <Color x:Key="MenuButtonColor">#6750A4</Color>
     <Color x:Key="OnMenuButtonColor">#FFFFFF</Color>
     <Color x:Key="CardSurfaceColor">#F3EDF7</Color>

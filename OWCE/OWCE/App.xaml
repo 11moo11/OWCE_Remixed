@@ -74,6 +74,15 @@
                 <Setter Property="Margin" Value="20,28,20,10" />
             </Style>
 
+            <!-- The small heading at the top of a dashboard panel. -->
+            <Style x:Key="PanelCaptionStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="SairaExtraCondensed-Bold" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="CharacterSpacing" Value="1.4" />
+                <Setter Property="Margin" Value="20,14,20,0" />
+                <Setter Property="VerticalOptions" Value="Start" />
+            </Style>
+
             <!-- Text buttons for dialogs. -->
             <Style x:Key="DialogButtonStyle" TargetType="Button">
                 <Setter Property="BackgroundColor" Value="Transparent" />

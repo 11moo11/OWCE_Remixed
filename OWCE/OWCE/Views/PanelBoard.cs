@@ -14,11 +14,13 @@ namespace OWCE.Views
         public const string PreferenceKey = "panel_layout";
 
         const double Spacing = 16;
+        // The space between panels is a little tighter than the space at the edge of the screen.
+        const double Gap = 12;
         const double AutoScrollEdge = 90;
         const double AutoScrollStep = 60;
 
-        readonly VerticalStackLayout _root = new VerticalStackLayout() { Spacing = Spacing };
-        readonly Grid _grid = new Grid() { ColumnSpacing = Spacing, RowSpacing = Spacing, Padding = new Thickness(Spacing, 0) };
+        readonly VerticalStackLayout _root = new VerticalStackLayout() { Spacing = Gap };
+        readonly Grid _grid = new Grid() { ColumnSpacing = Gap, RowSpacing = Gap, Padding = new Thickness(Spacing, 0) };
         readonly Border _editBar;
         readonly Dictionary<string, PanelHost> _hosts = new Dictionary<string, PanelHost>();
 
