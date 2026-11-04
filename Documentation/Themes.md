@@ -139,3 +139,13 @@ in preferences (`theme_user_styles`, `theme_current`). A preset whose corners an
 made panel style; changing either builds the panel style from the settings.
 
 Corners and effect apply to the dashboard panels. The settings cards, buttons and the bottom bar keep their own shapes.
+
+## The app icon
+
+On Android the launcher icon follows the theme. There are 15 icons (the original yellow plus 14 colours, made from the same artwork by
+`Resources/AppIcon/appicon_*.png`), and the one closest to the theme's primary colour is used ([AppIconCatalog](../OWCE/OWCE/AppIconCatalog.cs)).
+Android cannot draw an icon at run time, so a custom colour gets the nearest of the 15. Mechanically, the manifest has one launcher
+entry (an `activity-alias`) per icon, and [AppIconSwitcher](../OWCE/OWCE/Platforms/Android/AppIconSwitcher.cs) turns one on and the
+others off. This happens when the app goes to the background, because some launchers close the app when its icon changes, and the
+launcher can take a few seconds to show the new icon. The splash screen colour is fixed (it is part of the app's theme) and iOS keeps
+its single icon.

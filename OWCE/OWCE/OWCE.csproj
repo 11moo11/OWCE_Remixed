@@ -35,7 +35,22 @@
 
   <ItemGroup>
     <!-- App icon + splash. -->
+    <!-- The launcher icon in one colour per theme colour (see AppIconCatalog). The plain appicon is the original yellow. -->
     <MauiIcon Include="Resources\AppIcon\appicon.png" Color="#ECEC00" />
+    <MauiIcon Include="Resources\AppIcon\appicon_purple.png" Color="#6750A4" />
+    <MauiIcon Include="Resources\AppIcon\appicon_indigo.png" Color="#3F5AA6" />
+    <MauiIcon Include="Resources\AppIcon\appicon_blue.png" Color="#1E88E5" />
+    <MauiIcon Include="Resources\AppIcon\appicon_teal.png" Color="#00897B" />
+    <MauiIcon Include="Resources\AppIcon\appicon_green.png" Color="#2E7D32" />
+    <MauiIcon Include="Resources\AppIcon\appicon_lime.png" Color="#9E9D24" />
+    <MauiIcon Include="Resources\AppIcon\appicon_amber.png" Color="#F9A825" />
+    <MauiIcon Include="Resources\AppIcon\appicon_orange.png" Color="#EF6C00" />
+    <MauiIcon Include="Resources\AppIcon\appicon_red.png" Color="#D32F2F" />
+    <MauiIcon Include="Resources\AppIcon\appicon_pink.png" Color="#C2185B" />
+    <MauiIcon Include="Resources\AppIcon\appicon_brown.png" Color="#795548" />
+    <MauiIcon Include="Resources\AppIcon\appicon_slate.png" Color="#546E7A" />
+    <MauiIcon Include="Resources\AppIcon\appicon_black.png" Color="#101010" />
+    <MauiIcon Include="Resources\AppIcon\appicon_white.png" Color="#F5F5F5" />
     <MauiSplashScreen Include="Resources\Splash\splash.png" Color="#ECEC00" BaseSize="255,440" />
 
     <!-- Images (source files are the 3x assets, BaseSize is the 1x size). -->

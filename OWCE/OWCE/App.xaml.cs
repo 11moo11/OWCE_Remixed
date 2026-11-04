@@ -62,7 +62,11 @@ namespace OWCE
 
         protected override Window CreateWindow(IActivationState activationState)
         {
-            return new Window(new NavigationPage(new BoardListPage()));
+            var window = new Window(new NavigationPage(new BoardListPage()));
+
+            // The launcher icon follows the theme, but only changes once the app is out of sight.
+            window.Stopped += (sender, e) => AppIconCatalog.ApplyForCurrentTheme();
+            return window;
         }
 
         IOWBLE CreateOWBLE()
