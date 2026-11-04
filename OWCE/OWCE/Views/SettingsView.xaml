@@ -22,6 +22,36 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Only shown while the Material theme is the one selected. -->
+            <VerticalStackLayout x:Name="MaterialOptions" IsVisible="False">
+                <Label Text="Material colours" Style="{StaticResource SectionHeaderStyle}" />
+                <Border StrokeThickness="0" Padding="16,18,16,12" BackgroundColor="{DynamicResource CardSurfaceColor}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Pick a colour and the whole app is tinted to match." FontSize="14" TextColor="{DynamicResource MutedTextColor}" />
+                        <FlexLayout x:Name="SeedSwatches" Wrap="Wrap" JustifyContent="Start" />
+
+                        <!-- A rainbow bar with a see-through slider on top, for any other colour. -->
+                        <Grid HeightRequest="44">
+                            <Border x:Name="HueBar" StrokeThickness="0" HeightRequest="14" VerticalOptions="Center" Margin="12,0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="7" />
+                                </Border.StrokeShape>
+                            </Border>
+                            <Slider x:Name="HueSlider" Minimum="0" Maximum="360" MinimumTrackColor="Transparent" MaximumTrackColor="Transparent" ThumbColor="White" VerticalOptions="Center" ValueChanged="HueSlider_ValueChanged" DragCompleted="HueSlider_DragCompleted" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <views:SettingsGroup Margin="0,12,0,0">
+                    <views:SettingsItem Title="Dark mode" Subtitle="Dark surfaces, lighter colours">
+                        <Switch x:Name="MaterialDarkSwitch" OnColor="{DynamicResource AccentColor}" Toggled="MaterialDarkSwitch_Toggled" />
+                    </views:SettingsItem>
+                </views:SettingsGroup>
+            </VerticalStackLayout>
+
             <Label Text="Units" Style="{StaticResource SectionHeaderStyle}" />
             <views:SettingsGroup>
                 <views:SettingsItem Title="Imperial units" Subtitle="Show speed in mph and temperature in °F">

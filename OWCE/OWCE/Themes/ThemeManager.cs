@@ -23,7 +23,7 @@ namespace OWCE.Themes
         public static IReadOnlyList<ThemeInfo> Themes { get; } = new List<ThemeInfo>
         {
             new ThemeInfo(DefaultThemeId, "Default", "The original OWCE look.", () => new DefaultTheme()),
-            new ThemeInfo("material", "Material", "Material Design 3: tonal purple surfaces and large rounded corners.", () => new MaterialTheme()),
+            new ThemeInfo("material", "Material", "Material Design 3: tonal purple surfaces and large rounded corners.", () => MaterialTheme.Create()),
             new ThemeInfo("devil-trigger", "Devil Trigger", "Inspired by Devil May Cry: black, crimson and bone with hard edges.", () => new DevilTriggerTheme()),
             new ThemeInfo("codec", "Codec", "Inspired by Metal Gear Solid: green phosphor on black.", () => new CodecTheme()),
             new ThemeInfo("underground", "Underground", "Inspired by Need for Speed Underground: night city neon.", () => new UndergroundTheme()),

@@ -57,6 +57,9 @@ namespace OWCE.Views
             ThemeDescriptionLabel.Text = ThemeManager.Find(themeId).Description;
             ThemePicker.ThemeSelected += ThemePicker_ThemeSelected;
 
+            BuildMaterialOptions();
+            UpdateMaterialOptions(false);
+
             _loading = false;
             BindingContext = this;
         }
@@ -69,6 +72,152 @@ namespace OWCE.Views
             ThemeDescriptionLabel.Text = ThemeManager.Find(themeId).Description;
             ThemeManager.Apply(themeId);
             ThemeManager.Save(themeId);
+            UpdateMaterialOptions(true);
+        }
+
+        // ---- Material colours ----
+
+        readonly List<Border> _seedSwatches = new List<Border>();
+        DateTime _lastHueApply = DateTime.MinValue;
+
+        void BuildMaterialOptions()
+        {
+            // The rainbow behind the hue slider.
+            var rainbow = new LinearGradientBrush() { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
+            for (var i = 0; i <= 12; ++i)
+            {
+                rainbow.GradientStops.Add(new GradientStop(Color.FromHsla(i / 12f, 0.75f, 0.5f), i / 12f));
+            }
+            HueBar.Background = rainbow;
+
+            foreach (var hex in MaterialPalette.SeedChoices)
+            {
+                var color = Color.FromArgb(hex);
+                var swatch = new Border()
+                {
+                    WidthRequest = 44,
+                    HeightRequest = 44,
+                    Margin = new Thickness(0, 0, 10, 10),
+                    BackgroundColor = color,
+                    StrokeThickness = 3,
+                    Stroke = Brush.Transparent,
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 22 },
+                };
+                swatch.GestureRecognizers.Add(new TapGestureRecognizer()
+                {
+                    Command = new Command(() =>
+                    {
+                        Motion.Tick();
+                        _ = Motion.SquishAsync(swatch, 0.8);
+                        SetSeed(color, true);
+                    }),
+                });
+                _seedSwatches.Add(swatch);
+                SeedSwatches.Children.Add(swatch);
+            }
+        }
+
+        // Shows the options only for the Material theme, and loads the saved choices into the controls.
+        void UpdateMaterialOptions(bool animate)
+        {
+            var show = ThemePicker.SelectedThemeId == "material";
+
+            _loading = true;
+            MaterialDarkSwitch.IsToggled = MaterialTheme.IsDark;
+            HueSlider.Value = MaterialTheme.Seed.GetHue() * 360;
+            _loading = false;
+            MarkSelectedSwatch();
+
+            if (show == MaterialOptions.IsVisible)
+            {
+                return;
+            }
+
+            if (show && animate)
+            {
+                MaterialOptions.Opacity = 0;
+                MaterialOptions.IsVisible = true;
+                _ = MaterialOptions.FadeToAsync(1, 300, Easing.CubicOut);
+            }
+            else
+            {
+                MaterialOptions.Opacity = 1;
+                MaterialOptions.IsVisible = show;
+            }
+        }
+
+        void MarkSelectedSwatch()
+        {
+            var seed = MaterialTheme.Seed.ToRgbaHex();
+            for (var i = 0; i < _seedSwatches.Count; ++i)
+            {
+                var selected = Color.FromArgb(MaterialPalette.SeedChoices[i]).ToRgbaHex() == seed;
+                if (selected)
+                {
+                    _seedSwatches[i].SetDynamicResource(Border.StrokeProperty, "OnBackgroundBrush");
+                }
+                else
+                {
+                    _seedSwatches[i].RemoveDynamicResource(Border.StrokeProperty);
+                    _seedSwatches[i].Stroke = Brush.Transparent;
+                }
+            }
+        }
+
+        // Saves the colour and re-applies the Material theme.
+        void SetSeed(Color seed, bool updateSlider)
+        {
+            MaterialTheme.Seed = seed;
+
+            if (updateSlider)
+            {
+                _loading = true;
+                HueSlider.Value = seed.GetHue() * 360;
+                _loading = false;
+            }
+
+            ApplyMaterial();
+            MarkSelectedSwatch();
+        }
+
+        void ApplyMaterial()
+        {
+            ThemeManager.Apply("material");
+            ThemePicker.Rebuild();
+        }
+
+        void HueSlider_ValueChanged(object sender, ValueChangedEventArgs e)
+        {
+            if (_loading)
+            {
+                return;
+            }
+
+            MaterialTheme.Seed = Color.FromHsla((float)(e.NewValue / 360), 0.6f, 0.5f);
+
+            // The whole app is restyled for each step, so not on every single movement.
+            if ((DateTime.UtcNow - _lastHueApply).TotalMilliseconds > 120)
+            {
+                _lastHueApply = DateTime.UtcNow;
+                ThemeManager.Apply("material");
+            }
+        }
+
+        void HueSlider_DragCompleted(object sender, EventArgs e)
+        {
+            ApplyMaterial();
+            MarkSelectedSwatch();
+        }
+
+        void MaterialDarkSwitch_Toggled(object sender, ToggledEventArgs e)
+        {
+            if (_loading)
+            {
+                return;
+            }
+
+            MaterialTheme.IsDark = e.Value;
+            ApplyMaterial();
         }
 
         void ImperialSwitch_Toggled(object sender, ToggledEventArgs e)

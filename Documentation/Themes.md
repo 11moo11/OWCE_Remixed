@@ -1,12 +1,11 @@
 # Themes
 
-Pick one in **Settings > Theme**. Choosing a theme previews it straight away; **Save** keeps it, **Cancel** (or leaving
-the page) puts the old one back.
+Pick one in **Settings > Appearance**. A theme is applied and saved as soon as you tap it.
 
 | Theme | Idea |
 |---|---|
 | Default | The original OWCE look. |
-| Material | Material Design 3 baseline: tonal purple surfaces, large rounded corners, soft shadows. |
+| Material | Material Design 3: tonal surfaces, large rounded corners, soft shadows. Pick any colour (swatches or a hue slider) and switch on dark mode; the whole scheme is built from your colour. |
 | Devil Trigger | Devil May Cry: black, crimson and bone, hard edges, red glow. |
 | Codec | Metal Gear Solid codec screens: green phosphor on black, thin outlines, no rounding. |
 | Underground | Need for Speed Underground: night city, hot pink, cyan and amber neon. |
@@ -95,3 +94,14 @@ out the same modern way:
 * the Lights panel has a switch-style pill that shows on or off;
 * the panels' corner radius, outline and shadow come from the theme (`BoardDetailBlockBaseStyle`): Default and Material
   are round and soft, Codec and Devil Trigger are sharp.
+
+
+## Material colours and dark mode
+
+When Material is selected, Settings shows a colour picker and a **Dark mode** switch. The colour is a *seed*:
+[MaterialPalette](../OWCE/OWCE/Themes/MaterialPalette.cs) builds the whole scheme from it (tones of the seed, a muted
+version, a shifted one and tinted greys), in light or dark. It is an HSL approximation of Material's tonal palettes,
+not the exact colour science. Every text colour is checked against what it sits on and adjusted until it is readable
+(4.5 : 1). The default purple in light mode is the hand written baseline in `MaterialTheme.xaml`. The choices are
+saved as `material_seed` and `material_dark`. `MaterialTheme.xaml.cs` is hand written (not generated) because it applies
+the palette, so keep it if you regenerate the other themes.

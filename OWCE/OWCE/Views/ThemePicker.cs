@@ -20,6 +20,22 @@ namespace OWCE.Views
 
         public ThemePicker()
         {
+            Build();
+        }
+
+        /// <summary>Draws the previews again (a theme such as Material can change its colours).</summary>
+        public void Rebuild()
+        {
+            Build();
+            if (SelectedThemeId != null)
+            {
+                Select(SelectedThemeId);
+            }
+        }
+
+        void Build()
+        {
+            _previews.Clear();
             var grid = new Grid() { RowSpacing = 16, ColumnSpacing = 8 };
             for (var i = 0; i < Columns; ++i)
             {
