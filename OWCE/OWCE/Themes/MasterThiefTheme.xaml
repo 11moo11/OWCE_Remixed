@@ -74,7 +74,7 @@
         <Setter Property="Margin" Value="10,0,0,0" />
         <Setter Property="Padding" Value="15,0" />
         <Setter Property="FontSize" Value="18" />
-        <Setter Property="FontFamily" Value="SairaExtraCondensed-Bold" />
+        <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="BorderWidth" Value="1" />
         <Setter Property="BorderColor" Value="{DynamicResource ButtonBorderColor}" />
         <Setter Property="HeightRequest" Value="40" />
@@ -90,7 +90,7 @@
         <Setter Property="Margin" Value="10,0,0,0" />
         <Setter Property="Padding" Value="15,0" />
         <Setter Property="FontSize" Value="18" />
-        <Setter Property="FontFamily" Value="SairaExtraCondensed-Bold" />
+        <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="BorderWidth" Value="1" />
         <Setter Property="BorderColor" Value="{DynamicResource ButtonBorderColor}" />
         <Setter Property="HeightRequest" Value="40" />

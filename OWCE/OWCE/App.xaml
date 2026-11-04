@@ -74,9 +74,14 @@
                 <Setter Property="Margin" Value="20,28,20,10" />
             </Style>
 
+            <!-- Red for things like Disconnect. The same in every theme: white text on this is 6.5:1. -->
+            <Color x:Key="DangerColor">#B3261E</Color>
+            <Color x:Key="OnDangerColor">#FFFFFF</Color>
+            <SolidColorBrush x:Key="OnDangerBrush" Color="#FFFFFF" />
+
             <!-- The small heading at the top of a dashboard panel. -->
             <Style x:Key="PanelCaptionStyle" TargetType="Label">
-                <Setter Property="FontFamily" Value="SairaExtraCondensed-Bold" />
+                <Setter Property="FontAttributes" Value="Bold" />
                 <Setter Property="FontSize" Value="14" />
                 <Setter Property="CharacterSpacing" Value="1.4" />
                 <Setter Property="Margin" Value="20,14,20,0" />

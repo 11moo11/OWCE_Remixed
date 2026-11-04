@@ -14,16 +14,8 @@
             <converters:BoardIsAvailableOpacityConverter x:Key="boardIsAvailableOpacityConverter" />
 
             <DataTemplate x:Key="SideMenu">
-                <Grid BackgroundColor="{DynamicResource SurfaceColor}" ColumnSpacing="0" RowSpacing="0" VerticalOptions="Fill" RowDefinitions="Auto,*">
-                                
-                    <Grid Grid.Row="0" VerticalOptions="End" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0">
-<Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding PastRidesCommand}" /></Grid.GestureRecognizers>
-                        <Image Grid.Row="0" Grid.Column="0" Source="menu_myrides" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
-<Image.Behaviors><views:ThemedIconTint ThemeColorKey="OnSurfaceColor" /></Image.Behaviors>
-</Image>
-                        <Label Grid.Row="0" Grid.Column="1" Text="Past Rides" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" />
-                    </Grid>
-
+                <Grid BackgroundColor="{DynamicResource SurfaceColor}" Padding="16,8,16,0" VerticalOptions="Fill" RowDefinitions="Auto,*">
+                    <views:MenuButton Grid.Row="0" Text="Past Rides" IconSource="menu_myrides" Command="{Binding PastRidesCommand}" />
                 </Grid>
             </DataTemplate>
 
@@ -67,8 +59,8 @@
                                 </Border.Shadow>
 
                                 <Grid>
-                                    <Label FontFamily="SairaExtraCondensed-Bold" FontSize="16" Text="{Binding BoardModelStringLong}" TextColor="{DynamicResource OnCardColor}" Margin="20,5,0,0" CharacterSpacing="-0.26" />
-                                    <Label FontFamily="SairaExtraCondensed-Black" FontSize="40" Text="{Binding Name}" TextColor="{DynamicResource OnCardColor}" HorizontalOptions="Center" VerticalOptions="Center" CharacterSpacing="0.48" />
+                                    <Label FontAttributes="Bold" FontSize="16" Text="{Binding BoardModelStringLong}" TextColor="{DynamicResource OnCardColor}" Margin="20,5,0,0" CharacterSpacing="-0.26" />
+                                    <Label FontAttributes="Bold" FontSize="30" Text="{Binding Name}" TextColor="{DynamicResource OnCardColor}" HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Grid>
                                 
                             </Border>

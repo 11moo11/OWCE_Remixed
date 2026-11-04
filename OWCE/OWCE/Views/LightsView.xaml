@@ -12,7 +12,7 @@
 
             <VerticalStackLayout Grid.Column="0" Spacing="0" Padding="0,0,0,18">
                 <Label Text="LIGHTS" Style="{StaticResource PanelCaptionStyle}" TextColor="{DynamicResource OnLights}" />
-                <Label Text="OFF" FontFamily="SairaExtraCondensed-Black" TextColor="{DynamicResource OnLights}" FontSize="56" Margin="20,0,0,0">
+                <Label FontAttributes="Bold" Text="OFF" TextColor="{DynamicResource OnLights}" FontSize="44" Margin="20,0,0,0">
                     <Label.Triggers>
                         <DataTrigger TargetType="Label" Binding="{Binding LightMode}" Value="True">
                             <Setter Property="Text" Value="ON" />

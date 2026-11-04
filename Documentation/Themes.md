@@ -18,7 +18,7 @@ the page) puts the old one back.
 The PS2-inspired palettes are interpretations of each game's general look, not copies of their UIs. The sources I could
 find confirm structure (for example [Devil May Cry's orb and vitality gauge HUD](https://devilmaycry.fandom.com/wiki/Orbs),
 [the codec as a green-tinted dialogue screen](https://knowyourmeme.com/memes/codec-screen)) but not exact colours or
-fonts, so the colours are my own. All themes use the same font (Saira Extra Condensed).
+fonts, so the colours are my own. All themes use the system font.
 
 ## How it works
 
@@ -87,7 +87,7 @@ The Settings, About, Past rides, Submit ride and Raw data screens use a Material
 
 ## The dashboard panels
 
-The board screen's panels keep their bold colours and the Saira font, which is part of the app's character, but are laid
+The board screen's panels keep their bold colours and use the same system font as the rest of the app, but are laid
 out the same modern way:
 
 * a small spaced-out caption (`PanelCaptionStyle`), then the number, left aligned;

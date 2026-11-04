@@ -21,7 +21,7 @@
                 <Grid BackgroundColor="{DynamicResource RideModePanel}"  AbsoluteLayout.LayoutFlags="WidthProportional" AbsoluteLayout.LayoutBounds="0,0,1,121">
                     <Label Text="RIDE MODE" Style="{StaticResource PanelCaptionStyle}" TextColor="{DynamicResource OnRideModePanel}" />
 
-                    <Label Text="{Binding RideModeString}" FontFamily="SairaExtraCondensed-Black" HorizontalOptions="Start" Margin="20,30,56,20" TextColor="{DynamicResource OnRideModePanel}" CharacterSpacing="1.2" FontSize="52" />
+                    <Label FontAttributes="Bold" Text="{Binding RideModeString}" HorizontalOptions="Start" Margin="20,30,56,20" TextColor="{DynamicResource OnRideModePanel}" CharacterSpacing="0.5" FontSize="44" />
 
 
                     <!--
@@ -74,27 +74,27 @@
 
                 <!-- Custom shaping. Only shown when the board supports it and is in Custom ride mode. -->
                 <VerticalStackLayout x:Name="CustomShapingPanel" Grid.Row="2" IsVisible="False" Padding="20,16,20,20" Spacing="14" BackgroundColor="{DynamicResource SurfaceColor}">
-                    <Label x:Name="CustomShapingStatusLabel" FontFamily="SairaExtraCondensed-SemiBold" TextColor="{DynamicResource MutedTextColor}" FontSize="16" />
+                    <Label x:Name="CustomShapingStatusLabel" TextColor="{DynamicResource MutedTextColor}" FontSize="16" />
 
                     <VerticalStackLayout x:Name="CustomShapingSliders" Spacing="12">
                     <VerticalStackLayout Spacing="0">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Aggressiveness" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
-                            <Label x:Name="AggressivenessValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
+                            <Label FontAttributes="Bold" Text="Aggressiveness" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
+                            <Label FontAttributes="Bold" x:Name="AggressivenessValueLabel" Grid.Column="1" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
                         </Grid>
                         <views:ThickSlider x:Name="AggressivenessSlider" Minimum="0" Maximum="10" MinimumTrackColor="{DynamicResource SliderActiveColor}" MaximumTrackColor="{DynamicResource SliderInactiveColor}" ThumbColor="{DynamicResource SliderActiveColor}" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="0">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Turn compensation" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
-                            <Label x:Name="TurnCompensationValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
+                            <Label FontAttributes="Bold" Text="Turn compensation" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
+                            <Label FontAttributes="Bold" x:Name="TurnCompensationValueLabel" Grid.Column="1" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
                         </Grid>
                         <views:ThickSlider x:Name="TurnCompensationSlider" Minimum="0" Maximum="10" MinimumTrackColor="{DynamicResource SliderActiveColor}" MaximumTrackColor="{DynamicResource SliderInactiveColor}" ThumbColor="{DynamicResource SliderActiveColor}" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="0">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Angle offset" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
-                            <Label x:Name="AngleOffsetValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
+                            <Label FontAttributes="Bold" Text="Angle offset" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
+                            <Label FontAttributes="Bold" x:Name="AngleOffsetValueLabel" Grid.Column="1" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
                         </Grid>
                         <views:ThickSlider x:Name="AngleOffsetSlider" Minimum="-3" Maximum="1.5" MinimumTrackColor="{DynamicResource SliderActiveColor}" MaximumTrackColor="{DynamicResource SliderInactiveColor}" ThumbColor="{DynamicResource SliderActiveColor}" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
                     </VerticalStackLayout>

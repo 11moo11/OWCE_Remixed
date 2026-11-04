@@ -55,7 +55,7 @@ namespace OWCE.Views
             {
                 Text = title.ToUpperInvariant(),
                 TextColor = Colors.White,
-                FontFamily = "SairaExtraCondensed-Bold",
+                FontAttributes = FontAttributes.Bold,
                 FontSize = 14,
                 CharacterSpacing = 0.5,
                 HorizontalOptions = LayoutOptions.Center,
@@ -129,7 +129,7 @@ namespace OWCE.Views
             var label = new Label()
             {
                 Text = text,
-                FontFamily = "SairaExtraCondensed-Bold",
+                FontAttributes = FontAttributes.Bold,
                 FontSize = 14,
                 HorizontalTextAlignment = TextAlignment.Center,
                 VerticalTextAlignment = TextAlignment.Center,

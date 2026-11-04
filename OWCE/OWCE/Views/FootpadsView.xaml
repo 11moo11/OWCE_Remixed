@@ -3,13 +3,13 @@
     <Border BackgroundColor="#E00172" Style="{DynamicResource BoardDetailBlockBaseStyle}" >
         <Grid x:Name="x" HorizontalOptions="Fill" ColumnDefinitions="*,*" ColumnSpacing="0">
 
-            <Label Text="L" Grid.Column="0" Opacity="0.35" TextColor="White" FontFamily="SairaExtraCondensed-Black" FontSize="96" HorizontalOptions="Center" VerticalOptions="Center"  />
-            <Label Text="R" Grid.Column="1" TextColor="White" FontFamily="SairaExtraCondensed-Black" FontSize="96" HorizontalOptions="Center" VerticalOptions="Center"  />
+            <Label FontAttributes="Bold" Text="L" Grid.Column="0" Opacity="0.35" TextColor="White" FontSize="96" HorizontalOptions="Center" VerticalOptions="Center"  />
+            <Label FontAttributes="Bold" Text="R" Grid.Column="1" TextColor="White" FontSize="96" HorizontalOptions="Center" VerticalOptions="Center"  />
             
             <BoxView Grid.Column="0" Opacity="0.25" BackgroundColor="Black" />
             <BoxView Grid.Column="1" Opacity="0.25" BackgroundColor="Black" IsVisible="false" />
             <BoxView Grid.ColumnSpan="2" WidthRequest="1" Opacity="0.2" BackgroundColor="Black" HorizontalOptions="Center" Margin="0,6" />
-            <Label Text="FOOTPADS" FontFamily="SairaExtraCondensed-Bold" TextColor="White" CharacterSpacing="0.26" FontSize="16" Margin="20,6,0,0" />
+            <Label FontAttributes="Bold" Text="FOOTPADS" TextColor="White" CharacterSpacing="0.26" FontSize="16" Margin="20,6,0,0" />
 
         </Grid>  
     </Border>

@@ -109,7 +109,6 @@ namespace OWCE.Pages
             var scanningLabel = new Label()
             {
                 Text = "Scanning...",
-                FontFamily = "SairaExtraCondensed-SemiBold",
                 FontSize = 24,
                 VerticalOptions = LayoutOptions.Center,
                 HorizontalOptions = LayoutOptions.End,

@@ -131,7 +131,7 @@ namespace OWCE.Views
                             TextColor = TextColorFor(_accent),
                             Text = "-",
                             FontSize = 24,
-                            FontFamily = "SairaExtraCondensed-Bold",
+                            FontAttributes = FontAttributes.Bold,
                             BackgroundColor = _accent,
                             HorizontalTextAlignment = TextAlignment.Center,
                             VerticalTextAlignment = TextAlignment.Center,

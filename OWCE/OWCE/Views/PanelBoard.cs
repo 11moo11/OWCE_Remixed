@@ -125,7 +125,6 @@ namespace OWCE.Views
             var label = new Label()
             {
                 Text = "Editing panels. Hold and drag a panel to move it.",
-                FontFamily = "SairaExtraCondensed-SemiBold",
                 FontSize = 16,
                 VerticalOptions = LayoutOptions.Center,
             };
@@ -166,7 +165,7 @@ namespace OWCE.Views
             var label = new Label()
             {
                 Text = text,
-                FontFamily = "SairaExtraCondensed-Bold",
+                FontAttributes = FontAttributes.Bold,
                 FontSize = 16,
                 HorizontalTextAlignment = TextAlignment.Center,
                 VerticalTextAlignment = TextAlignment.Center,

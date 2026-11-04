@@ -17,71 +17,22 @@
             <DataTemplate x:Key="SideMenu" x:DataType="pages:BoardPage">
                
 
-                <Grid BackgroundColor="{DynamicResource SurfaceColor}" ColumnSpacing="0" RowSpacing="8" VerticalOptions="Fill" RowDefinitions="Auto,1,Auto,1,*,Auto">
-                    
-                    <Grid Grid.Row="0" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0" IsVisible="{Binding Board.IsRecordingRide, Converter={StaticResource InvertedBoolConverter}}">
-<Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding StartRecordRideCommand}" /></Grid.GestureRecognizers>
-                        <Image Grid.Row="0" Grid.Column="0" Source="settings_start_recording" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
-<Image.Behaviors><views:ThemedIconTint ThemeColorKey="OnSurfaceColor" /></Image.Behaviors>
-</Image>
-                        <Label Grid.Row="0" Grid.Column="1" Text="Record ride" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18"/>
-                    </Grid>
-                                        
-                    <Grid Grid.Row="0" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0" IsVisible="{Binding Board.IsRecordingRide}">
-<Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding StopRecordRideCommand}" /></Grid.GestureRecognizers>
-                        <Image Grid.Row="0" Grid.Column="0" Source="settings_stop_recording" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
-<Image.Behaviors><views:ThemedIconTint ThemeColorKey="OnSurfaceColor" /></Image.Behaviors>
-</Image>
-                        <Label Grid.Row="0" Grid.Column="1" Text="Stop recording ride" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18"/>
-                    </Grid>
+                <Grid BackgroundColor="{DynamicResource SurfaceColor}" ColumnSpacing="0" RowSpacing="0" Padding="16,8,16,0" VerticalOptions="Fill" RowDefinitions="Auto,*,Auto">
 
-                    <Grid Grid.Row="2" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0">
-                        <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding EditPanelsCommand}" />
-                        </Grid.GestureRecognizers>
-                        <Image Grid.Row="0" Grid.Column="0" Source="menu_settings" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
-                            <Image.Behaviors><views:ThemedIconTint ThemeColorKey="OnSurfaceColor" /></Image.Behaviors>
-                        </Image>
-                        <Label Grid.Row="0" Grid.Column="1" Text="Edit panels" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18"/>
-                    </Grid>
+                    <VerticalStackLayout Grid.Row="0" Spacing="10">
+                        <views:MenuButton Text="Record ride" IconSource="settings_start_recording"
+                                          Command="{Binding StartRecordRideCommand}"
+                                          IsVisible="{Binding Board.IsRecordingRide, Converter={StaticResource InvertedBoolConverter}}" />
+                        <views:MenuButton Text="Stop recording ride" IconSource="settings_stop_recording"
+                                          Command="{Binding StopRecordRideCommand}"
+                                          IsVisible="{Binding Board.IsRecordingRide}" />
+                        <views:MenuButton Text="Edit panels" IconPathData="{x:Static views:Icons.Dashboard}"
+                                          Command="{Binding EditPanelsCommand}" />
+                    </VerticalStackLayout>
 
-                    <!--
-                    <BoxView Grid.Row="1" BackgroundColor="{DynamicResource DividerColor}" HeightRequest="1" />
-
-
-                    <Grid Grid.Row="2" RowDefinitions="30,30,30,30" ColumnSpacing="0" ColumnDefinitions="60,*">
-                        <views:SettingsSwitch x:Name="ImperialSwitch" VerticalOptions="Center" Grid.Row="0" Grid.Column="0" IsToggledChanged="ImperialSwitch_IsToggledChanged" HorizontalOptions="Center" />
-                        <Label Grid.Row="0" Grid.Column="1" VerticalOptions="Center" Text="Imperial units (mph, F)" TextColor="{Binding Source={x:Reference ImperialSwitch}, Path=CurrentColor}" FontSize="18" />
-
-                        <views:SettingsSwitch Grid.Row="1" Grid.Column="0" VerticalOptions="Center" />
-                        <Label Grid.Row="1" Grid.Column="1" Text="Light theme" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" VerticalOptions="Center" />
-
-                        <views:SettingsSwitch Grid.Row="2" Grid.Column="0" VerticalOptions="Center" />
-                        <Label Grid.Row="2" Grid.Column="1" Text="Board lights on" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" VerticalOptions="Center" />
-                    
-                        <views:SettingsSwitch Grid.Row="3" Grid.Column="0" VerticalOptions="Center" />
-                        <Label Grid.Row="3" Grid.Column="1" Text="Show battery % calculation from voltage" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" />
-
-                        <BoxView Color="White" Opacity="0.8" Grid.Row="1" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="2" />
-                        <Label TextColor="{DynamicResource OnSurfaceColor}" Grid.Row="1" Text="Coming Soon" HorizontalOptions="Center" VerticalOptions="Center" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="2" FontAttributes="Bold" />
-                    </Grid>
-
-                    <BoxView Grid.Row="3" BackgroundColor="{DynamicResource DividerColor}" HeightRequest="1" />
-                    -->
-
-                    <Grid Grid.Row="4" VerticalOptions="End" RowDefinitions="Auto" ColumnSpacing="0" ColumnDefinitions="60,*">
-
-                        <Image Grid.Row="0" Grid.Column="0" Source="settings_disconnect" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
-<Image.Behaviors><views:ThemedIconTint ThemeColorKey="OnSurfaceColor" /></Image.Behaviors>
-</Image>
-                        <Label Grid.Row="0" Grid.Column="1" Text="Disconnect from board" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="Disconnect_Tapped" />
-                            </Label.GestureRecognizers>
-                        </Label>
-
-
-                    </Grid>
+                    <!-- Kept apart from the everyday buttons and in red so it is never hit by accident. -->
+                    <views:MenuButton Grid.Row="2" Margin="0,0,0,10" IsDanger="True" Text="Disconnect from board" IconSource="settings_disconnect"
+                                      Tapped="Disconnect_Tapped" />
                 </Grid>
             </DataTemplate>
 
@@ -135,19 +86,19 @@
                 <views:FootpadsView IsVisible="false" />
                 -->
                 <Grid Padding="20,0" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto">
-                    <Label Grid.Row="0" Grid.Column="0" Text="Serial number" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
-                    <Label Grid.Row="1" Grid.Column="0" Text="Battery serial number" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
-                    <Label Grid.Row="2" Grid.Column="0" Text="Hardware revision" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
-                    <Label Grid.Row="3" Grid.Column="0" Text="Firmware" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
-                    <Label Grid.Row="4" Grid.Column="0" Text="RSSI" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
-                    <Label Grid.Row="5" Grid.Column="0" Text="App Version" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
+                    <Label Grid.Row="0" Grid.Column="0" Text="Serial number" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
+                    <Label Grid.Row="1" Grid.Column="0" Text="Battery serial number" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
+                    <Label Grid.Row="2" Grid.Column="0" Text="Hardware revision" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
+                    <Label Grid.Row="3" Grid.Column="0" Text="Firmware" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
+                    <Label Grid.Row="4" Grid.Column="0" Text="RSSI" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
+                    <Label Grid.Row="5" Grid.Column="0" Text="App Version" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
 
-                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding SerialNumber}" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" HorizontalOptions="End" />
-                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding BatterySerial}" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" HorizontalOptions="End" />
-                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding HardwareRevision}" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" HorizontalOptions="End" />
-                    <Label Grid.Row="3" Grid.Column="1" Text="{Binding FirmwareRevision}" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" HorizontalOptions="End" />
-                    <Label Grid.Row="4" Grid.Column="1" Text="{Binding RSSI}" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" HorizontalOptions="End" />
-                    <Label Grid.Row="5" Grid.Column="1" x:Name="AppVersionLabel" FontFamily="SairaExtraCondensed-SemiBold" FontSize="16" TextColor="{DynamicResource MutedTextColor}" HorizontalOptions="End" />
+                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding SerialNumber}" FontSize="16" TextColor="{DynamicResource MutedTextColor}" HorizontalOptions="End" />
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding BatterySerial}" FontSize="16" TextColor="{DynamicResource MutedTextColor}" HorizontalOptions="End" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding HardwareRevision}" FontSize="16" TextColor="{DynamicResource MutedTextColor}" HorizontalOptions="End" />
+                    <Label Grid.Row="3" Grid.Column="1" Text="{Binding FirmwareRevision}" FontSize="16" TextColor="{DynamicResource MutedTextColor}" HorizontalOptions="End" />
+                    <Label Grid.Row="4" Grid.Column="1" Text="{Binding RSSI}" FontSize="16" TextColor="{DynamicResource MutedTextColor}" HorizontalOptions="End" />
+                    <Label Grid.Row="5" Grid.Column="1" x:Name="AppVersionLabel" FontSize="16" TextColor="{DynamicResource MutedTextColor}" HorizontalOptions="End" />
                 </Grid>
             </StackLayout>
         </ScrollView>

@@ -15,11 +15,11 @@ namespace OWCE.Pages.Popup
         IAsyncRelayCommand _closeCommand;
         public IAsyncRelayCommand CloseCommand => _closeCommand ??= new AsyncRelayCommand(CloseCommand_Clicked);
 
-        IAsyncRelayCommand<Grid> _aboutCommand;
-        public IAsyncRelayCommand<Grid> AboutCommand => _aboutCommand ??= new AsyncRelayCommand<Grid>(async (sender) => await AboutCommand_Clicked(sender));
+        IAsyncRelayCommand<View> _aboutCommand;
+        public IAsyncRelayCommand<View> AboutCommand => _aboutCommand ??= new AsyncRelayCommand<View>(async (sender) => await AboutCommand_Clicked(sender));
 
-        IAsyncRelayCommand<Grid> _settingsCommand;
-        public IAsyncRelayCommand<Grid> SettingsCommand => _settingsCommand ??= new AsyncRelayCommand<Grid>(async (sender) => await SettingsCommand_Clicked(sender));
+        IAsyncRelayCommand<View> _settingsCommand;
+        public IAsyncRelayCommand<View> SettingsCommand => _settingsCommand ??= new AsyncRelayCommand<View>(async (sender) => await SettingsCommand_Clicked(sender));
 
         View _pageSpecificSideMenu = null;
         public View PageSpecificSideMenu {
@@ -38,7 +38,7 @@ namespace OWCE.Pages.Popup
                 if (value != null)
                 {
                     _pageSpecificSideMenu = value;
-                    Grid.SetRow(_pageSpecificSideMenu, 2);
+                    Grid.SetRow(_pageSpecificSideMenu, 1);
                     MainGrid.Children.Add(_pageSpecificSideMenu);
                 }
             }
@@ -56,7 +56,7 @@ namespace OWCE.Pages.Popup
             await MopupService.Instance.PopAsync(true);
         }
 
-        async Task AboutCommand_Clicked(Grid sender)
+        async Task AboutCommand_Clicked(View sender)
         {
             sender.Opacity = 0.6f;
 
@@ -67,7 +67,7 @@ namespace OWCE.Pages.Popup
             );
         }
 
-        async Task SettingsCommand_Clicked(Grid sender)
+        async Task SettingsCommand_Clicked(View sender)
         {
             sender.Opacity = 0.6f;
 

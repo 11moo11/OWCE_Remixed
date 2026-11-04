@@ -35,7 +35,7 @@
                     <!-- Battery -->
                     <VerticalStackLayout Grid.Column="0" BackgroundColor="{DynamicResource BatteryHeader}" Padding="0,0,0,16" Spacing="0">
                         <Label Text="BATTERY" Style="{StaticResource PanelCaptionStyle}" TextColor="{DynamicResource OnBattery}" />
-                        <Label Text="{Binding BatteryPercent, StringFormat='{0}%'}" TextColor="{DynamicResource OnBattery}" FontFamily="SairaExtraCondensed-Black" FontSize="56" Margin="20,0,0,0" />
+                        <Label FontAttributes="Bold" Text="{Binding BatteryPercent, StringFormat='{0}%'}" TextColor="{DynamicResource OnBattery}" FontSize="40" Margin="20,0,0,0" />
 
                         <Grid x:Name="BatteryTrack" HeightRequest="6" Margin="20,6,20,0" SizeChanged="Tracks_SizeChanged">
                             <BoxView BackgroundColor="{DynamicResource BatteryBar}" CornerRadius="3" />
@@ -52,13 +52,13 @@
                                     <Binding Path="BoardType" Converter="{StaticResource IsBoardTypeConverter}" ConverterParameter="PintX" />
                                 </MultiBinding>
                             </VerticalStackLayout.IsVisible>
-                            <Label Text="{Binding BatteryVoltage, StringFormat='{0:F2}V'}" TextColor="{DynamicResource OnBattery}" FontSize="16" FontFamily="SairaExtraCondensed-Medium" />
+                            <Label FontAttributes="Bold" Text="{Binding BatteryVoltage, StringFormat='{0:F2}V'}" TextColor="{DynamicResource OnBattery}" FontSize="16" />
                             <Label TextColor="{DynamicResource OnBattery}">
                                 <Label.FormattedText>
                                     <FormattedString>
-                                        <Span Text="{Binding BatteryCells.LowestCellVoltage, StringFormat='{0:F2}-'}" FontSize="14" FontFamily="SairaExtraCondensed-Medium" />
-                                        <Span Text="{Binding BatteryCells.HighestCellVoltage, StringFormat='{0:F2}V'}" FontSize="14" FontFamily="SairaExtraCondensed-Medium" />
-                                        <Span Text=" cells" FontSize="14" FontFamily="SairaExtraCondensed-Light" />
+                                        <Span FontAttributes="Bold" Text="{Binding BatteryCells.LowestCellVoltage, StringFormat='{0:F2}-'}" FontSize="14" />
+                                        <Span FontAttributes="Bold" Text="{Binding BatteryCells.HighestCellVoltage, StringFormat='{0:F2}V'}" FontSize="14" />
+                                        <Span Text=" cells" FontSize="14" />
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
@@ -68,7 +68,7 @@
                     <!-- Current -->
                     <VerticalStackLayout Grid.Column="1" BackgroundColor="{DynamicResource PowerPanel}" Padding="0,0,0,16" Spacing="0">
                         <Label Text="CURRENT" Style="{StaticResource PanelCaptionStyle}" TextColor="{DynamicResource OnPower}" />
-                        <Label Text="{Binding CurrentAmps, StringFormat='{0:F1}A'}" TextColor="{DynamicResource OnPower}" FontFamily="SairaExtraCondensed-Black" FontSize="56" Margin="20,0,0,0" />
+                        <Label FontAttributes="Bold" Text="{Binding CurrentAmps, StringFormat='{0:F1}A'}" TextColor="{DynamicResource OnPower}" FontSize="40" Margin="20,0,0,0" />
 
                         <Grid x:Name="PowerTrack" HeightRequest="6" Margin="20,6,20,0" SizeChanged="Tracks_SizeChanged">
                             <BoxView BackgroundColor="{DynamicResource PowerBar}" CornerRadius="3" />
@@ -79,16 +79,16 @@
                             <Label TextColor="{DynamicResource OnPower}">
                                 <Label.FormattedText>
                                     <FormattedString>
-                                        <Span Text="{Binding TripAmpHours, StringFormat='{0:F2} Ah'}" FontSize="16" FontFamily="SairaExtraCondensed-Medium" />
-                                        <Span Text=" trip" FontSize="16" FontFamily="SairaExtraCondensed-Light" />
+                                        <Span FontAttributes="Bold" Text="{Binding TripAmpHours, StringFormat='{0:F2} Ah'}" FontSize="16" />
+                                        <Span Text=" trip" FontSize="16" />
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
                             <Label TextColor="{DynamicResource OnPower}">
                                 <Label.FormattedText>
                                     <FormattedString>
-                                        <Span Text="{Binding TripRegenAmpHours, StringFormat='{0:F2} Ah'}" FontSize="14" FontFamily="SairaExtraCondensed-Medium" />
-                                        <Span Text=" regen" FontSize="14" FontFamily="SairaExtraCondensed-Light" />
+                                        <Span FontAttributes="Bold" Text="{Binding TripRegenAmpHours, StringFormat='{0:F2} Ah'}" FontSize="14" />
+                                        <Span Text=" regen" FontSize="14" />
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>

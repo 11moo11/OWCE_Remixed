@@ -37,50 +37,40 @@
     <Grid
           x:Name="MainGrid"
           ColumnSpacing="0"
-          RowSpacing="12"
-          Padding="0,24,0,16"
-          RowDefinitions="Auto,1,*,1,Auto,Auto">
+          RowSpacing="0"
+          Padding="0,24,0,20"
+          RowDefinitions="Auto,*,Auto">
 
-        <Label Grid.Row="0" Text="{Binding Title}" TextColor="{DynamicResource OnSurfaceColor}" FontAttributes="Bold" FontSize="24" Padding="16,0,16,0" />
+        <!-- Header: app name + a big round close button (easy to hit with a gloved or shaky thumb). -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="24,0,16,12">
+            <Label Grid.Column="0" Text="{Binding Title}" TextColor="{DynamicResource OnSurfaceColor}" FontAttributes="Bold" FontSize="30" VerticalOptions="Center" />
 
-
-
-        <!-- Close button. The touch area is bigger than the 16 unit icon so it is easy to hit. -->
-        <Grid Grid.Row="0" WidthRequest="44" HeightRequest="44" HorizontalOptions="End" VerticalOptions="Center" Margin="0,-12,4,-12" BackgroundColor="Transparent">
-            <Grid.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding CloseCommand}" />
-            </Grid.GestureRecognizers>
-            <Image Source="menu_cancel" WidthRequest="16" HeightRequest="16" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True">
-                <Image.Behaviors>
-                    <views:ThemedIconTint ThemeColorKey="OnSurfaceColor" />
-                </Image.Behaviors>
-            </Image>
+            <Grid Grid.Column="1" WidthRequest="52" HeightRequest="52" VerticalOptions="Center" BackgroundColor="Transparent">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CloseCommand}" />
+                </Grid.GestureRecognizers>
+                <Border StrokeThickness="0" BackgroundColor="Transparent" InputTransparent="True">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="26" />
+                    </Border.StrokeShape>
+                    <BoxView BackgroundColor="{DynamicResource AccentColor}" Opacity="0.14" InputTransparent="True" />
+                </Border>
+                <Image Source="menu_cancel" WidthRequest="20" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True">
+                    <Image.Behaviors>
+                        <views:ThemedIconTint ThemeColorKey="OnSurfaceColor" />
+                    </Image.Behaviors>
+                </Image>
+            </Grid>
         </Grid>
 
-        <BoxView Grid.Row="1" BackgroundColor="{DynamicResource DividerColor}" HeightRequest="1" />
+        <!-- Grid.Row 1 is for the page specific menu -->
 
-        <!-- Grid.Row 2 is for page specific menu -->
-
-        <BoxView Grid.Row="3" BackgroundColor="{DynamicResource DividerColor}" HeightRequest="1" />
-
-        <Grid x:Name="SettingsRow" Grid.Row="4" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0">
-<Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding SettingsCommand}" CommandParameter="{x:Reference SettingsRow}" /></Grid.GestureRecognizers>
-            <Image Grid.Row="0" Grid.Column="0" Source="menu_settings" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
-<Image.Behaviors><views:ThemedIconTint ThemeColorKey="OnSurfaceColor" /></Image.Behaviors>
-</Image>
-            <Label Grid.Row="0" Grid.Column="1" Text="Settings" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" />
-        </Grid>
-
-        <Grid x:Name="AboutRow" Grid.Row="5" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0">
-<Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding AboutCommand}" CommandParameter="{x:Reference AboutRow}" /></Grid.GestureRecognizers>
-            <Image Grid.Row="0" Grid.Column="0" Source="settings_info" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
-                <Image.Behaviors>
-                    <views:ThemedIconTint ThemeColorKey="OnSurfaceColor" />
-                </Image.Behaviors>
-            </Image>
-            <Label Grid.Row="0" Grid.Column="1" Text="About this app" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" />
-        </Grid>
-
+        <VerticalStackLayout Grid.Row="2" Padding="16,16,16,0" Spacing="10">
+            <views:MenuButton x:Name="SettingsButton" Text="Settings" IconSource="menu_settings"
+                              Command="{Binding SettingsCommand}" CommandParameter="{x:Reference SettingsButton}" />
+            <views:MenuButton x:Name="AboutButton" Text="About this app" IconSource="settings_info"
+                              Command="{Binding AboutCommand}" CommandParameter="{x:Reference AboutButton}" />
+        </VerticalStackLayout>
 
     </Grid>
     </Border>

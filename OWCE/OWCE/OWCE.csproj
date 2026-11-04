@@ -55,12 +55,7 @@
     <MauiImage Include="Resources\Images\swipe_rename.png" Resize="true" BaseSize="24,24" />
     <MauiImage Include="Resources\Images\splash_image.png" Resize="true" BaseSize="255,440" />
 
-    <!-- Fonts (referenced by family name, eg FontFamily="SairaExtraCondensed-Bold"). -->
-    <MauiFont Include="Resources\Fonts\SairaExtraCondensed-Black.ttf" />
-    <MauiFont Include="Resources\Fonts\SairaExtraCondensed-Bold.ttf" />
-    <MauiFont Include="Resources\Fonts\SairaExtraCondensed-Light.ttf" />
-    <MauiFont Include="Resources\Fonts\SairaExtraCondensed-Medium.ttf" />
-    <MauiFont Include="Resources\Fonts\SairaExtraCondensed-SemiBold.ttf" />
+    <!-- No custom fonts: the whole app uses the system font. -->
 
     <!-- Sample ride data used by MockOWBLE when running on a simulator/emulator in Debug. -->
     <EmbeddedResource Include="Resources\SampleRideData\*.bin" />
