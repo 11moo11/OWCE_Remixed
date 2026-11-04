@@ -77,13 +77,33 @@ namespace OWCE.Views
             _root = new Grid() { BackgroundColor = Colors.Transparent };
             _root.Children.Add(_indicator);
             _root.Children.Add(_items);
+
+            // One clear layer over the whole bar takes every touch, so a slide can start anywhere (including on the selected
+            // tab) and a tap is turned into the tab under the finger.
+            _items.InputTransparent = true;
+            var touch = new BoxView() { Color = Colors.Transparent };
+            var tap = new TapGestureRecognizer();
+            tap.Tapped += async (sender, e) =>
+            {
+                var point = e.GetPosition(touch);
+                if (point == null || _cell <= 0 || _pager == null)
+                {
+                    return;
+                }
+
+                var index = Math.Clamp((int)(point.Value.X / _cell), 0, _list.Count - 1);
+                Motion.Tick();
+                await _pager.SelectAsync(index);
+            };
+            touch.GestureRecognizers.Add(tap);
+            var pan = new PanGestureRecognizer();
+            pan.PanUpdated += Pan_PanUpdated;
+            touch.GestureRecognizers.Add(pan);
+            _root.Children.Add(touch);
             Content = _root;
 
             _root.SizeChanged += (sender, e) => UpdateCell();
 
-            var pan = new PanGestureRecognizer();
-            pan.PanUpdated += Pan_PanUpdated;
-            _root.GestureRecognizers.Add(pan);
         }
 
         /// <summary>
@@ -125,17 +145,6 @@ namespace OWCE.Views
 
             item.Wrapper = new Grid() { BackgroundColor = Colors.Transparent };
             item.Wrapper.Children.Add(stack);
-
-            var tap = new TapGestureRecognizer();
-            tap.Tapped += async (sender, e) =>
-            {
-                Motion.Tick();
-                if (_pager != null)
-                {
-                    await _pager.SelectAsync(index);
-                }
-            };
-            item.Wrapper.GestureRecognizers.Add(tap);
 
             _list.Add(item);
             _items.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
@@ -312,7 +321,7 @@ namespace OWCE.Views
                     _ = _indicator.ScaleToAsync(1, 300, Easing.SpringOut);
 
                     // A quick flick carries on to the next item.
-                    var flick = Math.Abs(_velocity) > 0.0015 ? Math.Sign(_velocity) * 0.4 : 0;
+                    var flick = Math.Abs(_velocity) > 0.0008 ? Math.Sign(_velocity) * 0.6 : Math.Sign(_pager.Position - _dragStart) * 0.25;
                     var target = Math.Clamp((int)Math.Round(_pager.Position + flick), 0, _list.Count - 1);
                     _ = _pager.SelectAsync(target, fromDrag: true);
                     break;

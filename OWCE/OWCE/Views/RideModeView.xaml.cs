@@ -77,8 +77,6 @@ namespace OWCE.Views
             }
         }
 
-        ObservableCollection<RideModeButton> _rideModesList = new ObservableCollection<RideModeButton>();
-
         public RideModeView()
         {
             InitializeComponent();
@@ -89,21 +87,14 @@ namespace OWCE.Views
                 new CustomShapingControl(RideTrait.TurnCompensation, TurnCompensationSlider, TurnCompensationValueLabel, "F1", ""),
                 new CustomShapingControl(RideTrait.AngleOffset, AngleOffsetSlider, AngleOffsetValueLabel, "F1", "°"),
             };
-        }
 
-        void ExpanderView_PropertyChanged(System.Object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (Expander.IsExpandedProperty.PropertyName.Equals(e.PropertyName))
-            {
-                if (ExpanderView.IsExpanded)
-                {
-                    ExpanderArrow.RotateToAsync(180, 200, Easing.CubicIn);
-                }
-                else
-                {
-                    ExpanderArrow.RotateToAsync(0, 200, Easing.CubicOut);
-                }
-            }
+            var pan = new PanGestureRecognizer();
+            pan.PanUpdated += Header_PanUpdated;
+            Header.GestureRecognizers.Add(pan);
+
+            // The arrows nudge now and then to say they can be swiped.
+            Loaded += (sender, e) => StartHint();
+            Unloaded += (sender, e) => this.AbortAnimation(HintName);
         }
 
         protected override void OnBindingContextChanged()
@@ -137,22 +128,217 @@ namespace OWCE.Views
 
         void SetupRideModeButtons()
         {
-            _rideModesList.Clear();
+            BuildDots();
+            SyncFromBoard();
+        }
 
-            foreach (var rideMode in _availableRideModes)
+        // ---- Choosing the ride mode by swiping ----
+
+        const string HintName = "RideModeHint";
+
+        int _modeIndex = -1;
+        int _commitVersion = 0;
+        bool _isAnimatingMode = false;
+        readonly List<Border> _dots = new List<Border>();
+
+        void BuildDots()
+        {
+            Dots.Children.Clear();
+            _dots.Clear();
+
+            if (_availableRideModes == null)
             {
-                _rideModesList.Add(new RideModeButton()
-                {
-                    Name = rideMode.Item1,
-                    Value = rideMode.Item2,
-                    IsSelected = false,
-                });
+                return;
             }
 
-            //RideModesCollectionView.ItemsSource = null;
-            //RideModesCollectionView.ItemsSource = _rideModesList;
-            BindableLayout.SetItemsSource(RideModesStackLayout, null);
-            BindableLayout.SetItemsSource(RideModesStackLayout, _rideModesList);
+            foreach (var mode in _availableRideModes)
+            {
+                var dot = new Border()
+                {
+                    HeightRequest = 8,
+                    WidthRequest = 8,
+                    StrokeThickness = 0,
+                    Opacity = 0.4,
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 4 },
+                };
+                dot.SetDynamicResource(VisualElement.BackgroundColorProperty, "OnRideModePanel");
+                _dots.Add(dot);
+                Dots.Children.Add(dot);
+            }
+        }
+
+        void UpdateDots(bool animate)
+        {
+            for (var i = 0; i < _dots.Count; ++i)
+            {
+                var selected = i == _modeIndex;
+                var width = selected ? 24.0 : 8.0;
+                var opacity = selected ? 1.0 : 0.4;
+
+                if (animate)
+                {
+                    var dot = _dots[i];
+                    var from = dot.WidthRequest;
+                    dot.Animate("dot", new Animation(v => dot.WidthRequest = v, from, width, Easing.SpringOut), 16, 350);
+                    _ = dot.FadeToAsync(opacity, 200);
+                }
+                else
+                {
+                    _dots[i].WidthRequest = width;
+                    _dots[i].Opacity = opacity;
+                }
+            }
+        }
+
+        // Shows the board's ride mode (unless the user is in the middle of choosing one).
+        void SyncFromBoard()
+        {
+            if (_availableRideModes == null || _board == null || _isAnimatingMode)
+            {
+                return;
+            }
+
+            var index = _availableRideModes.FindIndex(x => x.Item2 == _board.RideMode);
+            if (index < 0)
+            {
+                _modeIndex = -1;
+                ModeLabel.Text = _board.RideModeString;
+                UpdateDots(false);
+                return;
+            }
+
+            if (index != _modeIndex)
+            {
+                _modeIndex = index;
+                ModeLabel.Text = _availableRideModes[index].Item1;
+                UpdateDots(false);
+            }
+        }
+
+        void StartHint()
+        {
+            this.AbortAnimation(HintName);
+
+            // Slow breathing on the arrows.
+            var animation = new Animation();
+            animation.Add(0, 0.5, new Animation(v => { PreviousArrow.Opacity = v; NextArrow.Opacity = v; }, 1, 0.35, Easing.SinInOut));
+            animation.Add(0.5, 1, new Animation(v => { PreviousArrow.Opacity = v; NextArrow.Opacity = v; }, 0.35, 1, Easing.SinInOut));
+            animation.Commit(this, HintName, 16, 2200, repeat: () => true);
+        }
+
+        void PreviousArrow_Tapped(object sender, TappedEventArgs e) => _ = StepAsync(-1);
+
+        void NextArrow_Tapped(object sender, TappedEventArgs e) => _ = StepAsync(1);
+
+        void Header_PanUpdated(object sender, PanUpdatedEventArgs e)
+        {
+            if (_availableRideModes == null || _modeIndex < 0 || _isAnimatingMode)
+            {
+                return;
+            }
+
+            var width = Math.Max(Stage.Width, 1);
+
+            switch (e.StatusType)
+            {
+                case GestureStatus.Running:
+                {
+                    // The name follows the finger. At the first and last mode it resists.
+                    var dx = e.TotalX;
+                    var blocked = (dx > 0 && _modeIndex == 0) || (dx < 0 && _modeIndex == _availableRideModes.Count - 1);
+                    ModeLabel.TranslationX = dx * (blocked ? 0.2 : 0.7);
+                    ModeLabel.Opacity = 1 - Math.Min(Math.Abs(dx) / width, 1) * 0.6;
+                    break;
+                }
+
+                case GestureStatus.Completed:
+                {
+                    var dx = e.TotalX;
+                    if (Math.Abs(dx) > 50)
+                    {
+                        _ = StepAsync(dx < 0 ? 1 : -1);
+                    }
+                    else
+                    {
+                        _ = SettleLabelAsync();
+                    }
+                    break;
+                }
+
+                case GestureStatus.Canceled:
+                    _ = SettleLabelAsync();
+                    break;
+            }
+        }
+
+        async Task SettleLabelAsync()
+        {
+            await Task.WhenAll(
+                ModeLabel.TranslateToAsync(0, 0, 400, Easing.SpringOut),
+                ModeLabel.FadeToAsync(1, 200));
+        }
+
+        // Moves one ride mode along (direction 1 = next, -1 = previous). The new mode slides in from that side.
+        async Task StepAsync(int direction)
+        {
+            if (_availableRideModes == null || _modeIndex < 0 || _isAnimatingMode)
+            {
+                return;
+            }
+
+            var target = _modeIndex + direction;
+            if (target < 0 || target >= _availableRideModes.Count)
+            {
+                Motion.Tick(HapticFeedbackType.LongPress);
+                await SettleLabelAsync();
+                return;
+            }
+
+            _isAnimatingMode = true;
+            try
+            {
+                Motion.Tick();
+                _modeIndex = target;
+                UpdateDots(true);
+
+                var distance = Math.Max(Stage.Width, 1) * 0.5;
+                await Task.WhenAll(
+                    ModeLabel.TranslateToAsync(-direction * distance, 0, 130, Easing.CubicIn),
+                    ModeLabel.FadeToAsync(0, 130));
+
+                ModeLabel.Text = _availableRideModes[target].Item1;
+                ModeLabel.TranslationX = direction * distance;
+
+                await Task.WhenAll(
+                    ModeLabel.TranslateToAsync(0, 0, 450, Easing.SpringOut),
+                    ModeLabel.FadeToAsync(1, 200));
+            }
+            finally
+            {
+                _isAnimatingMode = false;
+            }
+
+            _ = CommitAfterPauseAsync(_availableRideModes[target].Item2);
+        }
+
+        // The board is only told once the user has stopped swiping, so swiping past modes does not send each one.
+        async Task CommitAfterPauseAsync(ushort rideMode)
+        {
+            var version = ++_commitVersion;
+            await Task.Delay(450);
+            if (version != _commitVersion)
+            {
+                return;
+            }
+
+            _board?.ChangeRideMode(rideMode);
+
+            // Then show whatever the board reports, once it has had time to answer.
+            await Task.Delay(1500);
+            if (version == _commitVersion)
+            {
+                SyncFromBoard();
+            }
         }
 
         // ---- Custom shaping ----
@@ -179,6 +365,7 @@ namespace OWCE.Views
             }
 
             RefreshCustomShaping();
+            SyncFromBoard();
         }
 
         void Board_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -194,7 +381,14 @@ namespace OWCE.Views
                 case nameof(OWBoard.Aggressiveness):
                 case nameof(OWBoard.HasCustomShapingValues):
                     // Board updates arrive on Bluetooth threads.
-                    MainThread.BeginInvokeOnMainThread(RefreshCustomShaping);
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        RefreshCustomShaping();
+                        if (e.PropertyName == null || e.PropertyName == nameof(OWBoard.RideMode))
+                        {
+                            SyncFromBoard();
+                        }
+                    });
                     break;
             }
         }
@@ -207,7 +401,19 @@ namespace OWCE.Views
             var board = _board;
 
             var show = board != null && board.CanCustomShape && board.IsInCustomRideMode;
-            CustomShapingPanel.IsVisible = show;
+            if (show && CustomShapingPanel.IsVisible == false)
+            {
+                // Opens up with a little spring.
+                CustomShapingPanel.Opacity = 0;
+                CustomShapingPanel.TranslationY = -16;
+                CustomShapingPanel.IsVisible = true;
+                _ = CustomShapingPanel.FadeToAsync(1, 250, Easing.CubicOut);
+                _ = CustomShapingPanel.TranslateToAsync(0, 0, 450, Easing.SpringOut);
+            }
+            else
+            {
+                CustomShapingPanel.IsVisible = show;
+            }
 
             if (show == false)
             {
@@ -308,31 +514,6 @@ namespace OWCE.Views
             }
 
             return accepted;
-        }
-
-        void RideModeButton_Clicked(System.Object sender, System.EventArgs e)
-        {
-            foreach (var button in _rideModesList)
-            {
-                button.IsSelected = false;
-            }
-
-            if (sender is Button senderButton)
-            {
-                var selectedRideMode = _rideModesList.FirstOrDefault(x => x.Name == senderButton.Text);
-                if (selectedRideMode != null)
-                {
-                    selectedRideMode.IsSelected = true;
-
-                    if (BindingContext is OWBoard board)
-                    {
-                        board.ChangeRideMode(selectedRideMode.Value);
-                    }
-                }
-
-
-               //VisualStateManager.GoToState(button, selectedRideMode.IsSelected ? "SelectedState" : "NormalState");
-            }
         }
     }
 }

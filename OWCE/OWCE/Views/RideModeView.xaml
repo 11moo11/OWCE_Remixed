@@ -6,74 +6,38 @@
              xmlns:views="clr-namespace:OWCE.Views"
              xmlns:converters="clr-namespace:OWCE.Converters">
 
-    <ContentView.Resources>
-        <converters:AllTrueMultiConverter x:Key="AllTrueConverter" />
-        <converters:AnyTrueMultiConverter x:Key="AnyTrueConverter" />
-        <converters:IsBoardTypeConverter x:Key="IsBoardTypeConverter" />
-        <converters:IsTrueConverter x:Key="IsTrueConverter" />
-        <converters:IsFalseConverter x:Key="IsFalseConverter" />
-        <converters:SelectedButtonConverter x:Key="SelectedButtonConverter" />
-    </ContentView.Resources>
-
     <Border BackgroundColor="{DynamicResource RideModePanel}" Style="{DynamicResource BoardDetailBlockBaseStyle}">
-        <toolkit:Expander x:Name="ExpanderView" Margin="0" Padding="0" HorizontalOptions="Fill" PropertyChanged="ExpanderView_PropertyChanged">
-            <toolkit:Expander.Header>
-                <Grid BackgroundColor="{DynamicResource RideModePanel}"  AbsoluteLayout.LayoutFlags="WidthProportional" AbsoluteLayout.LayoutBounds="0,0,1,121">
-                    <Label Text="RIDE MODE" Style="{StaticResource PanelCaptionStyle}" TextColor="{DynamicResource OnRideModePanel}" />
+        <VerticalStackLayout Spacing="0">
 
-                    <Label FontAttributes="Bold" Text="{Binding RideModeString}" HorizontalOptions="Start" Margin="20,30,56,20" TextColor="{DynamicResource OnRideModePanel}" CharacterSpacing="0.5" FontSize="44" />
+            <!-- The ride mode is chosen by swiping this part sideways (or tapping the arrows). -->
+            <Grid x:Name="Header" HeightRequest="150" BackgroundColor="{DynamicResource RideModePanel}">
+                <Label Text="RIDE MODE" Style="{StaticResource PanelCaptionStyle}" TextColor="{DynamicResource OnRideModePanel}" />
 
+                <!-- Arrows and a hint at the top right, so it is clear that the mode is swiped. -->
+                <HorizontalStackLayout HorizontalOptions="End" VerticalOptions="Start" Margin="0,8,12,0" Spacing="2">
+                    <Label x:Name="PreviousArrow" Text="‹" FontSize="34" Padding="10,0" TextColor="{DynamicResource OnRideModePanel}" VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="PreviousArrow_Tapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="SWIPE" FontSize="12" CharacterSpacing="2" FontAttributes="Bold" Opacity="0.7" TextColor="{DynamicResource OnRideModePanel}" VerticalOptions="Center" />
+                    <Label x:Name="NextArrow" Text="›" FontSize="34" Padding="10,0" TextColor="{DynamicResource OnRideModePanel}" VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="NextArrow_Tapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
 
-                    <!--
-                    <Label Text="Simplestop is ON" IsVisible="{Binding SimpleStopEnabled, Converter={StaticResource IsTrueConverter}}" FontFamily="SairaExtraCondensed-SemiBold" TextColor="Magenta" HorizontalOptions="Center" VerticalOptions="End" FontSize="16" Margin="0,0,0,6" />
-                    <Label Text="Simplestop is OFF" IsVisible="{Binding SimpleStopEnabled, Converter={StaticResource IsFalseConverter}}" FontFamily="SairaExtraCondensed-SemiBold" TextColor="{DynamicResource OnRideModePanel}" HorizontalOptions="Center" VerticalOptions="End" FontSize="16" Margin="0,0,0,6" />
-                    -->
-
-                    <views:ExpanderArrowView x:Name="ExpanderArrow" ArrowColor="{DynamicResource OnRideModePanel}" HorizontalOptions="End" Margin="17,13" />
-
+                <Grid x:Name="Stage" Margin="0,38,0,38" IsClippedToBounds="True">
+                    <Label x:Name="ModeLabel" FontAttributes="Bold" Text="{Binding RideModeString}" HorizontalOptions="Start" VerticalOptions="Center" Margin="20,0" TextColor="{DynamicResource OnRideModePanel}" CharacterSpacing="0.5" FontSize="44" />
                 </Grid>
-            </toolkit:Expander.Header>
-            <Grid ColumnSpacing="0" RowSpacing="0" RowDefinitions="Auto,76,Auto" Margin="0" Padding="0">
-                <!--
-                <views:SwitchView Grid.Row="0" HorizontalOptions="Center">
-                    <views:SwitchView.IsVisible>
-                        <MultiBinding Converter="{StaticResource AnyTrueConverter}">
-                            <Binding Path="SimpleStopEnabled" Converter="{StaticResource IsTrueConverter}" />
-                            <Binding Path="SimpleStopEnabled" Converter="{StaticResource IsFalseConverter}" />
-                        </MultiBinding>
-                    </views:SwitchView.IsVisible>
-                </views:SwitchView>
-                -->
 
-                <!--
-                <CollectionView x:Name="RideModesCollectionView" HorizontalScrollBarVisibility="Never" ItemsLayout="HorizontalList" Grid.Row="1" HeightRequest="76" BackgroundColor="{DynamicResource SurfaceColor}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="views:RideModeButton">
-                            <Grid>
-                                <Button Text="{Binding Name}" Clicked="RideModeButton_Clicked" Style="{Binding IsSelected, Converter={StaticResource SelectedButtonConverter}}">
-                                    
-                                </Button>
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-                -->
-
-                <ScrollView Grid.Row="1" HeightRequest="76" BackgroundColor="{DynamicResource SurfaceColor}" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never" Orientation="Horizontal">
-                    <StackLayout  x:Name="RideModesStackLayout" BindableLayout.ItemsSource="{Binding User.TopFollowers}" Grid.Row="1" HeightRequest="76" BackgroundColor="{DynamicResource SurfaceColor}" Orientation="Horizontal">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="views:RideModeButton">
-                                <Button Text="{Binding Name}" Clicked="RideModeButton_Clicked" Style="{Binding IsSelected, Converter={StaticResource SelectedButtonConverter}}" HorizontalOptions="Center">
-                                    
-                                </Button>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </StackLayout>
-                </ScrollView>
-               
+                <!-- One dot per ride mode, the current one stretched. -->
+                <HorizontalStackLayout x:Name="Dots" Spacing="6" HorizontalOptions="Start" VerticalOptions="End" Margin="20,0,20,16" />
+            </Grid>
 
                 <!-- Custom shaping. Only shown when the board supports it and is in Custom ride mode. -->
-                <VerticalStackLayout x:Name="CustomShapingPanel" Grid.Row="2" IsVisible="False" Padding="20,16,20,20" Spacing="14" BackgroundColor="{DynamicResource SurfaceColor}">
+                <VerticalStackLayout x:Name="CustomShapingPanel" IsVisible="False" Padding="20,16,20,20" Spacing="14" BackgroundColor="{DynamicResource SurfaceColor}">
                     <Label x:Name="CustomShapingStatusLabel" TextColor="{DynamicResource MutedTextColor}" FontSize="16" />
 
                     <VerticalStackLayout x:Name="CustomShapingSliders" Spacing="12">
@@ -101,7 +65,7 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
-            </Grid>
-        </toolkit:Expander>
+
+        </VerticalStackLayout>
     </Border>
 </ContentView>
