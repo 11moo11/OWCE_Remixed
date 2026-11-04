@@ -87,14 +87,6 @@ namespace OWCE.Views
                 new CustomShapingControl(RideTrait.TurnCompensation, TurnCompensationSlider, TurnCompensationValueLabel, "F1", ""),
                 new CustomShapingControl(RideTrait.AngleOffset, AngleOffsetSlider, AngleOffsetValueLabel, "F1", "°"),
             };
-
-            var pan = new PanGestureRecognizer();
-            pan.PanUpdated += Header_PanUpdated;
-            Header.GestureRecognizers.Add(pan);
-
-            // The arrows nudge now and then to say they can be swiped.
-            Loaded += (sender, e) => StartHint();
-            Unloaded += (sender, e) => this.AbortAnimation(HintName);
         }
 
         protected override void OnBindingContextChanged()
@@ -126,220 +118,169 @@ namespace OWCE.Views
             }
         }
 
-        void SetupRideModeButtons()
+        // ---- Choosing the ride mode ----
+
+        sealed class ModeButton
         {
-            BuildDots();
-            SyncFromBoard();
+            public ushort Value;
+            public Border Border;
+            public BoxView Tint;
+            public Label Label;
         }
 
-        // ---- Choosing the ride mode by swiping ----
+        readonly List<ModeButton> _modeButtons = new List<ModeButton>();
 
-        const string HintName = "RideModeHint";
-
-        int _modeIndex = -1;
-        int _commitVersion = 0;
-        bool _isAnimatingMode = false;
-        readonly List<Border> _dots = new List<Border>();
-
-        void BuildDots()
+        // One big button for each ride mode the board has, two to a row.
+        void SetupRideModeButtons()
         {
-            Dots.Children.Clear();
-            _dots.Clear();
+            ModeGrid.Children.Clear();
+            ModeGrid.RowDefinitions.Clear();
+            ModeGrid.ColumnDefinitions.Clear();
+            _modeButtons.Clear();
 
             if (_availableRideModes == null)
             {
                 return;
             }
 
-            foreach (var mode in _availableRideModes)
+            ModeGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+            ModeGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+
+            for (var i = 0; i < _availableRideModes.Count; ++i)
             {
-                var dot = new Border()
+                var mode = _availableRideModes[i];
+                if (i % 2 == 0)
                 {
-                    HeightRequest = 8,
-                    WidthRequest = 8,
-                    StrokeThickness = 0,
-                    Opacity = 0.4,
-                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 4 },
-                };
-                dot.SetDynamicResource(VisualElement.BackgroundColorProperty, "OnRideModePanel");
-                _dots.Add(dot);
-                Dots.Children.Add(dot);
-            }
-        }
-
-        void UpdateDots(bool animate)
-        {
-            for (var i = 0; i < _dots.Count; ++i)
-            {
-                var selected = i == _modeIndex;
-                var width = selected ? 24.0 : 8.0;
-                var opacity = selected ? 1.0 : 0.4;
-
-                if (animate)
-                {
-                    var dot = _dots[i];
-                    var from = dot.WidthRequest;
-                    dot.Animate("dot", new Animation(v => dot.WidthRequest = v, from, width, Easing.SpringOut), 16, 350);
-                    _ = dot.FadeToAsync(opacity, 200);
-                }
-                else
-                {
-                    _dots[i].WidthRequest = width;
-                    _dots[i].Opacity = opacity;
-                }
-            }
-        }
-
-        // Shows the board's ride mode (unless the user is in the middle of choosing one).
-        void SyncFromBoard()
-        {
-            if (_availableRideModes == null || _board == null || _isAnimatingMode)
-            {
-                return;
-            }
-
-            var index = _availableRideModes.FindIndex(x => x.Item2 == _board.RideMode);
-            if (index < 0)
-            {
-                _modeIndex = -1;
-                ModeLabel.Text = _board.RideModeString;
-                UpdateDots(false);
-                return;
-            }
-
-            if (index != _modeIndex)
-            {
-                _modeIndex = index;
-                ModeLabel.Text = _availableRideModes[index].Item1;
-                UpdateDots(false);
-            }
-        }
-
-        void StartHint()
-        {
-            this.AbortAnimation(HintName);
-
-            // Slow breathing on the arrows.
-            var animation = new Animation();
-            animation.Add(0, 0.5, new Animation(v => { PreviousArrow.Opacity = v; NextArrow.Opacity = v; }, 1, 0.35, Easing.SinInOut));
-            animation.Add(0.5, 1, new Animation(v => { PreviousArrow.Opacity = v; NextArrow.Opacity = v; }, 0.35, 1, Easing.SinInOut));
-            animation.Commit(this, HintName, 16, 2200, repeat: () => true);
-        }
-
-        void PreviousArrow_Tapped(object sender, TappedEventArgs e) => _ = StepAsync(-1);
-
-        void NextArrow_Tapped(object sender, TappedEventArgs e) => _ = StepAsync(1);
-
-        void Header_PanUpdated(object sender, PanUpdatedEventArgs e)
-        {
-            if (_availableRideModes == null || _modeIndex < 0 || _isAnimatingMode)
-            {
-                return;
-            }
-
-            var width = Math.Max(Stage.Width, 1);
-
-            switch (e.StatusType)
-            {
-                case GestureStatus.Running:
-                {
-                    // The name follows the finger. At the first and last mode it resists.
-                    var dx = e.TotalX;
-                    var blocked = (dx > 0 && _modeIndex == 0) || (dx < 0 && _modeIndex == _availableRideModes.Count - 1);
-                    ModeLabel.TranslationX = dx * (blocked ? 0.2 : 0.7);
-                    ModeLabel.Opacity = 1 - Math.Min(Math.Abs(dx) / width, 1) * 0.6;
-                    break;
+                    ModeGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
                 }
 
-                case GestureStatus.Completed:
+                var button = BuildModeButton(mode.Item1, mode.Item2);
+                _modeButtons.Add(button);
+
+                // An odd one out at the end gets the whole row.
+                var last = i == _availableRideModes.Count - 1 && i % 2 == 0;
+                ModeGrid.Add(button.Border, i % 2, i / 2);
+                if (last)
                 {
-                    var dx = e.TotalX;
-                    if (Math.Abs(dx) > 50)
-                    {
-                        _ = StepAsync(dx < 0 ? 1 : -1);
-                    }
-                    else
-                    {
-                        _ = SettleLabelAsync();
-                    }
-                    break;
+                    Grid.SetColumnSpan(button.Border, 2);
                 }
+            }
 
-                case GestureStatus.Canceled:
-                    _ = SettleLabelAsync();
-                    break;
+            _shownModeValue = null;
+            SyncFromBoard();
+        }
+
+        ModeButton BuildModeButton(string name, ushort value)
+        {
+            var button = new ModeButton() { Value = value };
+
+            button.Tint = new BoxView() { InputTransparent = true };
+            button.Tint.SetDynamicResource(VisualElement.BackgroundColorProperty, "OnRideModePanel");
+
+            button.Label = new Label()
+            {
+                Text = name,
+                FontSize = 20,
+                FontAttributes = FontAttributes.Bold,
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center,
+                InputTransparent = true,
+            };
+
+            var grid = new Grid() { Children = { button.Tint, button.Label } };
+
+            button.Border = new Border()
+            {
+                HeightRequest = 64,
+                StrokeThickness = 0,
+                Padding = new Thickness(0),
+                StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 18 },
+                Content = grid,
+            };
+
+            var tap = new TapGestureRecognizer();
+            tap.Tapped += (sender, e) => ModeButtonTapped(button);
+            button.Border.GestureRecognizers.Add(tap);
+
+            ApplyModeButtonState(button, false);
+            return button;
+        }
+
+        static void ApplyModeButtonState(ModeButton button, bool selected)
+        {
+            if (selected)
+            {
+                // Solid, with the panel's colour as the text.
+                button.Tint.Opacity = 1;
+                button.Label.SetDynamicResource(Label.TextColorProperty, "RideModePanel");
+            }
+            else
+            {
+                button.Tint.Opacity = 0.16;
+                button.Label.SetDynamicResource(Label.TextColorProperty, "OnRideModePanel");
             }
         }
 
-        async Task SettleLabelAsync()
+        ushort? _shownModeValue;
+
+        void ShowSelectedMode(ushort? value)
         {
-            await Task.WhenAll(
-                ModeLabel.TranslateToAsync(0, 0, 400, Easing.SpringOut),
-                ModeLabel.FadeToAsync(1, 200));
+            _shownModeValue = value;
+            foreach (var button in _modeButtons)
+            {
+                ApplyModeButtonState(button, value.HasValue && button.Value == value.Value);
+            }
         }
 
-        // Moves one ride mode along (direction 1 = next, -1 = previous). The new mode slides in from that side.
-        async Task StepAsync(int direction)
+        void ModeButtonTapped(ModeButton button)
         {
-            if (_availableRideModes == null || _modeIndex < 0 || _isAnimatingMode)
+            Motion.Tick();
+            _ = Motion.SquishAsync(button.Border, 0.94);
+
+            if (_shownModeValue == button.Value)
             {
                 return;
             }
 
-            var target = _modeIndex + direction;
-            if (target < 0 || target >= _availableRideModes.Count)
-            {
-                Motion.Tick(HapticFeedbackType.LongPress);
-                await SettleLabelAsync();
-                return;
-            }
-
-            _isAnimatingMode = true;
-            try
-            {
-                Motion.Tick();
-                _modeIndex = target;
-                UpdateDots(true);
-
-                var distance = Math.Max(Stage.Width, 1) * 0.5;
-                await Task.WhenAll(
-                    ModeLabel.TranslateToAsync(-direction * distance, 0, 130, Easing.CubicIn),
-                    ModeLabel.FadeToAsync(0, 130));
-
-                ModeLabel.Text = _availableRideModes[target].Item1;
-                ModeLabel.TranslationX = direction * distance;
-
-                await Task.WhenAll(
-                    ModeLabel.TranslateToAsync(0, 0, 450, Easing.SpringOut),
-                    ModeLabel.FadeToAsync(1, 200));
-            }
-            finally
-            {
-                _isAnimatingMode = false;
-            }
-
-            _ = CommitAfterPauseAsync(_availableRideModes[target].Item2);
+            // Highlight straight away, then tell the board.
+            ShowSelectedMode(button.Value);
+            _ignoreBoardUntil = DateTime.UtcNow.AddSeconds(1.9);
+            _board?.ChangeRideMode(button.Value);
+            _ = ResyncLaterAsync();
         }
 
-        // The board is only told once the user has stopped swiping, so swiping past modes does not send each one.
-        async Task CommitAfterPauseAsync(ushort rideMode)
+        int _syncVersion = 0;
+
+        // After the board has had time to answer, show what it says (in case the change did not happen).
+        async Task ResyncLaterAsync()
         {
-            var version = ++_commitVersion;
-            await Task.Delay(450);
-            if (version != _commitVersion)
-            {
-                return;
-            }
-
-            _board?.ChangeRideMode(rideMode);
-
-            // Then show whatever the board reports, once it has had time to answer.
-            await Task.Delay(1500);
-            if (version == _commitVersion)
+            var version = ++_syncVersion;
+            await Task.Delay(2000);
+            if (version == _syncVersion)
             {
                 SyncFromBoard();
             }
         }
+
+        // Shows the board's ride mode.
+        void SyncFromBoard()
+        {
+            if (_board == null)
+            {
+                return;
+            }
+
+            // While a change the user just made is waiting for the board, leave the highlight alone.
+            if (DateTime.UtcNow < _ignoreBoardUntil)
+            {
+                return;
+            }
+
+            var known = _availableRideModes != null && _availableRideModes.Any(x => x.Item2 == _board.RideMode);
+            ShowSelectedMode(known ? _board.RideMode : (ushort?)null);
+        }
+
+        DateTime _ignoreBoardUntil = DateTime.MinValue;
 
         // ---- Custom shaping ----
 
