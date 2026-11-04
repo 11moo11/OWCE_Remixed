@@ -1,6 +1,6 @@
 # Fonts
 
-The theme builder (Settings > Build your own) can set the font for the whole app. The choices are free
+The theme builder (Settings > Appearance) can set the font for the whole app. The choices are free
 [Google Fonts](https://fonts.google.com/) bundled in
 [OWCE/OWCE/Resources/Fonts](../OWCE/OWCE/Resources/Fonts), all under the
 [SIL Open Font License 1.1](https://openfontlicense.org/):

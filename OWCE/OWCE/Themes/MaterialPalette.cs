@@ -30,16 +30,28 @@ namespace OWCE.Themes
             "#546E7A", // slate
         };
 
-        /// <summary>The theme's colour keys with their new values.</summary>
-        public static Dictionary<string, Color> Generate(Color seed, bool dark)
+        /// <summary>
+        /// The theme's colour keys with their new values, built from three seed colours. As in Material 3, each seed becomes a
+        /// ladder of tones and the scheme picks tones from them, so the result is balanced whatever colours are given:
+        /// <list type="bullet">
+        /// <item>primary: the highlight colour (selected items, sliders, headings) and the speed and battery panels, and it
+        /// tints the greys of the page;</item>
+        /// <item>secondary: supporting surfaces: cards, buttons, the lights panel;</item>
+        /// <item>accent: the power and temperature panels.</item>
+        /// </list>
+        /// </summary>
+        public static Dictionary<string, Color> Generate(Color primary, Color secondary, Color accent, bool dark)
         {
-            var hue = seed.GetHue();
-            var chroma = Math.Clamp(seed.GetSaturation(), 0.3f, 0.9f);
-            var tertiaryHue = (hue + 60f / 360f) % 1f;
+            var hue = primary.GetHue();
+            var chroma = Math.Clamp(primary.GetSaturation(), 0.3f, 0.9f);
+            var secondaryHue = secondary.GetHue();
+            var secondaryChroma = Math.Clamp(secondary.GetSaturation(), 0.08f, 0.8f);
+            var accentHue = accent.GetHue();
+            var accentChroma = Math.Clamp(accent.GetSaturation() * 0.8f, 0.2f, 0.85f);
 
             Color P(double tone) => Tone(hue, chroma, tone);
-            Color S(double tone) => Tone(hue, chroma * 0.35f, tone);
-            Color T(double tone) => Tone(tertiaryHue, chroma * 0.6f, tone);
+            Color S(double tone) => Tone(secondaryHue, secondaryChroma, tone);
+            Color T(double tone) => Tone(accentHue, accentChroma, tone);
             Color N(double tone) => Tone(hue, 0.07f, tone);
             Color V(double tone) => Tone(hue, 0.12f, tone);
 

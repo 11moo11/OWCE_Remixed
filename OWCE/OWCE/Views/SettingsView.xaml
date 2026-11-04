@@ -12,38 +12,23 @@
             <Label x:Name="TitleLabel" Text="Settings" FontSize="34" TextColor="{DynamicResource OnBackgroundColor}" Margin="20,12,20,20" />
 
             <Label Text="Appearance" Style="{StaticResource SectionHeaderStyle}" Margin="20,0,20,10" />
-            <Border StrokeThickness="0" Padding="12,20,12,16" BackgroundColor="{DynamicResource CardSurfaceColor}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="24" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="18">
-                    <views:ThemePicker x:Name="ThemePicker" />
-                    <Label x:Name="ThemeDescriptionLabel" FontSize="14" HorizontalTextAlignment="Center" TextColor="{DynamicResource MutedTextColor}" />
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- The theme builder: every theme above is made of these settings. -->
-            <Label Text="Build your own" Style="{StaticResource SectionHeaderStyle}" />
-            <Border StrokeThickness="0" Padding="16,18,16,18" BackgroundColor="{DynamicResource CardSurfaceColor}">
+            <Border StrokeThickness="0" Padding="12,20,12,18" BackgroundColor="{DynamicResource CardSurfaceColor}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="24" />
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Every theme is made of these settings. Change them, then save your own style." FontSize="14" TextColor="{DynamicResource MutedTextColor}" Margin="0,0,0,6" />
+                    <views:ThemePicker x:Name="ThemePicker" />
+                    <Label x:Name="ThemeDescriptionLabel" FontSize="14" HorizontalTextAlignment="Center" TextColor="{DynamicResource MutedTextColor}" Margin="8,0,8,10" />
 
-                    <Label Text="Panel corners" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" />
-                    <views:SegmentedControl x:Name="CornersControl" />
+                    <VerticalStackLayout Spacing="10" Margin="8,0">
+                        <Label Text="Mode" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" />
+                        <views:SegmentedControl x:Name="ModeControl" />
 
-                    <Label Text="Panel effect" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" Margin="0,10,0,0" />
-                    <views:SegmentedControl x:Name="DepthControl" />
-
-                    <Label Text="Font" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" Margin="0,10,0,0" />
-                    <FlexLayout x:Name="FontChips" Wrap="Wrap" JustifyContent="Start" />
-
-                    <!-- Only shown while the Material palette is the one in use. -->
-                    <VerticalStackLayout x:Name="MaterialOptions" IsVisible="False" Spacing="10">
-                        <Label Text="Material colour" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" Margin="0,10,0,0" />
-                        <FlexLayout x:Name="SeedSwatches" Wrap="Wrap" JustifyContent="Start" />
+                        <Label Text="Colours" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" Margin="0,10,0,0" />
+                        <!-- Which of the three colours is being edited. Each shows its current colour. -->
+                        <Grid x:Name="RoleRow" ColumnDefinitions="*,*,*" ColumnSpacing="8" />
+                        <Label x:Name="RoleHintLabel" FontSize="13" TextColor="{DynamicResource MutedTextColor}" />
+                        <FlexLayout x:Name="SeedSwatches" Wrap="Wrap" JustifyContent="Start" Margin="0,4,0,0" />
 
                         <!-- A rainbow bar with a see-through slider on top, for any other colour. -->
                         <Grid HeightRequest="44">
@@ -54,19 +39,25 @@
                             </Border>
                             <Slider x:Name="HueSlider" Minimum="0" Maximum="360" MinimumTrackColor="Transparent" MaximumTrackColor="Transparent" ThumbColor="White" VerticalOptions="Center" ValueChanged="HueSlider_ValueChanged" DragCompleted="HueSlider_DragCompleted" />
                         </Grid>
+                        <Slider x:Name="ShadeSlider" Minimum="0.15" Maximum="0.95" MinimumTrackColor="{DynamicResource AccentColor}" MaximumTrackColor="{DynamicResource DividerColor}" ThumbColor="{DynamicResource AccentColor}" ValueChanged="ShadeSlider_ValueChanged" DragCompleted="ShadeSlider_DragCompleted" />
+                        <Button x:Name="ResetColoursButton" Text="Reset colours" Style="{StaticResource DialogButtonStyle}" Clicked="ResetColours_Clicked" IsVisible="False" />
 
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Dark mode" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" VerticalOptions="Center" />
-                            <Switch x:Name="MaterialDarkSwitch" Grid.Column="1" OnColor="{DynamicResource AccentColor}" Toggled="MaterialDarkSwitch_Toggled" />
-                        </Grid>
-                    </VerticalStackLayout>
+                        <Label Text="Panel corners" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" Margin="0,10,0,0" />
+                        <views:SegmentedControl x:Name="CornersControl" />
 
-                    <views:MenuButton Margin="0,14,0,0" Text="Save as a new style" IconPathData="{x:Static views:Icons.Save}" Tapped="SaveStyle_Tapped" />
+                        <Label Text="Panel effect" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" Margin="0,10,0,0" />
+                        <views:SegmentedControl x:Name="DepthControl" />
 
-                    <!-- For a style you saved earlier. -->
-                    <VerticalStackLayout x:Name="StyleActions" IsVisible="False" Spacing="10">
-                        <views:MenuButton Text="Save changes to this style" IconPathData="{x:Static views:Icons.Save}" Tapped="UpdateStyle_Tapped" />
-                        <views:MenuButton IsDanger="True" Text="Delete this style" IconPathData="{x:Static views:Icons.Delete}" Tapped="DeleteStyle_Tapped" />
+                        <Label Text="Font" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" Margin="0,10,0,0" />
+                        <FlexLayout x:Name="FontChips" Wrap="Wrap" JustifyContent="Start" />
+
+                        <views:MenuButton Margin="0,14,0,0" Text="Save as a new style" IconPathData="{x:Static views:Icons.Save}" Tapped="SaveStyle_Tapped" />
+
+                        <!-- For a style you saved earlier. -->
+                        <VerticalStackLayout x:Name="StyleActions" IsVisible="False" Spacing="10">
+                            <views:MenuButton Text="Save changes to this style" IconPathData="{x:Static views:Icons.Save}" Tapped="UpdateStyle_Tapped" />
+                            <views:MenuButton IsDanger="True" Text="Delete this style" IconPathData="{x:Static views:Icons.Delete}" Tapped="DeleteStyle_Tapped" />
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>

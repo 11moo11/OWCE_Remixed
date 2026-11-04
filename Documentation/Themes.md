@@ -5,7 +5,7 @@ Pick one in **Settings > Appearance**. A theme is applied and saved as soon as y
 | Theme | Idea |
 |---|---|
 | Default | The original OWCE look. |
-| Material | Material Design 3: tonal surfaces, large rounded corners, soft shadows. Pick any colour (swatches or a hue slider) and switch on dark mode; the whole scheme is built from your colour. |
+| Material | Material Design 3 baseline: tonal purple surfaces, large rounded corners, soft shadows. |
 | Devil Trigger | Devil May Cry: black, crimson and bone, hard edges, red glow. |
 | Codec | Metal Gear Solid codec screens: green phosphor on black, thin outlines, no rounding. |
 | Underground | Need for Speed Underground: night city, hot pink, cyan and amber neon. |
@@ -96,16 +96,25 @@ out the same modern way:
   are round and soft, Codec and Devil Trigger are sharp.
 
 
-## Material colours and dark mode
+## Colours and light / dark mode
 
-When Material is selected, Settings shows a colour picker and a **Dark mode** switch. The colour is a *seed*:
-[MaterialPalette](../OWCE/OWCE/Themes/MaterialPalette.cs) builds the whole scheme from it (tones of the seed, a muted
-version, a shifted one and tinted greys), in light or dark. It is an HSL approximation of Material's tonal palettes,
-not the exact colour science. Every text colour is checked against what it sits on and adjusted until it is readable
-(4.5 : 1). The default purple in light mode is the hand written baseline in `MaterialTheme.xaml`. The choices are
-saved as `material_seed` and `material_dark`. `MaterialTheme.xaml.cs` is hand written (not generated) because it applies
-the palette, so keep it if you regenerate the other themes.
+Every theme (not just Material) can be switched between **Light** and **Dark** and given three colours, under
+**Settings > Appearance**:
 
+* **Primary:** highlights, selected items, sliders and headings, and the speed and battery panels. It also tints the greys of the page.
+* **Secondary:** supporting surfaces: cards, buttons and the lights panel.
+* **Accent:** the power and temperature panels.
+
+This follows how Material 3 builds a scheme: each colour becomes a ladder of tones (like Material's tonal palettes, but done
+in HSL, not the exact colour science), and the scheme picks tones from the ladders: light mode uses the mid tones for
+colour and very light tones for surfaces, dark mode the reverse. So any three colours give a balanced result.
+[MaterialPalette](../OWCE/OWCE/Themes/MaterialPalette.cs) does this, and every text colour is checked against what it sits
+on and adjusted until it is readable (4.5 : 1). I checked it with the presets' colours and 150 random sets of three
+colours in both modes (8,050 text and background pairs, none below 4.5 : 1).
+
+Each preset has its own mode and three starting colours. While you change nothing, its hand made palette is used exactly
+as it was. As soon as you change the mode or any colour, the whole scheme is generated from the three colours (so a
+preset's special neon or phosphor look turns into a tonal version of those colours). **Reset colours** goes back.
 
 ## The theme builder
 
@@ -115,10 +124,10 @@ plus a few simple settings:
 * **Panel corners:** Very round, Round or Sharp (28, 14 or 2 units).
 * **Panel effect:** None, Drop shadow, or Edge light (a thin accent outline with a glow).
 * **Font:** the system font or one of the bundled Google Fonts, see [Fonts.md](Fonts.md).
-* **Material colour and dark mode,** when the Material palette is used.
+* **Mode and colours:** light or dark, and the primary, secondary and accent colours (see above).
 
 The presets are specs too (each with its own default corners and effect; all use the system font). Change any setting under
-**Settings > Build your own** and it applies straight away. **Save as a new style** keeps your version, which then appears
+**Settings > Appearance** and it applies straight away. **Save as a new style** keeps your version, which then appears
 next to the presets; **Save changes** updates it and **Delete** removes it. Saved styles and the theme in use are kept
 in preferences (`theme_user_styles`, `theme_current`). A preset whose corners and effect are left alone keeps its hand
 made panel style exactly; changing either builds the panel style from the settings.

@@ -2,7 +2,9 @@ using CommunityToolkit.Mvvm.Messaging;
 
 namespace OWCE.Themes
 {
-    public sealed record ThemeInfo(string Id, string Name, string Description, Func<ResourceDictionary> Create, CornerStyle Corners, DepthStyle Depth);
+    /// <param name="Primary">The preset's three seed colours (hex), which are what the colour pickers start from.</param>
+    public sealed record ThemeInfo(string Id, string Name, string Description, Func<ResourceDictionary> Create, CornerStyle Corners, DepthStyle Depth,
+        bool Dark, string Primary, string Secondary, string Accent);
 
     /// <summary>Sent after a different theme has been applied.</summary>
     public sealed class ThemeChangedMessage
@@ -22,15 +24,15 @@ namespace OWCE.Themes
         /// <summary>The built in presets. Each is a colour palette plus default corners and depth.</summary>
         public static IReadOnlyList<ThemeInfo> Themes { get; } = new List<ThemeInfo>
         {
-            new ThemeInfo(DefaultThemeId, "Default", "The original OWCE look.", () => new DefaultTheme(), CornerStyle.VeryRound, DepthStyle.DropShadow),
-            new ThemeInfo("material", "Material", "Material Design 3: tonal surfaces and large rounded corners. Pick any colour, and dark mode.", () => MaterialTheme.Create(MaterialPalette.DefaultSeed, false), CornerStyle.VeryRound, DepthStyle.DropShadow),
-            new ThemeInfo("devil-trigger", "Devil Trigger", "Inspired by Devil May Cry: black, crimson and bone with hard edges.", () => new DevilTriggerTheme(), CornerStyle.Sharp, DepthStyle.EdgeLight),
-            new ThemeInfo("codec", "Codec", "Inspired by Metal Gear Solid: green phosphor on black.", () => new CodecTheme(), CornerStyle.Sharp, DepthStyle.EdgeLight),
-            new ThemeInfo("underground", "Underground", "Inspired by Need for Speed Underground: night city neon.", () => new UndergroundTheme(), CornerStyle.Sharp, DepthStyle.EdgeLight),
-            new ThemeInfo("nanotech", "Nanotech", "Inspired by Ratchet & Clank: deep blue with bright orange.", () => new NanotechTheme(), CornerStyle.VeryRound, DepthStyle.DropShadow),
-            new ThemeInfo("master-thief", "Master Thief", "Inspired by Sly Cooper: rooftop-at-night indigo with gold.", () => new MasterThiefTheme(), CornerStyle.Round, DepthStyle.EdgeLight),
-            new ThemeInfo("keyblade", "Keyblade", "Inspired by Kingdom Hearts II: command-menu navy and sky blue with gold.", () => new KeybladeTheme(), CornerStyle.Round, DepthStyle.EdgeLight),
-            new ThemeInfo("city-escape", "City Escape", "Inspired by Sonic Adventure 2: black and yellow with hero blue and rival red.", () => new CityEscapeTheme(), CornerStyle.Sharp, DepthStyle.EdgeLight),
+            new ThemeInfo(DefaultThemeId, "Default", "The original OWCE look.", () => new DefaultTheme(), CornerStyle.VeryRound, DepthStyle.DropShadow, false, "#1F4FD8", "#FF8C00", "#CC00CC"),
+            new ThemeInfo("material", "Material", "Material Design 3: tonal surfaces and large rounded corners. Pick any colour, and dark mode.", () => new MaterialTheme(), CornerStyle.VeryRound, DepthStyle.DropShadow, false, "#6750A4", "#625B71", "#7D5260"),
+            new ThemeInfo("devil-trigger", "Devil Trigger", "Inspired by Devil May Cry: black, crimson and bone with hard edges.", () => new DevilTriggerTheme(), CornerStyle.Sharp, DepthStyle.EdgeLight, true, "#FF5C70", "#D4A62A", "#B30D26"),
+            new ThemeInfo("codec", "Codec", "Inspired by Metal Gear Solid: green phosphor on black.", () => new CodecTheme(), CornerStyle.Sharp, DepthStyle.EdgeLight, true, "#4DFF88", "#0E8F44", "#00B34A"),
+            new ThemeInfo("underground", "Underground", "Inspired by Need for Speed Underground: night city neon.", () => new UndergroundTheme(), CornerStyle.Sharp, DepthStyle.EdgeLight, true, "#00E5FF", "#FF2E88", "#FFB400"),
+            new ThemeInfo("nanotech", "Nanotech", "Inspired by Ratchet & Clank: deep blue with bright orange.", () => new NanotechTheme(), CornerStyle.VeryRound, DepthStyle.DropShadow, true, "#FFB347", "#00C2FF", "#FF6B00"),
+            new ThemeInfo("master-thief", "Master Thief", "Inspired by Sly Cooper: rooftop-at-night indigo with gold.", () => new MasterThiefTheme(), CornerStyle.Round, DepthStyle.EdgeLight, true, "#F2B705", "#5B49C8", "#2EC4B6"),
+            new ThemeInfo("keyblade", "Keyblade", "Inspired by Kingdom Hearts II: command-menu navy and sky blue with gold.", () => new KeybladeTheme(), CornerStyle.Round, DepthStyle.EdgeLight, true, "#FFD65C", "#1B4FA8", "#7FB2FF"),
+            new ThemeInfo("city-escape", "City Escape", "Inspired by Sonic Adventure 2: black and yellow with hero blue and rival red.", () => new CityEscapeTheme(), CornerStyle.Sharp, DepthStyle.EdgeLight, true, "#FFD500", "#0A5BD8", "#C4161F"),
         };
 
         const string CurrentKey = "theme_current";
@@ -50,7 +52,7 @@ namespace OWCE.Themes
         public static ThemeSpec PresetSpec(string id)
         {
             var info = Find(id);
-            return new ThemeSpec() { Id = info.Id, Name = info.Name, BaseId = info.Id, Corners = info.Corners, Depth = info.Depth };
+            return new ThemeSpec() { Id = info.Id, Name = info.Name, BaseId = info.Id, Corners = info.Corners, Depth = info.Depth, Dark = info.Dark, Primary = info.Primary, Secondary = info.Secondary, Accent = info.Accent };
         }
 
         /// <summary>The styles the user has saved.</summary>
@@ -188,9 +190,25 @@ namespace OWCE.Themes
         public static ResourceDictionary CreateDictionary(ThemeSpec spec)
         {
             var preset = Find(spec.BaseId);
-            var dictionary = spec.BaseId == "material"
-                ? MaterialTheme.Create(spec.Seed, spec.Dark)
-                : preset.Create();
+            var dictionary = preset.Create();
+
+            // A preset's own hand made colours are kept as they are, until the mode or a colour is changed.
+            if (HasCustomColors(spec, preset))
+            {
+                var colors = MaterialPalette.Generate(Color.FromArgb(spec.Primary), Color.FromArgb(spec.Secondary), Color.FromArgb(spec.Accent), spec.Dark);
+                foreach (var item in colors)
+                {
+                    dictionary[item.Key] = item.Value;
+                }
+
+                // Some properties (Border.Stroke, Shape.Fill) take a brush, so those colours also exist as brushes.
+                dictionary["OnBackgroundBrush"] = new SolidColorBrush(colors["OnBackgroundColor"]);
+                dictionary["MutedTextBrush"] = new SolidColorBrush(colors["MutedTextColor"]);
+                dictionary["DividerBrush"] = new SolidColorBrush(colors["DividerColor"]);
+                dictionary["ButtonBorderBrush"] = new SolidColorBrush(colors["ButtonBorderColor"]);
+                dictionary["OnLightsBrush"] = new SolidColorBrush(colors["OnLights"]);
+                dictionary["AccentBrush"] = new SolidColorBrush(colors["AccentColor"]);
+            }
 
             dictionary["AppFontFamily"] = spec.Font ?? string.Empty;
 
@@ -201,6 +219,18 @@ namespace OWCE.Themes
             }
 
             return dictionary;
+        }
+
+        static bool SameColour(string a, string b) => Color.FromArgb(a).ToRgbaHex() == Color.FromArgb(b).ToRgbaHex();
+
+        /// <summary>True if the spec's mode or colours differ from the preset it started from.</summary>
+        public static bool HasCustomColors(ThemeSpec spec, ThemeInfo preset = null)
+        {
+            preset ??= Find(spec.BaseId);
+            return spec.Dark != preset.Dark
+                || SameColour(spec.Primary, preset.Primary) == false
+                || SameColour(spec.Secondary, preset.Secondary) == false
+                || SameColour(spec.Accent, preset.Accent) == false;
         }
 
         public static double CornerRadiusFor(CornerStyle corners) => corners switch

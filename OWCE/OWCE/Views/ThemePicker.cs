@@ -8,8 +8,6 @@ namespace OWCE.Views
     /// </summary>
     public class ThemePicker : ContentView
     {
-        const int Columns = 3;
-
         readonly Dictionary<string, Border> _previews = new Dictionary<string, Border>();
 
         /// <summary>The id of the selected theme (see ThemeManager).</summary>
@@ -26,41 +24,49 @@ namespace OWCE.Views
         /// <summary>Draws the previews again (a theme such as Material can change its colours).</summary>
         public void Rebuild()
         {
+            var scrollX = _scroll?.ScrollX ?? 0;
             Build();
+            if (scrollX > 0)
+            {
+                Dispatcher.Dispatch(async () => { try { await _scroll.ScrollToAsync(scrollX, 0, false); } catch (Exception) { } });
+            }
             if (SelectedThemeId != null)
             {
                 Select(SelectedThemeId);
             }
         }
 
+        readonly Dictionary<string, View> _swatches = new Dictionary<string, View>();
+        ScrollView _scroll;
+
         void Build()
         {
             _previews.Clear();
-            var grid = new Grid() { RowSpacing = 16, ColumnSpacing = 8 };
-            for (var i = 0; i < Columns; ++i)
+            _swatches.Clear();
+
+            // A carousel: the themes are in one row that scrolls sideways.
+            var row = new HorizontalStackLayout() { Spacing = 14, Padding = new Thickness(12, 4) };
+            foreach (var theme in ThemeManager.AllSpecs)
             {
-                grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+                var swatch = BuildSwatch(theme);
+                _swatches[theme.Id] = swatch;
+                row.Children.Add(swatch);
             }
 
-            var themes = ThemeManager.AllSpecs.ToList();
-            for (var i = 0; i < themes.Count; ++i)
+            _scroll = new ScrollView()
             {
-                if (i % Columns == 0)
-                {
-                    grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
-                }
-
-                var swatch = BuildSwatch(themes[i]);
-                grid.Add(swatch, i % Columns, i / Columns);
-            }
-
-            Content = grid;
+                Orientation = ScrollOrientation.Horizontal,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Never,
+                Content = row,
+            };
+            Content = _scroll;
         }
 
         /// <summary>Marks a theme as selected. Does not raise <see cref="ThemeSelected"/>.</summary>
         public void Select(string id)
         {
             SelectedThemeId = id;
+            ScrollToSelected();
 
             foreach (var item in _previews)
             {
@@ -75,6 +81,27 @@ namespace OWCE.Views
                     item.Value.Stroke = new SolidColorBrush(Colors.Transparent);
                 }
             }
+        }
+
+        // Slides the carousel so the selected theme is in view.
+        void ScrollToSelected()
+        {
+            if (SelectedThemeId == null || _scroll == null || _swatches.TryGetValue(SelectedThemeId, out var swatch) == false)
+            {
+                return;
+            }
+
+            Dispatcher.Dispatch(async () =>
+            {
+                try
+                {
+                    await Task.Delay(50);
+                    await _scroll.ScrollToAsync(swatch, ScrollToPosition.Center, true);
+                }
+                catch (Exception)
+                {
+                }
+            });
         }
 
         // The tapped preview shrinks and springs back.
@@ -123,8 +150,8 @@ namespace OWCE.Views
             var preview = new Border()
             {
                 Content = panels,
-                WidthRequest = 88,
-                HeightRequest = 72,
+                WidthRequest = 112,
+                HeightRequest = 88,
                 BackgroundColor = Colour("BackgroundGradientStart"),
                 StrokeThickness = 3,
                 Stroke = new SolidColorBrush(Colors.Transparent),

@@ -40,11 +40,17 @@ namespace OWCE.Themes
         /// <summary>The font family (see <see cref="FontCatalog"/>). Empty is the system font.</summary>
         public string Font { get; set; } = string.Empty;
 
-        /// <summary>The colour Material builds its scheme from. Only used when BaseId is "material".</summary>
-        public string Seed { get; set; } = MaterialPalette.DefaultSeed;
-
-        /// <summary>Material's dark mode. Only used when BaseId is "material".</summary>
+        /// <summary>Light or dark. (A preset has its own: most are dark.)</summary>
         public bool Dark { get; set; }
+
+        /// <summary>The highlight colour (hex): selected items, sliders, headings, the speed and battery panels.</summary>
+        public string Primary { get; set; } = MaterialPalette.DefaultSeed;
+
+        /// <summary>The supporting colour (hex): cards, buttons, the lights panel.</summary>
+        public string Secondary { get; set; } = "#625B71";
+
+        /// <summary>The extra colour (hex): the power and temperature panels.</summary>
+        public string Accent { get; set; } = "#7D5260";
 
         public ThemeSpec Clone() => (ThemeSpec)MemberwiseClone();
 
@@ -56,7 +62,9 @@ namespace OWCE.Themes
             ["corners"] = Corners.ToString(),
             ["depth"] = Depth.ToString(),
             ["font"] = Font,
-            ["seed"] = Seed,
+            ["primary"] = Primary,
+            ["secondary"] = Secondary,
+            ["accent"] = Accent,
             ["dark"] = Dark ? "1" : "0",
         };
 
@@ -70,7 +78,9 @@ namespace OWCE.Themes
                 Name = Get("name", "Style"),
                 BaseId = Get("base", ThemeManager.DefaultThemeId),
                 Font = Get("font", string.Empty),
-                Seed = Get("seed", MaterialPalette.DefaultSeed),
+                Primary = Get("primary", Get("seed", MaterialPalette.DefaultSeed)),
+                Secondary = Get("secondary", "#625B71"),
+                Accent = Get("accent", "#7D5260"),
                 Dark = Get("dark", "0") == "1",
             };
 

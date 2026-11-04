@@ -52,13 +52,16 @@ namespace OWCE.Views
             ImperialSwitch.IsToggled = App.Current.MetricDisplay == false;
             AutoRecordSwitch.IsToggled = Preferences.Get("auto_ride_recording", false);
 
+            ModeControl.SetItems("Light", "Dark");
             CornersControl.SetItems("Very round", "Round", "Sharp");
             DepthControl.SetItems("None", "Drop shadow", "Edge light");
+            ModeControl.SelectionChanged += index => Change(spec => spec.Dark = index == 1);
             CornersControl.SelectionChanged += index => Change(spec => spec.Corners = (CornerStyle)index);
             DepthControl.SelectionChanged += index => Change(spec => spec.Depth = (DepthStyle)index);
 
             BuildFontChips();
-            BuildMaterialOptions();
+            BuildRoleChips();
+            BuildHueBar();
             ThemePicker.ThemeSelected += ThemePicker_ThemeSelected;
             LoadFromCurrent();
 
@@ -71,9 +74,39 @@ namespace OWCE.Views
 
         // ---- Theme builder ----
 
+        static readonly string[] RoleNames = { "Primary", "Secondary", "Accent" };
+        static readonly string[] RoleHints =
+        {
+            "Primary: highlights, selected items, and the speed and battery panels.",
+            "Secondary: cards, buttons and the lights panel.",
+            "Accent: the power and temperature panels.",
+        };
+
         readonly List<Border> _seedSwatches = new List<Border>();
+        readonly List<string> _seedHexes = new List<string>();
+        readonly List<Border> _roleCircles = new List<Border>();
+        readonly List<Border> _roleChips = new List<Border>();
         readonly List<(Border Chip, Label Label, string Family)> _fontChips = new List<(Border, Label, string)>();
-        DateTime _lastHueApply = DateTime.MinValue;
+        int _role = 0;
+        DateTime _lastColourApply = DateTime.MinValue;
+
+        static string GetRole(ThemeSpec spec, int role) => role == 0 ? spec.Primary : role == 1 ? spec.Secondary : spec.Accent;
+
+        static void SetRole(ThemeSpec spec, int role, string hex)
+        {
+            if (role == 0)
+            {
+                spec.Primary = hex;
+            }
+            else if (role == 1)
+            {
+                spec.Secondary = hex;
+            }
+            else
+            {
+                spec.Accent = hex;
+            }
+        }
 
         // Changes the theme in use (keeping the rest of it as it is) and applies it.
         void Change(Action<ThemeSpec> edit)
@@ -106,37 +139,26 @@ namespace OWCE.Views
             ThemePicker.Select(spec.Id);
             ThemeDescriptionLabel.Text = ThemeManager.IsUserStyle(spec.Id) ? $"Your style, based on {ThemeManager.Find(spec.BaseId).Name}." : ThemeManager.Find(spec.Id).Description;
 
+            ModeControl.SelectedIndex = spec.Dark ? 1 : 0;
             CornersControl.SelectedIndex = (int)spec.Corners;
             DepthControl.SelectedIndex = (int)spec.Depth;
             MarkSelectedFont();
 
-            MaterialDarkSwitch.IsToggled = spec.Dark;
-            HueSlider.Value = Color.FromArgb(spec.Seed).GetHue() * 360;
-            MarkSelectedSwatch();
+            for (var i = 0; i < _roleCircles.Count; ++i)
+            {
+                _roleCircles[i].BackgroundColor = Color.FromArgb(GetRole(spec, i));
+            }
+            MarkRole();
+            RebuildSwatches();
 
-            ShowMaterialOptions(spec.BaseId == "material");
+            var colour = Color.FromArgb(GetRole(spec, _role));
+            HueSlider.Value = colour.GetHue() * 360;
+            ShadeSlider.Value = Math.Clamp(colour.GetSaturation(), 0.15f, 0.95f);
+            ResetColoursButton.IsVisible = ThemeManager.HasCustomColors(spec);
+
             StyleActions.IsVisible = ThemeManager.IsUserStyle(spec.Id);
 
             _loading = wasLoading;
-        }
-
-        void ShowMaterialOptions(bool show)
-        {
-            if (show == MaterialOptions.IsVisible)
-            {
-                return;
-            }
-
-            if (show)
-            {
-                MaterialOptions.Opacity = 0;
-                MaterialOptions.IsVisible = true;
-                _ = MaterialOptions.FadeToAsync(1, 300, Easing.CubicOut);
-            }
-            else
-            {
-                MaterialOptions.IsVisible = false;
-            }
         }
 
         void BuildFontChips()
@@ -200,17 +222,91 @@ namespace OWCE.Views
             }
         }
 
-        void BuildMaterialOptions()
+        // Three buttons, each with a circle of its current colour. The tapped one is the colour the swatches and sliders edit.
+        void BuildRoleChips()
         {
-            // The rainbow behind the hue slider.
+            for (var i = 0; i < 3; ++i)
+            {
+                var role = i;
+
+                var circle = new Border()
+                {
+                    WidthRequest = 32,
+                    HeightRequest = 32,
+                    StrokeThickness = 1,
+                    Stroke = new SolidColorBrush(Colors.Gray),
+                    HorizontalOptions = LayoutOptions.Center,
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 16 },
+                    InputTransparent = true,
+                };
+                var label = new Label() { Text = RoleNames[i], FontSize = 14, HorizontalOptions = LayoutOptions.Center, InputTransparent = true };
+                label.SetDynamicResource(Label.TextColorProperty, "OnSurfaceColor");
+
+                var chip = new Border()
+                {
+                    Padding = new Thickness(6, 10),
+                    StrokeThickness = 1.5,
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 18 },
+                    Content = new VerticalStackLayout() { Spacing = 6, Children = { circle, label }, InputTransparent = true },
+                };
+                chip.GestureRecognizers.Add(new TapGestureRecognizer()
+                {
+                    Command = new Command(() =>
+                    {
+                        Motion.Tick();
+                        _ = Motion.SquishAsync(chip, 0.94);
+                        _role = role;
+                        LoadFromCurrent();
+                    }),
+                });
+
+                _roleCircles.Add(circle);
+                _roleChips.Add(chip);
+                RoleRow.Add(chip, i, 0);
+            }
+        }
+
+        void MarkRole()
+        {
+            RoleHintLabel.Text = RoleHints[_role];
+            for (var i = 0; i < _roleChips.Count; ++i)
+            {
+                _roleChips[i].RemoveDynamicResource(Border.StrokeProperty);
+                if (i == _role)
+                {
+                    _roleChips[i].SetDynamicResource(Border.StrokeProperty, "AccentBrush");
+                }
+                else
+                {
+                    _roleChips[i].SetDynamicResource(Border.StrokeProperty, "DividerBrush");
+                }
+            }
+        }
+
+        // The rainbow behind the hue slider.
+        void BuildHueBar()
+        {
             var rainbow = new LinearGradientBrush() { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
             for (var i = 0; i <= 12; ++i)
             {
                 rainbow.GradientStops.Add(new GradientStop(Color.FromHsla(i / 12f, 0.75f, 0.5f), i / 12f));
             }
             HueBar.Background = rainbow;
+        }
 
-            foreach (var hex in MaterialPalette.SeedChoices)
+        // Ready made colours for the colour being edited. The first one is the colour the theme started with.
+        void RebuildSwatches()
+        {
+            SeedSwatches.Children.Clear();
+            _seedSwatches.Clear();
+            _seedHexes.Clear();
+
+            var preset = ThemeManager.Find(ThemeManager.Current.BaseId);
+            var start = _role == 0 ? preset.Primary : _role == 1 ? preset.Secondary : preset.Accent;
+            var choices = new[] { start }.Concat(MaterialPalette.SeedChoices).ToList();
+            var current = Color.FromArgb(GetRole(ThemeManager.Current, _role)).ToRgbaHex();
+
+            foreach (var hex in choices)
             {
                 var color = Color.FromArgb(hex);
                 var swatch = new Border()
@@ -223,13 +319,19 @@ namespace OWCE.Views
                     Stroke = Brush.Transparent,
                     StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 22 },
                 };
+                if (color.ToRgbaHex() == current)
+                {
+                    swatch.SetDynamicResource(Border.StrokeProperty, "OnBackgroundBrush");
+                }
+
+                var role = _role;
                 swatch.GestureRecognizers.Add(new TapGestureRecognizer()
                 {
                     Command = new Command(() =>
                     {
                         Motion.Tick();
                         _ = Motion.SquishAsync(swatch, 0.8);
-                        Change(spec => spec.Seed = color.ToRgbaHex());
+                        Change(spec => SetRole(spec, role, color.ToRgbaHex()));
                     }),
                 });
                 _seedSwatches.Add(swatch);
@@ -237,25 +339,9 @@ namespace OWCE.Views
             }
         }
 
-        void MarkSelectedSwatch()
-        {
-            var seed = Color.FromArgb(ThemeManager.Current.Seed).ToRgbaHex();
-            for (var i = 0; i < _seedSwatches.Count; ++i)
-            {
-                var selected = Color.FromArgb(MaterialPalette.SeedChoices[i]).ToRgbaHex() == seed;
-                _seedSwatches[i].RemoveDynamicResource(Border.StrokeProperty);
-                if (selected)
-                {
-                    _seedSwatches[i].SetDynamicResource(Border.StrokeProperty, "OnBackgroundBrush");
-                }
-                else
-                {
-                    _seedSwatches[i].Stroke = Brush.Transparent;
-                }
-            }
-        }
+        Color SliderColour() => Color.FromHsla((float)(HueSlider.Value / 360), (float)ShadeSlider.Value, 0.5f);
 
-        void HueSlider_ValueChanged(object sender, ValueChangedEventArgs e)
+        void ColourSliderChanged()
         {
             if (_loading)
             {
@@ -263,23 +349,41 @@ namespace OWCE.Views
             }
 
             // The whole app is restyled for each step, so not on every single movement.
-            if ((DateTime.UtcNow - _lastHueApply).TotalMilliseconds > 120)
+            if ((DateTime.UtcNow - _lastColourApply).TotalMilliseconds > 120)
             {
-                _lastHueApply = DateTime.UtcNow;
+                _lastColourApply = DateTime.UtcNow;
                 var spec = ThemeManager.Current.Clone();
-                spec.Seed = Color.FromHsla((float)(e.NewValue / 360), 0.6f, 0.5f).ToRgbaHex();
+                SetRole(spec, _role, SliderColour().ToRgbaHex());
                 ThemeManager.Apply(spec);
+                _roleCircles[_role].BackgroundColor = SliderColour();
             }
         }
 
-        void HueSlider_DragCompleted(object sender, EventArgs e)
+        void ColourSliderFinished()
         {
-            Change(spec => spec.Seed = Color.FromHsla((float)(HueSlider.Value / 360), 0.6f, 0.5f).ToRgbaHex());
+            var role = _role;
+            var colour = SliderColour().ToRgbaHex();
+            Change(spec => SetRole(spec, role, colour));
         }
 
-        void MaterialDarkSwitch_Toggled(object sender, ToggledEventArgs e)
+        void HueSlider_ValueChanged(object sender, ValueChangedEventArgs e) => ColourSliderChanged();
+
+        void HueSlider_DragCompleted(object sender, EventArgs e) => ColourSliderFinished();
+
+        void ShadeSlider_ValueChanged(object sender, ValueChangedEventArgs e) => ColourSliderChanged();
+
+        void ShadeSlider_DragCompleted(object sender, EventArgs e) => ColourSliderFinished();
+
+        void ResetColours_Clicked(object sender, EventArgs e)
         {
-            Change(spec => spec.Dark = e.Value);
+            Change(spec =>
+            {
+                var preset = ThemeManager.Find(spec.BaseId);
+                spec.Dark = preset.Dark;
+                spec.Primary = preset.Primary;
+                spec.Secondary = preset.Secondary;
+                spec.Accent = preset.Accent;
+            });
         }
 
         static Page CurrentPage => App.Current.RootPage;
