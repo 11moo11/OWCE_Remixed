@@ -134,19 +134,21 @@ namespace OWCE.Pages
             CustomToolbarItems.Add(scanningToolbarItem);
 
             // The bottom bar: past rides on the left, the boards (this page) in the middle, settings on the right.
-            Nav.AddItem("Past rides", Icons.History);
-            Nav.AddItem("Boards", Icons.Bluetooth);
-            Nav.AddItem("Settings", Icons.Settings);
-            Nav.SelectedIndex = 1;
+            Nav.AddItem("Past rides", Icons.History, NavPopStyle.SpinBack);
+            Nav.AddItem("Boards", Icons.Bluetooth, NavPopStyle.Wiggle);
+            Nav.AddItem("Settings", Icons.Settings, NavPopStyle.Spin);
+            Nav.Attach(Pager);
             Pager.Select(1);
-            Nav.ItemTapped += async index =>
+            Pager.TabSelected += (index, fromDrag) =>
             {
                 if (index == 0)
                 {
                     PastRidesTab.Refresh();
                 }
-                Nav.SelectedIndex = index;
-                await Pager.SelectAsync(index);
+                else if (index == 2 && fromDrag == false)
+                {
+                    SettingsTab.PlayEntrance();
+                }
             };
 
             /*
@@ -168,6 +170,11 @@ namespace OWCE.Pages
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+
+            if (_hasAppeared == false)
+            {
+                Nav.PlayEntrance();
+            }
 
             //App.Current.OWBLE.BLEStateChanged += OWBLE_BLEStateChanged;
             //App.Current.OWBLE.BoardDiscovered += OWBLE_BoardDiscovered;
@@ -277,6 +284,16 @@ namespace OWCE.Pages
             //App.Current.OWBLE.BLEStateChanged -= OWBLE_BLEStateChanged;
             //App.Current.OWBLE.BoardDiscovered -= OWBLE_BoardDiscovered;
             //App.Current.OWBLE.BoardConnected -= OWBLE_BoardConnected;
+        }
+
+        // A board card squashes and springs back when it is tapped.
+        void BoardCard_Tapped(object sender, TappedEventArgs e)
+        {
+            Motion.Tick();
+            if (sender is VisualElement card)
+            {
+                _ = Motion.SquishAsync(card, 0.96);
+            }
         }
 
         void OWBLE_ErrorOccurred(string message)

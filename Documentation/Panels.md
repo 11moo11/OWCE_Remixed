@@ -34,3 +34,9 @@ designed for the full width of the screen.
 
 Panels are resized with buttons, not by dragging a corner like an Android widget. Drag handles inside a scrolling list
 fight with the scrolling and I could not test that.
+
+## Moving between tabs
+
+The bottom bar has three tabs. Tap one, or put a finger on the bar and slide: the pill follows your finger, the whole
+screen slides with it, and letting go snaps to the nearest tab (a quick flick carries on to the next one). Pulling past
+either end stretches like a rubber band.

@@ -61,6 +61,9 @@ namespace OWCE.Views
             BindingContext = this;
         }
 
+        /// <summary>The first sections spring up into place one after another.</summary>
+        public void PlayEntrance() => Motion.StaggerIn(ContentStack.Children.OfType<VisualElement>().Take(8), 55, 30);
+
         void ThemePicker_ThemeSelected(string themeId)
         {
             ThemeDescriptionLabel.Text = ThemeManager.Find(themeId).Description;

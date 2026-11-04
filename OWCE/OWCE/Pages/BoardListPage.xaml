@@ -52,7 +52,7 @@
                         <ContentView Padding="16,10,16,15">
                            
                             <Border HeightRequest="121" StrokeShape="RoundRectangle 20" BackgroundColor="{DynamicResource CardColor}">
-<Border.GestureRecognizers><TapGestureRecognizer Command="{Binding Source={x:Reference MainCollectionView}, Path=BindingContext.BoardSelectedCommand}" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
+<Border.GestureRecognizers><TapGestureRecognizer Tapped="BoardCard_Tapped" Command="{Binding Source={x:Reference MainCollectionView}, Path=BindingContext.BoardSelectedCommand}" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
 
                                 
                                 <Border.Shadow>

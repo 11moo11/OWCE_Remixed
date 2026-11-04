@@ -23,6 +23,10 @@ namespace OWCE.Views
         public static readonly BindableProperty IsDangerProperty = BindableProperty.Create(nameof(IsDanger), typeof(bool), typeof(MenuButton), false,
             propertyChanged: (b, o, n) => ((MenuButton)b).UpdateStyle());
 
+        /// <summary>Makes the icon breathe (fade and swell). Used for something that is going on, like recording.</summary>
+        public static readonly BindableProperty IsPulsingProperty = BindableProperty.Create(nameof(IsPulsing), typeof(bool), typeof(MenuButton), false,
+            propertyChanged: (b, o, n) => ((MenuButton)b).UpdatePulse());
+
         public static readonly BindableProperty CommandProperty = BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(MenuButton));
 
         public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(MenuButton));
@@ -38,6 +42,8 @@ namespace OWCE.Views
         public string IconPathData { get => (string)GetValue(IconPathDataProperty); set => SetValue(IconPathDataProperty, value); }
 
         public bool IsDanger { get => (bool)GetValue(IsDangerProperty); set => SetValue(IsDangerProperty, value); }
+
+        public bool IsPulsing { get => (bool)GetValue(IsPulsingProperty); set => SetValue(IsPulsingProperty, value); }
 
         public ICommand Command { get => (ICommand)GetValue(CommandProperty); set => SetValue(CommandProperty, value); }
 
@@ -86,19 +92,14 @@ namespace OWCE.Views
             Content = grid;
 
             var tap = new TapGestureRecognizer();
-            tap.Tapped += async (sender, e) =>
+            tap.Tapped += (sender, e) =>
             {
-                try
-                {
-                    HapticFeedback.Default.Perform(HapticFeedbackType.Click);
-                }
-                catch (Exception)
-                {
-                    // Not every device can do this.
-                }
+                Motion.Tick();
 
-                // A quick dip so the button visibly reacts.
-                Opacity = 0.6;
+                // The button squashes and springs back, and its icon gives a little jump.
+                _ = Motion.SquishAsync(this, 0.95);
+                _ = JumpIconAsync();
+
                 Tapped?.Invoke(this, EventArgs.Empty);
 
                 var command = Command;
@@ -106,12 +107,50 @@ namespace OWCE.Views
                 {
                     command.Execute(CommandParameter);
                 }
-
-                await this.FadeToAsync(1.0, 150);
             };
             GestureRecognizers.Add(tap);
 
             UpdateStyle();
+
+            Loaded += (sender, e) => UpdatePulse();
+            Unloaded += (sender, e) => this.AbortAnimation(PulseName);
+        }
+
+        const string PulseName = "MenuButtonPulse";
+
+        void UpdatePulse()
+        {
+            this.AbortAnimation(PulseName);
+            _iconHolder.Opacity = 1;
+            _iconHolder.Scale = 1;
+
+            if (IsPulsing == false || IsLoaded == false)
+            {
+                return;
+            }
+
+            var animation = new Animation();
+            animation.Add(0, 0.5, new Animation(v => { _iconHolder.Opacity = v; _iconHolder.Scale = 1 + (1 - v) * 0.35; }, 1, 0.35, Easing.SinInOut));
+            animation.Add(0.5, 1, new Animation(v => { _iconHolder.Opacity = v; _iconHolder.Scale = 1 + (1 - v) * 0.35; }, 0.35, 1, Easing.SinInOut));
+            animation.Commit(this, PulseName, 16, 1300, repeat: () => true);
+        }
+
+        async Task JumpIconAsync()
+        {
+            if (IsPulsing)
+            {
+                return;
+            }
+
+            try
+            {
+                _iconHolder.CancelAnimations();
+                await _iconHolder.TranslateToAsync(6, 0, 90, Easing.CubicOut);
+                await _iconHolder.TranslateToAsync(0, 0, 400, Easing.SpringOut);
+            }
+            catch (Exception)
+            {
+            }
         }
 
         void UpdateStyle()

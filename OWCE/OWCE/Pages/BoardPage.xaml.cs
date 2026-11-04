@@ -72,13 +72,34 @@ namespace OWCE.Pages
 
 
             // The bottom bar switches between the dashboard, the actions and the settings.
-            Nav.AddItem("Actions", Icons.Bolt);
+            Nav.AddItem("Actions", Icons.Bolt, NavPopStyle.Wiggle);
             Nav.AddItem("Dashboard", Icons.Dashboard);
-            Nav.AddItem("Settings", Icons.Settings);
-            Nav.ItemTapped += index => ShowTab(index);
-            Nav.SelectedIndex = 1;
-            _tab = 1;
+            Nav.AddItem("Settings", Icons.Settings, NavPopStyle.Spin);
+            Nav.Attach(Pager);
             Pager.Select(1);
+            _tab = 1;
+            Pager.TabSelected += (index, fromDrag) =>
+            {
+                _tab = index;
+
+                // Tapping a tab makes its contents spring in as the screen slides across. (A drag has already
+                // shown the page, so it is left alone.)
+                if (fromDrag == false)
+                {
+                    if (index == 0)
+                    {
+                        Motion.StaggerIn(new VisualElement[] { ActionsTitle }.Concat(ActionsStack.Children.OfType<VisualElement>()).Append(DisconnectButton), 60, 32);
+                    }
+                    else if (index == 1)
+                    {
+                        Panels.PlayEntrance();
+                    }
+                    else
+                    {
+                        SettingsTab.PlayEntrance();
+                    }
+                }
+            };
             ActionsView.BindingContext = this;
 
         }
@@ -119,9 +140,18 @@ namespace OWCE.Pages
             }
         }
 
+        bool _hasAppeared = false;
+
         protected override void OnAppearing()
         {
             base.OnAppearing();
+
+            if (_hasAppeared == false)
+            {
+                _hasAppeared = true;
+                Nav.PlayEntrance();
+                Panels.PlayEntrance();
+            }
         }
 
         protected override void OnDisappearing()
@@ -219,9 +249,7 @@ namespace OWCE.Pages
         // 0 = actions, 1 = dashboard, 2 = settings.
         void ShowTab(int tab)
         {
-            _tab = tab;
             _ = Pager.SelectAsync(tab);
-            Nav.SelectedIndex = tab;
         }
 
         Task EditPanelsAsync()

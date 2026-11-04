@@ -1,75 +1,118 @@
 namespace OWCE.Views
 {
     /// <summary>
-    /// Holds a few views on top of each other and shows one. Changing tab slides the whole view sideways, in the direction of the
-    /// tab (a tab further right slides in from the right), so the tabs feel like parts of one wide screen.
+    /// Holds a few views side by side as one wide strip and shows a window onto it, so changing tab slides the whole view sideways
+    /// in the direction of the tab. The position is a fractional tab number (1.5 is half way between tab 1 and tab 2), which
+    /// lets a finger drag it, and lets it spring past its target and settle. Pages in the distance fade and shrink a little.
     /// </summary>
     public class TabPager : Grid
     {
-        const uint SlideMilliseconds = 280;
+        int _selected = -1;
+        double _position;
+        TaskCompletionSource _running;
 
-        int _index = -1;
-        int _token = 0;
+        /// <summary>The tab that is (or is heading to be) shown.</summary>
+        public int SelectedIndex => _selected;
 
-        public int SelectedIndex => _index;
+        /// <summary>The fractional tab number the strip is currently at.</summary>
+        public double Position => _position;
+
+
+        /// <summary>Raised whenever the strip moves, with the new position.</summary>
+        public event Action<double> PositionChanged;
+
+        /// <summary>Raised when a tab is chosen, before the slide starts. The flag says the user dragged to it.</summary>
+        public event Action<int, bool> TabSelected;
 
         public TabPager()
         {
             IsClippedToBounds = true;
+            SizeChanged += (sender, e) => Apply(_position);
         }
 
-        /// <summary>Shows a tab. Slides if it is not the first one shown (and the pager has been laid out).</summary>
-        public async Task SelectAsync(int index)
+        /// <summary>Moves the strip to a position straight away (used while dragging). Stops any slide in progress.</summary>
+        public void SetPosition(double position)
         {
-            if (index == _index || index < 0 || index >= Children.Count)
-            {
-                return;
-            }
+            this.AbortAnimation("TabPager");
+            Apply(position);
+        }
 
-            var token = ++_token;
-            var from = _index >= 0 ? (View)Children[_index] : null;
-            var to = (View)Children[index];
-            var direction = index > _index ? 1 : -1;
-            _index = index;
+        void Apply(double position)
+        {
+            _position = position;
+            var width = Width > 0 ? Width : 0;
 
-            // Stop whatever was still sliding, and put away every page that is not part of this slide.
-            foreach (View page in Children)
+            for (var i = 0; i < Children.Count; ++i)
             {
-                page.CancelAnimations();
-                if (page != from && page != to)
+                var page = (View)Children[i];
+                var distance = i - position;
+                var near = Math.Abs(distance) < 1;
+
+                page.IsVisible = near;
+                if (near)
                 {
-                    page.IsVisible = false;
-                    page.TranslationX = 0;
+                    var amount = Math.Abs(distance);
+                    page.TranslationX = distance * width;
+                    page.Opacity = 1 - 0.7 * amount;
+                    page.Scale = 1 - 0.06 * amount;
                 }
             }
 
-            var width = Width;
-            if (from == null || width <= 0)
-            {
-                to.TranslationX = 0;
-                to.IsVisible = true;
-                return;
-            }
-
-            from.TranslationX = 0;
-            to.TranslationX = direction * width;
-            to.IsVisible = true;
-
-            await Task.WhenAll(
-                from.TranslateToAsync(-direction * width, 0, SlideMilliseconds, Easing.CubicOut),
-                to.TranslateToAsync(0, 0, SlideMilliseconds, Easing.CubicOut));
-
-            if (token == _token)
-            {
-                from.IsVisible = false;
-                from.TranslationX = 0;
-            }
+            PositionChanged?.Invoke(position);
         }
 
-        /// <summary>Shows a tab without sliding (used for the first one).</summary>
+        /// <summary>Shows a tab straight away, with no animation (used for the first one).</summary>
         public void Select(int index)
         {
-            _ = SelectAsync(index);
+            _selected = index;
+            SetPosition(index);
+        }
+
+        /// <summary>Slides to a tab. It springs a little past it and settles.</summary>
+        public Task SelectAsync(int index, bool fromDrag = false)
+        {
+            if (index < 0 || index >= Children.Count)
+            {
+                return Task.CompletedTask;
+            }
+
+            if (index == _selected && Math.Abs(_position - index) < 0.001)
+            {
+                return Task.CompletedTask;
+            }
+
+            var changed = index != _selected;
+            _selected = index;
+            if (changed)
+            {
+                TabSelected?.Invoke(index, fromDrag);
+            }
+
+            if (Width <= 0)
+            {
+                SetPosition(index);
+                return Task.CompletedTask;
+            }
+
+            this.AbortAnimation("TabPager");
+            _running?.TrySetResult();
+            var finished = new TaskCompletionSource();
+            _running = finished;
+
+            var distance = Math.Abs(index - _position);
+            var length = (uint)Math.Clamp(380 + 140 * distance, 380, 700);
+
+            var animation = new Animation(value => Apply(value), _position, index, Easing.SpringOut);
+            animation.Commit(this, "TabPager", 16, length, finished: (value, cancelled) =>
+            {
+                if (!cancelled)
+                {
+                    Apply(index);
+                }
+                finished.TrySetResult();
+            });
+
+            return finished.Task;
         }
     }
 }

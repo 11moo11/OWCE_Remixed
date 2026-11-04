@@ -64,6 +64,9 @@ namespace OWCE.Views
             Rebuild();
         }
 
+        /// <summary>The panels spring up into place one after another.</summary>
+        public void PlayEntrance() => Motion.StaggerIn(_grid.Children.OfType<VisualElement>(), 70, 36);
+
         public void StartEditing() => SetEditing(true);
 
         public void StopEditing() => SetEditing(false);

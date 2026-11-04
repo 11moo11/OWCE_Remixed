@@ -53,21 +53,21 @@
 
         <!-- Actions tab -->
         <Grid x:Name="ActionsView" x:DataType="pages:BoardPage" RowDefinitions="Auto,*,Auto" Padding="16,0,16,8">
-            <Label Grid.Row="0" Text="Actions" FontSize="34" TextColor="{DynamicResource OnBackgroundColor}" Margin="4,12,4,20" />
+            <Label x:Name="ActionsTitle" Grid.Row="0" Text="Actions" FontSize="34" TextColor="{DynamicResource OnBackgroundColor}" Margin="4,12,4,20" />
 
-            <VerticalStackLayout Grid.Row="1" Spacing="12">
+            <VerticalStackLayout x:Name="ActionsStack" Grid.Row="1" Spacing="12">
                 <views:MenuButton Text="Record ride" IconSource="settings_start_recording"
                                   Command="{Binding StartRecordRideCommand}"
                                   IsVisible="{Binding Board.IsRecordingRide, Converter={StaticResource InvertedBoolConverter}}" />
                 <views:MenuButton Text="Stop recording ride" IconSource="settings_stop_recording"
-                                  Command="{Binding StopRecordRideCommand}"
+                                  Command="{Binding StopRecordRideCommand}" IsPulsing="{Binding Board.IsRecordingRide}"
                                   IsVisible="{Binding Board.IsRecordingRide}" />
                 <views:MenuButton Text="Reorder dashboard panels" IconPathData="{x:Static views:Icons.Dashboard}"
                                   Command="{Binding EditPanelsCommand}" />
             </VerticalStackLayout>
 
             <!-- Kept apart from the everyday buttons and in red so it is never hit by accident. -->
-            <views:MenuButton Grid.Row="2" IsDanger="True" Text="Disconnect from board" IconSource="settings_disconnect" Tapped="Disconnect_Tapped" />
+            <views:MenuButton x:Name="DisconnectButton" Grid.Row="2" IsDanger="True" Text="Disconnect from board" IconSource="settings_disconnect" Tapped="Disconnect_Tapped" />
         </Grid>
 
         <!-- Dashboard tab -->

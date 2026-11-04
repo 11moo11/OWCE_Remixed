@@ -7,7 +7,7 @@
     x:DataType="views:SettingsView">
 
     <ScrollView>
-        <VerticalStackLayout Padding="16,0,16,32">
+        <VerticalStackLayout x:Name="ContentStack" Padding="16,0,16,32">
 
             <Label x:Name="TitleLabel" Text="Settings" FontSize="34" TextColor="{DynamicResource OnBackgroundColor}" Margin="20,12,20,20" />
 

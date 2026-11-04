@@ -61,6 +61,20 @@ namespace OWCE.Views
             }
         }
 
+        // The tapped preview shrinks and springs back.
+        static async Task PopAsync(View view)
+        {
+            try
+            {
+                view.CancelAnimations();
+                view.Scale = 0.86;
+                await view.ScaleToAsync(1, 500, Easing.SpringOut);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         View BuildSwatch(ThemeInfo theme)
         {
             // Read the theme's colours without applying it.
@@ -115,6 +129,8 @@ namespace OWCE.Views
             {
                 Command = new Command(() =>
                 {
+                    Motion.Tick();
+                    _ = PopAsync(preview);
                     Select(theme.Id);
                     ThemeSelected?.Invoke(theme.Id);
                 }),
