@@ -4,47 +4,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:OWCE.Pages"
     xmlns:views="clr-namespace:OWCE.Views"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     x:Class="OWCE.Pages.AppSettingsPage"
-    x:DataType="pages:AppSettingsPage"
     Title="Settings"
     UseLargeTitle="True">
 
-    <pages:BaseContentPage.Resources>
-         <ResourceDictionary>
-            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
-        </ResourceDictionary>
-    </pages:BaseContentPage.Resources>
-
-    <ScrollView>
-        <VerticalStackLayout Padding="16,0,16,40">
-
-            <Label Text="Appearance" Style="{StaticResource SectionHeaderStyle}" Margin="20,0,20,10" />
-            <Border StrokeThickness="0" Padding="12,20,12,16" BackgroundColor="{DynamicResource CardSurfaceColor}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="24" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="18">
-                    <views:ThemePicker x:Name="ThemePicker" />
-                    <Label x:Name="ThemeDescriptionLabel" FontSize="14" HorizontalTextAlignment="Center" TextColor="{DynamicResource MutedTextColor}" />
-                </VerticalStackLayout>
-            </Border>
-
-            <Label Text="Units" Style="{StaticResource SectionHeaderStyle}" />
-            <views:SettingsGroup>
-                <views:SettingsItem Title="Imperial units" Subtitle="Show speed in mph and temperature in °F">
-                    <Switch OnColor="{DynamicResource AccentColor}" IsToggled="{Binding MetricDisplay, Converter={StaticResource InvertedBoolConverter}}" />
-                </views:SettingsItem>
-            </views:SettingsGroup>
-
-            <Label Text="Rides" Style="{StaticResource SectionHeaderStyle}" />
-            <views:SettingsGroup>
-                <views:SettingsItem Title="Auto ride recording" Subtitle="Start recording a ride as soon as you connect to a board">
-                    <Switch OnColor="{DynamicResource AccentColor}" IsToggled="{Binding AutoRideRecording}" />
-                </views:SettingsItem>
-            </views:SettingsGroup>
-
-        </VerticalStackLayout>
-    </ScrollView>
+    <!-- Changes are saved as soon as they are made, so there is no Save button. -->
+    <views:SettingsView ShowTitle="False" />
 
 </pages:BaseContentPage>

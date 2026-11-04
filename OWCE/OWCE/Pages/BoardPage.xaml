@@ -14,27 +14,6 @@
 
             <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
 
-            <DataTemplate x:Key="SideMenu" x:DataType="pages:BoardPage">
-               
-
-                <Grid BackgroundColor="{DynamicResource SurfaceColor}" ColumnSpacing="0" RowSpacing="0" Padding="16,8,16,0" VerticalOptions="Fill" RowDefinitions="Auto,*,Auto">
-
-                    <VerticalStackLayout Grid.Row="0" Spacing="10">
-                        <views:MenuButton Text="Record ride" IconSource="settings_start_recording"
-                                          Command="{Binding StartRecordRideCommand}"
-                                          IsVisible="{Binding Board.IsRecordingRide, Converter={StaticResource InvertedBoolConverter}}" />
-                        <views:MenuButton Text="Stop recording ride" IconSource="settings_stop_recording"
-                                          Command="{Binding StopRecordRideCommand}"
-                                          IsVisible="{Binding Board.IsRecordingRide}" />
-                        <views:MenuButton Text="Edit panels" IconPathData="{x:Static views:Icons.Dashboard}"
-                                          Command="{Binding EditPanelsCommand}" />
-                    </VerticalStackLayout>
-
-                    <!-- Kept apart from the everyday buttons and in red so it is never hit by accident. -->
-                    <views:MenuButton Grid.Row="2" Margin="0,0,0,10" IsDanger="True" Text="Disconnect from board" IconSource="settings_disconnect"
-                                      Tapped="Disconnect_Tapped" />
-                </Grid>
-            </DataTemplate>
 
         </ResourceDictionary>
     </pages:BaseContentPage.Resources>
@@ -67,8 +46,13 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <ScrollView>
-            <StackLayout Spacing="16" Margin="0,16,0,0">
+        <Grid RowDefinitions="*,Auto" RowSpacing="0">
+
+        <Grid Grid.Row="0">
+
+        <!-- Dashboard tab -->
+        <ScrollView x:Name="DashboardView">
+            <StackLayout Spacing="16" Margin="0,16,0,16">
                 <!-- The panels are created here, with their bindings, and then handed to the PanelBoard (see SetupPanels),
                      which lets the user move and resize them. This container is never shown. -->
                 <VerticalStackLayout x:Name="PanelSource" IsVisible="False">
@@ -102,5 +86,33 @@
                 </Grid>
             </StackLayout>
         </ScrollView>
+
+        <!-- Actions tab -->
+        <Grid x:Name="ActionsView" IsVisible="False" x:DataType="pages:BoardPage" RowDefinitions="Auto,*,Auto" Padding="16,0,16,8">
+            <Label Grid.Row="0" Text="Actions" FontSize="34" TextColor="{DynamicResource OnBackgroundColor}" Margin="4,12,4,20" />
+
+            <VerticalStackLayout Grid.Row="1" Spacing="12">
+                <views:MenuButton Text="Record ride" IconSource="settings_start_recording"
+                                  Command="{Binding StartRecordRideCommand}"
+                                  IsVisible="{Binding Board.IsRecordingRide, Converter={StaticResource InvertedBoolConverter}}" />
+                <views:MenuButton Text="Stop recording ride" IconSource="settings_stop_recording"
+                                  Command="{Binding StopRecordRideCommand}"
+                                  IsVisible="{Binding Board.IsRecordingRide}" />
+                <views:MenuButton Text="Reorder dashboard panels" IconPathData="{x:Static views:Icons.Dashboard}"
+                                  Command="{Binding EditPanelsCommand}" />
+            </VerticalStackLayout>
+
+            <!-- Kept apart from the everyday buttons and in red so it is never hit by accident. -->
+            <views:MenuButton Grid.Row="2" IsDanger="True" Text="Disconnect from board" IconSource="settings_disconnect" Tapped="Disconnect_Tapped" />
+        </Grid>
+
+        <!-- Settings tab (with About at the bottom) -->
+        <views:SettingsView x:Name="SettingsTab" IsVisible="False" />
+
+        </Grid>
+
+        <views:NavPill x:Name="Nav" Grid.Row="1" Margin="16,8,16,12" />
+
+        </Grid>
     </Grid>
 </pages:BaseContentPage>

@@ -5,7 +5,7 @@ are one panel (battery on the left, current on the right, tap it for the cell vo
 
 ## Editing
 
-* **Hold a panel and drag it** onto another one to move it there, or choose **Edit panels** in the side menu.
+* **Hold a panel and drag it** onto another one to move it there, or open the **Actions** tab at the bottom and choose **Reorder dashboard panels**.
 * While editing each panel is dimmed and shows buttons: **up** and **down** (move one place), **FULL / HALF** (width) and
   **S / M / L** (size). A bar at the top has **Reset** (back to the default layout) and **Done**.
 * The list scrolls by itself when you drag a panel near the top or bottom of the screen.

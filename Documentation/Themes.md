@@ -32,7 +32,6 @@ A theme is a `ResourceDictionary` in [OWCE/OWCE/Themes](../OWCE/OWCE/Themes). Ev
   `TempPanel`/`TempTrack`/`TempBar`, `RideModePanel`, `LightsPanel`, each with an `On...` text colour
 * the settings style look: `CardSurfaceColor` (a row's background), `AccentColor` (headings, buttons, selection) and `OnAccentColor`
 * brush versions of some colours, for properties that need a brush: `DividerBrush`, `OnBackgroundBrush`, `ButtonBorderBrush`, `MutedTextBrush`, `AccentBrush`
-* the burger menu button: `MenuButtonColor` (the circle) and `OnMenuButtonColor` (the lines)
 * styles: `BoardDetailBlockBaseStyle` (the panels' shape, outline and shadow), `RoundButtonStyle`, `SelectedRoundButtonStyle`
 
 The rest of the app refers to those keys with `{DynamicResource ...}`, so applying a theme restyles what is already on
@@ -74,7 +73,7 @@ The Settings, About, Past rides, Submit ride and Raw data screens use a Material
   round, the corners between items are only slightly round, and there is a small gap between items.
 * Small accent coloured headings above each group (`Style="{StaticResource SectionHeaderStyle}"`).
 * The theme picker shows a small picture of each theme.
-* Dialogs are neutral rounded surfaces with a text button (`DialogButtonStyle`). The side menu is a rounded drawer.
+* Dialogs are neutral rounded surfaces with a text button (`DialogButtonStyle`). The bottom navigation bar (Actions, Dashboard, Settings) is a rounded pill with a tinted, outlined selected item.
 
 ```xml
 <views:SettingsGroup>

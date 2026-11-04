@@ -31,7 +31,6 @@ namespace OWCE.Pages
         }*/
 
         private bool _initialSubscirbe = false;
-        Grid _sideMenuItem = null;
 
         IAsyncRelayCommand _startRecordRideCommand = null;
         public IAsyncRelayCommand StartRecordRideCommand => _startRecordRideCommand ??= new AsyncRelayCommand(StartRecordingAsync);
@@ -72,18 +71,13 @@ namespace OWCE.Pages
             titleLabel.Padding = new Thickness(0, 0, 16, 0);
 
 
-            var sideMenuItem = new CustomToolbarItem()
-            {
-                Position = CustomToolbarItemPosition.Left,
-                IconColorKey = "OnMenuButtonColor",
-                IconBackgroundKey = "MenuButtonColor",
-                IconImageSource = "hamburger",
-                Command = new AsyncRelayCommand(async () =>
-                {
-                    await MopupService.Instance.PushAsync(Popup.SideMenuPopup.Instance);
-                }),
-            };
-            CustomToolbarItems.Add(sideMenuItem);
+            // The bottom bar switches between the dashboard, the actions and the settings.
+            Nav.AddItem("Actions", Icons.Bolt);
+            Nav.AddItem("Dashboard", Icons.Dashboard);
+            Nav.AddItem("Settings", Icons.Settings);
+            Nav.ItemTapped += index => ShowTab(index);
+            ShowTab(1);
+            ActionsView.BindingContext = this;
 
         }
 
@@ -126,16 +120,6 @@ namespace OWCE.Pages
         protected override void OnAppearing()
         {
             base.OnAppearing();
-
-            Popup.SideMenuPopup.Instance.Title = "OWCE";
-
-            if (_sideMenuItem == null)
-            {
-                var dataTemplate = (DataTemplate)Resources["SideMenu"];
-                _sideMenuItem = dataTemplate.CreateContent() as Grid;
-                _sideMenuItem.BindingContext = this;
-            }
-            Popup.SideMenuPopup.Instance.PageSpecificSideMenu = _sideMenuItem;
         }
 
         protected override void OnDisappearing()
@@ -160,6 +144,13 @@ namespace OWCE.Pages
 
         protected override bool OnBackButtonPressed()
         {
+            // Back from the actions or the settings goes to the dashboard first.
+            if (_tab != 1)
+            {
+                ShowTab(1);
+                return true;
+            }
+
             Disconnect_Tapped(null, EventArgs.Empty);
             //DisconnectAndPop();
             return true;
@@ -221,22 +212,36 @@ namespace OWCE.Pages
             Panels.Configure(panels.Select(x => new PanelDefinition(x.Id, x.Title, x.Panel)));
         }
 
-        async Task EditPanelsAsync()
+        int _tab = -1;
+
+        // 0 = actions, 1 = dashboard, 2 = settings.
+        void ShowTab(int tab)
         {
-            await Popup.SideMenuPopup.Instance.CloseCommand_Clicked();
+            _tab = tab;
+            ActionsView.IsVisible = tab == 0;
+            DashboardView.IsVisible = tab == 1;
+            SettingsTab.IsVisible = tab == 2;
+            Nav.SelectedIndex = tab;
+        }
+
+        Task EditPanelsAsync()
+        {
+            ShowTab(1);
             Panels.StartEditing();
+            return Task.CompletedTask;
         }
 
-        async Task StartRecordingAsync()
+        // Recording keeps going if you go back to the dashboard, so these stay on the actions tab: the button just swaps.
+        Task StartRecordingAsync()
         {
-            await Popup.SideMenuPopup.Instance.CloseCommand_Clicked();
             Board.StartLogging();
+            return Task.CompletedTask;
         }
 
-        async Task StopRecordingAsync()
+        Task StopRecordingAsync()
         {
-            await Popup.SideMenuPopup.Instance.CloseCommand_Clicked();
             Board.StopLogging();
+            return Task.CompletedTask;
         }
     }
 }

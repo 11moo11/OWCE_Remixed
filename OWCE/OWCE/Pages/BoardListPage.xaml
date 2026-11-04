@@ -13,16 +13,11 @@
         <ResourceDictionary>
             <converters:BoardIsAvailableOpacityConverter x:Key="boardIsAvailableOpacityConverter" />
 
-            <DataTemplate x:Key="SideMenu">
-                <Grid BackgroundColor="{DynamicResource SurfaceColor}" Padding="16,8,16,0" VerticalOptions="Fill" RowDefinitions="Auto,*">
-                    <views:MenuButton Grid.Row="0" Text="Past Rides" IconSource="menu_myrides" Command="{Binding PastRidesCommand}" />
-                </Grid>
-            </DataTemplate>
 
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid>
+    <Grid RowDefinitions="*,Auto" RowSpacing="0">
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                 <GradientStop Color="{DynamicResource BackgroundGradientStart}" Offset="0"/>
@@ -31,7 +26,7 @@
         </Grid.Background>
               
         
-        <Image x:Name="BackgroundLogoImage" HorizontalOptions="Center" VerticalOptions="Center" Source="splash_image.png" Opacity="0.1" />
+        <Image x:Name="BackgroundLogoImage" Grid.Row="0" HorizontalOptions="Center" VerticalOptions="Center" Source="splash_image.png" Opacity="0.1" />
         <!--
         <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="0" Opacity="0.1">
             <Image Source="logo_a.png" />
@@ -40,7 +35,7 @@
         </StackLayout>
             -->
 
-        <RefreshView x:Name="MainRefreshView" Command="{Binding RefreshCommand}" >
+        <RefreshView x:Name="MainRefreshView" Grid.Row="0" Command="{Binding RefreshCommand}" >
             <CollectionView x:Name="MainCollectionView" ItemsSource="{Binding Boards}" Margin="0,0,0,0" SelectionMode="None"> 
                 <CollectionView.ItemsLayout>
                     <GridItemsLayout Orientation="Vertical" Span="1" VerticalItemSpacing="0" />
@@ -71,6 +66,8 @@
 
             </CollectionView>
         </RefreshView>
+
+        <views:NavPill x:Name="Nav" Grid.Row="1" Margin="16,8,16,12" />
 
 
         <!--

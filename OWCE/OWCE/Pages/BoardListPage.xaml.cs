@@ -137,18 +137,22 @@ namespace OWCE.Pages
             scanningToolbarItem.Content = _scanningView;
             CustomToolbarItems.Add(scanningToolbarItem);
 
-            var sideMenuItem = new CustomToolbarItem()
+            // The bottom bar: past rides on the left, the boards (this page) in the middle, settings on the right.
+            Nav.AddItem("Past rides", Icons.History);
+            Nav.AddItem("Boards", Icons.Bluetooth);
+            Nav.AddItem("Settings", Icons.Settings);
+            Nav.SelectedIndex = 1;
+            Nav.ItemTapped += async index =>
             {
-                Position = CustomToolbarItemPosition.Left,
-                IconColorKey = "OnMenuButtonColor",
-                IconBackgroundKey = "MenuButtonColor",
-                IconImageSource = "hamburger",
-                Command = new AsyncRelayCommand(async () =>
+                if (index == 0)
                 {
-                    await MopupService.Instance.PushAsync(Popup.SideMenuPopup.Instance);
-                }),
+                    await PastRidesCommand_Clicked();
+                }
+                else if (index == 2)
+                {
+                    await App.Current.RootPage.Navigation.PushModalAsync(new NavigationPage(new AppSettingsPage()));
+                }
             };
-            CustomToolbarItems.Add(sideMenuItem);
 
             /*
 #if DEBUG
@@ -165,23 +169,10 @@ namespace OWCE.Pages
         Thickness _safeInsets;
 
         bool _hasAppeared = false;
-        Grid _sideMenuItem;
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-
-            Popup.SideMenuPopup.Instance.Title = "OWCE";
-
-
-            if (_sideMenuItem == null)
-            {
-                var dataTemplate = (DataTemplate)Resources["SideMenu"];
-                _sideMenuItem = dataTemplate.CreateContent() as Grid;
-                _sideMenuItem.BindingContext = BindingContext;
-            }
-            Popup.SideMenuPopup.Instance.PageSpecificSideMenu = _sideMenuItem;
-
 
             //App.Current.OWBLE.BLEStateChanged += OWBLE_BLEStateChanged;
             //App.Current.OWBLE.BoardDiscovered += OWBLE_BoardDiscovered;
@@ -401,10 +392,7 @@ namespace OWCE.Pages
 
         async Task PastRidesCommand_Clicked()
         {
-            await Task.WhenAll(
-               Navigation.PushAsync(new PastRidesPage()),
-               MopupService.Instance.RemovePageAsync(SideMenuPopup.Instance)
-           );
+            await Navigation.PushAsync(new PastRidesPage());
         }
 
     }
