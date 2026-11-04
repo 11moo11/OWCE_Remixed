@@ -57,7 +57,7 @@ namespace OWCE
             LabelHandler.Mapper.AppendToMapping(nameof(ITextStyle.Font), (handler, view) =>
             {
 #if ANDROID
-                OWCE.Droid.FontScaleStyle.Apply(handler.PlatformView, view);
+                OWCE.Droid.AppFontStyle.Apply(handler.PlatformView, view, handler.GetRequiredService<IFontManager>(), (view as Label)?.StyleId == "font-sample");
 #elif IOS
                 OWCE.iOS.FontScaleStyle.Apply(handler.PlatformView.Font, view, font => handler.PlatformView.Font = font);
 #endif
@@ -65,7 +65,7 @@ namespace OWCE
             ButtonHandler.Mapper.AppendToMapping(nameof(ITextStyle.Font), (handler, view) =>
             {
 #if ANDROID
-                OWCE.Droid.FontScaleStyle.Apply(handler.PlatformView, (ITextStyle)view);
+                OWCE.Droid.AppFontStyle.Apply(handler.PlatformView, (ITextStyle)view, handler.GetRequiredService<IFontManager>());
 #elif IOS
                 OWCE.iOS.FontScaleStyle.Apply(handler.PlatformView.TitleLabel?.Font, (ITextStyle)view, font => handler.PlatformView.TitleLabel.Font = font);
 #endif
