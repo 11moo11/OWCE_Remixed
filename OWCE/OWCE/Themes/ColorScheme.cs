@@ -107,6 +107,12 @@ namespace OWCE.Themes
             c["TempTrack"] = Shade(accent, 0.04);
             c["TempBar"] = Shade(accent, -0.04);
 
+            // Ride mode buttons: quiet ones on the (dark) ride mode panel, and the chosen one in the accent colour.
+            c["RideModeButtonColor"] = Mix(c["RideModePanel"], Colors.White, 0.12);
+            c["RideModeButtonSelectedColor"] = accent;
+
+            LimitBrightness(c);
+
             // Text on the panels: black or white, whichever reads best on all the colours it sits on.
             c["OnSpeedPanel"] = BestText(black, white, c["SpeedPanel"]);
             c["OnBattery"] = BestText(black, white, c["BatteryHeader"], c["BatteryBar"]);
@@ -124,7 +130,60 @@ namespace OWCE.Themes
             Fit(c, "OnPower", "PowerPanel", "PowerBar");
             Fit(c, "OnTemp", "TempPanel", "TempTrack", "TempBar");
 
+            // Fitting the text can lighten a panel, so the brightness order is enforced once more, and the text checked again.
+            LimitBrightness(c);
+            c["OnBattery"] = BestText(black, white, c["BatteryHeader"], c["BatteryBar"]);
+            c["OnPower"] = BestText(black, white, c["PowerPanel"], c["PowerBar"]);
+            c["OnTemp"] = BestText(black, white, c["TempPanel"], c["TempTrack"], c["TempBar"]);
+            c["OnLights"] = BestText(black, white, c["LightsPanel"]);
+            c["OnRideModeButtonSelectedColor"] = BestText(black, white, c["RideModeButtonSelectedColor"]);
+            c["OnRideModeButtonColor"] = BestText(black, white, c["RideModeButtonColor"]);
+
             return c;
+        }
+
+        // The dashboard has an order of brightness: the speed panel is the brightest, the battery panel is below it, and the current
+        // (power) panel is never brighter than the battery panel. Everything else stays below the speed panel. Panels that are too
+        // bright are made darker. (If the speed panel is nearly black there is nothing darker to go to, so nothing is changed.)
+        static void LimitBrightness(Dictionary<string, Color> c)
+        {
+            var speed = Luminance(c["SpeedPanel"]);
+            if (speed < 0.02)
+            {
+                return;
+            }
+
+            void Cap(string key, double maxLuminance) => c[key] = Dim(c[key], maxLuminance);
+
+            Cap("BatteryHeader", speed * 0.8);
+            Cap("BatteryBar", speed * 0.9);
+            Cap("BatteryPanel", speed * 0.8);
+            Cap("LightsPanel", speed * 0.8);
+            Cap("TempPanel", speed * 0.85);
+            Cap("TempTrack", speed * 0.85);
+            Cap("TempBar", speed * 0.85);
+            Cap("RideModeButtonSelectedColor", speed * 0.75);
+
+            // Current is never brighter than battery.
+            var battery = Math.Min(Luminance(c["BatteryHeader"]), Luminance(c["BatteryBar"]));
+            Cap("PowerPanel", Math.Min(battery, speed * 0.8));
+            Cap("PowerBar", Luminance(c["PowerPanel"]));
+        }
+
+        // Makes a colour darker (same hue and saturation) until its luminance is at most the given amount.
+        static Color Dim(Color color, double maxLuminance)
+        {
+            var hue = color.GetHue();
+            var saturation = color.GetSaturation();
+            var lightness = color.GetLuminosity();
+
+            for (var i = 0; i < 100 && Luminance(color) > maxLuminance; ++i)
+            {
+                lightness = Math.Max(0f, lightness - 0.01f);
+                color = Color.FromHsla(hue, saturation, lightness);
+            }
+
+            return color;
         }
 
         static void Fit(Dictionary<string, Color> c, string textKey, params string[] backgroundKeys)

@@ -36,6 +36,23 @@ namespace OWCE
             SliderHandler.Mapper.AppendToMapping(nameof(ISlider.MinimumTrackColor), applyThickTrack);
             SliderHandler.Mapper.AppendToMapping(nameof(ISlider.MaximumTrackColor), applyThickTrack);
 
+            // The theme's font (the AppFontFamily resource) is attached to every label and button when its handler is created, so it
+            // follows theme changes wherever the control lives (setting it only through a style missed the dashboard panels).
+            LabelHandler.Mapper.AppendToMapping("OWCEAppFont", (handler, view) =>
+            {
+                if (view is Label label && label.StyleId != "font-sample")
+                {
+                    label.SetDynamicResource(Label.FontFamilyProperty, "AppFontFamily");
+                }
+            });
+            ButtonHandler.Mapper.AppendToMapping("OWCEAppFont", (handler, view) =>
+            {
+                if (view is Button button)
+                {
+                    button.SetDynamicResource(Button.FontFamilyProperty, "AppFontFamily");
+                }
+            });
+
             // Text in the theme builder's fonts is scaled so that every font looks about the same size.
             LabelHandler.Mapper.AppendToMapping(nameof(ITextStyle.Font), (handler, view) =>
             {

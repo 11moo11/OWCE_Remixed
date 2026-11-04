@@ -1,3 +1,5 @@
+using CommunityToolkit.Mvvm.Messaging;
+using OWCE.Themes;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -80,6 +82,8 @@ namespace OWCE.Views
         public RideModeView()
         {
             InitializeComponent();
+
+            WeakReferenceMessenger.Default.Register<RideModeView, ThemeChangedMessage>(this, (recipient, message) => recipient.UpdateButtonRadius());
 
             _customShapingControls = new[]
             {
@@ -175,7 +179,6 @@ namespace OWCE.Views
             var button = new ModeButton() { Value = value };
 
             button.Tint = new BoxView() { InputTransparent = true };
-            button.Tint.SetDynamicResource(VisualElement.BackgroundColorProperty, "OnRideModePanel");
 
             button.Label = new Label()
             {
@@ -194,7 +197,7 @@ namespace OWCE.Views
                 HeightRequest = 64,
                 StrokeThickness = 0,
                 Padding = new Thickness(0),
-                StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 18 },
+                StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = ButtonRadius },
                 Content = grid,
             };
 
@@ -206,18 +209,30 @@ namespace OWCE.Views
             return button;
         }
 
+        // The buttons follow the theme's corners (a little less round than the panel they sit in).
+        static double ButtonRadius => ThemeManager.CornerRadiusFor(ThemeManager.Current.Corners) * 0.65;
+
+        void UpdateButtonRadius()
+        {
+            foreach (var button in _modeButtons)
+            {
+                button.Border.StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = ButtonRadius };
+            }
+        }
+
         static void ApplyModeButtonState(ModeButton button, bool selected)
         {
+            button.Tint.Opacity = 1;
             if (selected)
             {
-                // Solid, with the panel's colour as the text.
-                button.Tint.Opacity = 1;
-                button.Label.SetDynamicResource(Label.TextColorProperty, "RideModePanel");
+                // The chosen mode is in the accent colour.
+                button.Tint.SetDynamicResource(VisualElement.BackgroundColorProperty, "RideModeButtonSelectedColor");
+                button.Label.SetDynamicResource(Label.TextColorProperty, "OnRideModeButtonSelectedColor");
             }
             else
             {
-                button.Tint.Opacity = 0.16;
-                button.Label.SetDynamicResource(Label.TextColorProperty, "OnRideModePanel");
+                button.Tint.SetDynamicResource(VisualElement.BackgroundColorProperty, "RideModeButtonColor");
+                button.Label.SetDynamicResource(Label.TextColorProperty, "OnRideModeButtonColor");
             }
         }
 

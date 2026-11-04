@@ -188,6 +188,7 @@ namespace OWCE.Views
                 {
                     Text = font.Name,
                     FontFamily = family,
+                    StyleId = "font-sample",
                     FontSize = 16,
                     Margin = new Thickness(16, 10),
                     InputTransparent = true,
