@@ -109,7 +109,6 @@ namespace OWCE.Pages
             var scanningLabel = new Label()
             {
                 Text = "Scanning...",
-                TextColor = Colors.Black,
                 FontFamily = "SairaExtraCondensed-SemiBold",
                 FontSize = 24,
                 VerticalOptions = LayoutOptions.Center,
@@ -120,12 +119,14 @@ namespace OWCE.Pages
             {
                 WidthRequest = 26,
                 HeightRequest = 26,
-                Color = Colors.Black,
                 IsRunning = true,
                 VerticalOptions = LayoutOptions.Center,
                 HorizontalOptions = LayoutOptions.End,
 
             };
+
+            scanningLabel.SetDynamicResource(Label.TextColorProperty, "OnBackgroundColor");
+            scanningActivityIndicator.SetDynamicResource(ActivityIndicator.ColorProperty, "OnBackgroundColor");
 
             Grid.SetColumn(scanningLabel, 0);
             Grid.SetColumn(scanningActivityIndicator, 1);

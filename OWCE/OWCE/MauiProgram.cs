@@ -20,7 +20,8 @@ namespace OWCE
                 .ConfigureMopups();
 
             // Thicker track for ThickSlider (MAUI has no setting for this).
-            SliderHandler.Mapper.AppendToMapping("OWCEThickTrack", (handler, view) =>
+            // Also re-applied when the track colours change (a theme change), because on iOS the colours are drawn into the track.
+            Action<ISliderHandler, ISlider> applyThickTrack = (handler, view) =>
             {
                 if (view is ThickSlider thickSlider)
                 {
@@ -30,7 +31,10 @@ namespace OWCE
                     OWCE.iOS.ThickSliderStyle.Apply(handler, thickSlider);
 #endif
                 }
-            });
+            };
+            SliderHandler.Mapper.AppendToMapping("OWCEThickTrack", applyThickTrack);
+            SliderHandler.Mapper.AppendToMapping(nameof(ISlider.MinimumTrackColor), applyThickTrack);
+            SliderHandler.Mapper.AppendToMapping(nameof(ISlider.MaximumTrackColor), applyThickTrack);
 
             // Platform specific implementations of the interfaces in OWCE.DependencyInterfaces.
 #if ANDROID

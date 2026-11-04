@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Devil Trigger: Inspired by Devil May Cry: black, crimson and bone with hard edges. Every theme defines the same keys, see ThemeManager. -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    x:Class="OWCE.Themes.DevilTriggerTheme">
+
+    <Color x:Key="BackgroundGradientStart">#0B0B0D</Color>
+    <Color x:Key="BackgroundGradientEnd">#1A0A0C</Color>
+    <Color x:Key="OnBackgroundColor">#EDE6D6</Color>
+    <Color x:Key="SurfaceColor">#141012</Color>
+    <Color x:Key="OnSurfaceColor">#EDE6D6</Color>
+    <Color x:Key="MutedTextColor">#B5AC9C</Color>
+    <Color x:Key="DividerColor">#3A1F22</Color>
+    <!-- A brush version of DividerColor, for properties such as Border.Stroke that need a brush. -->
+    <SolidColorBrush x:Key="DividerBrush" Color="#3A1F22" />
+    <Color x:Key="ScrimColor">#D9000000</Color>
+    <Color x:Key="CardColor">#8B0A1A</Color>
+    <Color x:Key="OnCardColor">#F7F0E4</Color>
+    <Color x:Key="ButtonColor">#1F1416</Color>
+    <Color x:Key="OnButtonColor">#EDE6D6</Color>
+    <Color x:Key="ButtonBorderColor">#8B0A1A</Color>
+    <Color x:Key="SelectedButtonColor">#C8102E</Color>
+    <Color x:Key="OnSelectedButtonColor">#FFFFFF</Color>
+    <Color x:Key="SliderActiveColor">#C8102E</Color>
+    <Color x:Key="SliderInactiveColor">#3A2A2C</Color>
+    <Color x:Key="SpeedPanel">#B30D26</Color>
+    <Color x:Key="OnSpeedPanel">#FFFFFF</Color>
+    <Color x:Key="BatteryPanel">#1F1416</Color>
+    <Color x:Key="BatteryHeader">#5E0912</Color>
+    <Color x:Key="BatteryBar">#8B0A1A</Color>
+    <Color x:Key="OnBattery">#F7F0E4</Color>
+    <Color x:Key="PowerPanel">#E8E0D0</Color>
+    <Color x:Key="PowerBar">#CFC5B0</Color>
+    <Color x:Key="OnPower">#14100A</Color>
+    <Color x:Key="TempPanel">#2A1A1C</Color>
+    <Color x:Key="TempTrack">#3A2326</Color>
+    <Color x:Key="TempBar">#6E1420</Color>
+    <Color x:Key="OnTemp">#F2EBDD</Color>
+    <Color x:Key="RideModePanel">#000000</Color>
+    <Color x:Key="OnRideModePanel">#E8E0D0</Color>
+    <Color x:Key="LightsPanel">#D4A62A</Color>
+    <Color x:Key="OnLights">#14100A</Color>
+
+    <!-- The panels on the board screen. -->
+    <Style x:Key="BoardDetailBlockBaseStyle" TargetType="Border">
+        <Setter Property="Margin" Value="16,0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="StrokeShape">
+            <RoundRectangle CornerRadius="2" />
+        </Setter>
+        <Setter Property="Stroke" Value="#C8102E" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Shadow">
+            <Shadow Brush="#C8102E" Opacity="0.45" Offset="0,0" Radius="12" />
+        </Setter>
+    </Style>
+
+    <Style x:Key="RoundButtonStyle" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{DynamicResource ButtonColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource OnButtonColor}" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="Margin" Value="10,0,0,0" />
+        <Setter Property="Padding" Value="15,0" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontFamily" Value="SairaExtraCondensed-Bold" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="BorderColor" Value="{DynamicResource ButtonBorderColor}" />
+        <Setter Property="HeightRequest" Value="40" />
+        <Setter Property="CharacterSpacing" Value="0.29" />
+    </Style>
+
+    <Style x:Key="SelectedRoundButtonStyle" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{DynamicResource SelectedButtonColor}" />
+        <Setter Property="TextColor" Value="{DynamicResource OnSelectedButtonColor}" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="Margin" Value="10,0,0,0" />
+        <Setter Property="Padding" Value="15,0" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontFamily" Value="SairaExtraCondensed-Bold" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="BorderColor" Value="{DynamicResource ButtonBorderColor}" />
+        <Setter Property="HeightRequest" Value="40" />
+        <Setter Property="CharacterSpacing" Value="0.29" />
+    </Style>
+
+</ResourceDictionary>

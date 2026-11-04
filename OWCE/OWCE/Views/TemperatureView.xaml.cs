@@ -40,11 +40,11 @@ namespace OWCE.Views
             InitializeComponent();
             MainView.BindingContext = this;
 
-            WeakReferenceMessenger.Default.Register<UnitDisplayUpdatedMessage>(this, (recipient, message) =>
+            WeakReferenceMessenger.Default.Register<TemperatureView, UnitDisplayUpdatedMessage>(this, (recipient, message) =>
             {
-                OnPropertyChanged(nameof(BatteryTemp));
-                OnPropertyChanged(nameof(MotorTemp));
-                OnPropertyChanged(nameof(ControllerTemp));
+                recipient.OnPropertyChanged(nameof(BatteryTemp));
+                recipient.OnPropertyChanged(nameof(MotorTemp));
+                recipient.OnPropertyChanged(nameof(ControllerTemp));
             });
         }
 

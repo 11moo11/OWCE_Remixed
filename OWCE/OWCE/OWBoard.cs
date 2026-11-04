@@ -701,11 +701,11 @@ namespace OWCE
 
         public OWBoard(IOWBLE owble, OWBaseBoard baseBoard) : base(baseBoard)
         {
-            WeakReferenceMessenger.Default.Register<UnitDisplayUpdatedMessage>(this, (recipient, message) =>
+            WeakReferenceMessenger.Default.Register<OWBoard, UnitDisplayUpdatedMessage>(this, (recipient, message) =>
             {
-                OnPropertyChanged(nameof(RPM));
-                OnPropertyChanged(nameof(LifetimeOdometer));
-                OnPropertyChanged(nameof(TripOdometer));
+                recipient.OnPropertyChanged(nameof(RPM));
+                recipient.OnPropertyChanged(nameof(LifetimeOdometer));
+                recipient.OnPropertyChanged(nameof(TripOdometer));
             });
 
             _owble = owble;

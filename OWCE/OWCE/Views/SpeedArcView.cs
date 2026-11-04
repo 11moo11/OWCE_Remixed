@@ -3,6 +3,8 @@ using System.Runtime.CompilerServices;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
+using CommunityToolkit.Mvvm.Messaging;
+using OWCE.Themes;
 
 namespace OWCE.Views
 {
@@ -71,13 +73,20 @@ namespace OWCE.Views
         public SpeedArcView()
         {
             _backgroundPaint = new SKPaint();
-            _backgroundPaint.Color = new SKColor(255, 255, 0); // Bright yellow
-
             _circlePaint = new SKPaint();
-            _circlePaint.Color = new SKColor(0, 0, 0, 20); // Black with 8% alpha
-
             _arcPaint = new SKPaint();
-            _arcPaint.Color = new SKColor(0, 0, 0, 31); // Black with 12% alpha
+            ApplyThemeColors();
+
+            // Redraw in the new colours when the theme changes.
+            // The handler must not capture "this", or the messenger would keep the view alive forever.
+            WeakReferenceMessenger.Default.Register<SpeedArcView, ThemeChangedMessage>(this, (recipient, message) =>
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    recipient.ApplyThemeColors();
+                    recipient.InvalidateSurface();
+                });
+            });
 
             _displayScale = (float)DeviceDisplay.Current.MainDisplayInfo.Density;
             //_circleRadius = (_displayScale * 278) * 0.5f;
@@ -93,6 +102,17 @@ namespace OWCE.Views
 
             _currentSweepAngle = _minSweepAngle;
             //_maxSweepAngle = 270 - _endAngle;
+        }
+
+        // The dial is drawn on the speed panel's colour: a circle and arc in the panel's text colour at low opacity.
+        void ApplyThemeColors()
+        {
+            var panel = ThemeManager.GetColor("SpeedPanel", Colors.Yellow).ToSKColor();
+            var on = ThemeManager.GetColor("OnSpeedPanel", Colors.Black).ToSKColor();
+
+            _backgroundPaint.Color = panel;
+            _circlePaint.Color = on.WithAlpha(20); // 8% alpha
+            _arcPaint.Color = on.WithAlpha(31); // 12% alpha
         }
 
         protected override void OnSizeAllocated(double width, double height)
@@ -152,7 +172,7 @@ namespace OWCE.Views
             var surface = e.Surface;
             var canvas = surface.Canvas;
 
-            canvas.Clear(SKColors.Yellow);
+            canvas.Clear(_backgroundPaint.Color);
 
             canvas.DrawCircle(_circleCenterX, _circleCenterY, _circleRadius, _circlePaint);
 

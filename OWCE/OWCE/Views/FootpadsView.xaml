@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="OWCE.Views.FootpadsView" HeightRequest="140">
-    <Border BackgroundColor="#E00172" Style="{StaticResource BoardDetailBlockBaseStyle}" >
+    <Border BackgroundColor="#E00172" Style="{DynamicResource BoardDetailBlockBaseStyle}" >
         <Grid x:Name="x" HorizontalOptions="Fill" ColumnDefinitions="*,*" ColumnSpacing="0">
 
             <Label Text="L" Grid.Column="0" Opacity="0.35" TextColor="White" FontFamily="SairaExtraCondensed-Black" FontSize="96" HorizontalOptions="Center" VerticalOptions="Center"  />

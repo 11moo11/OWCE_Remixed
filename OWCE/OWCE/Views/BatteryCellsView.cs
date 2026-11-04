@@ -5,6 +5,8 @@ using OWCE.Models;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
 using System.Collections.Generic;
+using CommunityToolkit.Mvvm.Messaging;
+using OWCE.Themes;
 
 namespace OWCE.Views
 {
@@ -28,8 +30,17 @@ namespace OWCE.Views
 
         Dictionary<uint, Label> _cellLables = new Dictionary<uint, Label>();
 
+        // Cells are drawn in the battery panel's bar colour, fading towards white for low voltages.
+        Color _accent = ThemeManager.GetColor("BatteryBar", Colors.Magenta);
+
         public BatteryCellsView()
         {
+            // The handler must not capture "this", or the messenger would keep the view alive forever.
+            WeakReferenceMessenger.Default.Register<BatteryCellsView, ThemeChangedMessage>(this, (recipient, message) =>
+            {
+                MainThread.BeginInvokeOnMainThread(recipient.ApplyTheme);
+            });
+
             Content = new Grid()
             {
                 ColumnSpacing = 0,
@@ -117,11 +128,11 @@ namespace OWCE.Views
                         //var voltage = minVoltage + (voltagePerIndex * cellIndex);
                         var label = new Label()
                         {
-                            TextColor = Colors.White,
+                            TextColor = TextColorFor(_accent),
                             Text = "-",
                             FontSize = 24,
                             FontFamily = "SairaExtraCondensed-Bold",
-                            BackgroundColor = Colors.Magenta,
+                            BackgroundColor = _accent,
                             HorizontalTextAlignment = TextAlignment.Center,
                             VerticalTextAlignment = TextAlignment.Center,
                         };
@@ -162,6 +173,32 @@ namespace OWCE.Views
             }
         }
 
+        void ApplyTheme()
+        {
+            _accent = ThemeManager.GetColor("BatteryBar", Colors.Magenta);
+
+            foreach (var cell in _cellLables)
+            {
+                if (cell.Value.Text == "-")
+                {
+                    // No reading yet.
+                    cell.Value.BackgroundColor = _accent;
+                    cell.Value.TextColor = TextColorFor(_accent);
+                }
+                else
+                {
+                    UpdateCell(cell.Key);
+                }
+            }
+        }
+
+        // Black or white, whichever is easier to read on the given colour.
+        static Color TextColorFor(Color background)
+        {
+            var luminance = 0.2126 * background.Red + 0.7152 * background.Green + 0.0722 * background.Blue;
+            return luminance > 0.55 ? Colors.Black : Colors.White;
+        }
+
         void UpdateCell(uint cellID)
         {
             if (BindingContext is BatteryCells batteryCells && _cellLables.ContainsKey(cellID))
@@ -174,6 +211,7 @@ namespace OWCE.Views
                 {
                     label.Text = value.ToString("F2");
                     label.BackgroundColor = color;
+                    label.TextColor = TextColorFor(color);
                 });
             }
         }
@@ -198,7 +236,12 @@ namespace OWCE.Views
             var colorPercent = (voltagePercent * 0.788235294118);
 
             //System.Diagnostics.Debug.WriteLine($"{voltage:F2} - {colorPercent:F2}");
-            return new Color(1f, (float)colorPercent, 1f);
+            // Fades the accent colour towards white (for the default magenta this is (1, p, 1)).
+            var amount = (float)colorPercent;
+            return new Color(
+                _accent.Red + (1f - _accent.Red) * amount,
+                _accent.Green + (1f - _accent.Green) * amount,
+                _accent.Blue + (1f - _accent.Blue) * amount);
 
 
             /*

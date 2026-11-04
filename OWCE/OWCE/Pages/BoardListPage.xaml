@@ -14,14 +14,14 @@
             <converters:BoardIsAvailableOpacityConverter x:Key="boardIsAvailableOpacityConverter" />
 
             <DataTemplate x:Key="SideMenu">
-                <Grid BackgroundColor="White" ColumnSpacing="0" RowSpacing="0" VerticalOptions="Fill" RowDefinitions="Auto,*">
+                <Grid BackgroundColor="{DynamicResource SurfaceColor}" ColumnSpacing="0" RowSpacing="0" VerticalOptions="Fill" RowDefinitions="Auto,*">
                                 
                     <Grid Grid.Row="0" VerticalOptions="End" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0">
 <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding PastRidesCommand}" /></Grid.GestureRecognizers>
                         <Image Grid.Row="0" Grid.Column="0" Source="menu_myrides" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
-<Image.Behaviors><toolkit:IconTintColorBehavior TintColor="Black" /></Image.Behaviors>
+<Image.Behaviors><toolkit:IconTintColorBehavior TintColor="{DynamicResource OnSurfaceColor}" /></Image.Behaviors>
 </Image>
-                        <Label Grid.Row="0" Grid.Column="1" Text="Past Rides" TextColor="Black" FontSize="18" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="Past Rides" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" />
                     </Grid>
 
                 </Grid>
@@ -33,8 +33,8 @@
     <Grid>
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                <GradientStop Color="{StaticResource BackgroundGradientStart}" Offset="0"/>
-                <GradientStop Color="{StaticResource BackgroundGradientEnd}" Offset="1"/>
+                <GradientStop Color="{DynamicResource BackgroundGradientStart}" Offset="0"/>
+                <GradientStop Color="{DynamicResource BackgroundGradientEnd}" Offset="1"/>
             </LinearGradientBrush>
         </Grid.Background>
               
@@ -58,7 +58,7 @@
                     <DataTemplate x:DataType="owce:OWBaseBoard">
                         <ContentView Padding="16,10,16,15">
                            
-                            <Border HeightRequest="121" StrokeShape="RoundRectangle 11" BackgroundColor="{StaticResource BrightYellow}">
+                            <Border HeightRequest="121" StrokeShape="RoundRectangle 11" BackgroundColor="{DynamicResource CardColor}">
 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding Source={x:Reference MainCollectionView}, Path=BindingContext.BoardSelectedCommand}" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
 
                                 
@@ -67,8 +67,8 @@
                                 </Border.Shadow>
 
                                 <Grid>
-                                    <Label FontFamily="SairaExtraCondensed-Bold" FontSize="16" Text="{Binding BoardModelStringLong}" TextColor="Black" Margin="20,5,0,0" CharacterSpacing="-0.26" />
-                                    <Label FontFamily="SairaExtraCondensed-Black" FontSize="40" Text="{Binding Name}" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center" CharacterSpacing="0.48" />
+                                    <Label FontFamily="SairaExtraCondensed-Bold" FontSize="16" Text="{Binding BoardModelStringLong}" TextColor="{DynamicResource OnCardColor}" Margin="20,5,0,0" CharacterSpacing="-0.26" />
+                                    <Label FontFamily="SairaExtraCondensed-Black" FontSize="40" Text="{Binding Name}" TextColor="{DynamicResource OnCardColor}" HorizontalOptions="Center" VerticalOptions="Center" CharacterSpacing="0.48" />
                                 </Grid>
                                 
                             </Border>

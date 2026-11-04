@@ -15,21 +15,21 @@
         <converters:SelectedButtonConverter x:Key="SelectedButtonConverter" />
     </ContentView.Resources>
 
-    <Border BackgroundColor="#000000" Style="{StaticResource BoardDetailBlockBaseStyle}">
+    <Border BackgroundColor="{DynamicResource RideModePanel}" Style="{DynamicResource BoardDetailBlockBaseStyle}">
         <toolkit:Expander x:Name="ExpanderView" Margin="0" Padding="0" HorizontalOptions="Fill" PropertyChanged="ExpanderView_PropertyChanged">
             <toolkit:Expander.Header>
-                <Grid BackgroundColor="#000000"  AbsoluteLayout.LayoutFlags="WidthProportional" AbsoluteLayout.LayoutBounds="0,0,1,121">
-                    <Label Text="RIDE MODE" FontFamily="SairaExtraCondensed-Bold" TextColor="White" CharacterSpacing="0.26" FontSize="16" Margin="20,6,0,0" />
+                <Grid BackgroundColor="{DynamicResource RideModePanel}"  AbsoluteLayout.LayoutFlags="WidthProportional" AbsoluteLayout.LayoutBounds="0,0,1,121">
+                    <Label Text="RIDE MODE" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnRideModePanel}" CharacterSpacing="0.26" FontSize="16" Margin="20,6,0,0" />
 
-                    <Label Text="{Binding RideModeString}" FontFamily="SairaExtraCondensed-Black" HorizontalOptions="Center" TextColor="White" CharacterSpacing="2.2" FontSize="60" Padding="0,16,0,16" />
+                    <Label Text="{Binding RideModeString}" FontFamily="SairaExtraCondensed-Black" HorizontalOptions="Center" TextColor="{DynamicResource OnRideModePanel}" CharacterSpacing="2.2" FontSize="60" Padding="0,16,0,16" />
 
 
                     <!--
                     <Label Text="Simplestop is ON" IsVisible="{Binding SimpleStopEnabled, Converter={StaticResource IsTrueConverter}}" FontFamily="SairaExtraCondensed-SemiBold" TextColor="Magenta" HorizontalOptions="Center" VerticalOptions="End" FontSize="16" Margin="0,0,0,6" />
-                    <Label Text="Simplestop is OFF" IsVisible="{Binding SimpleStopEnabled, Converter={StaticResource IsFalseConverter}}" FontFamily="SairaExtraCondensed-SemiBold" TextColor="White" HorizontalOptions="Center" VerticalOptions="End" FontSize="16" Margin="0,0,0,6" />
+                    <Label Text="Simplestop is OFF" IsVisible="{Binding SimpleStopEnabled, Converter={StaticResource IsFalseConverter}}" FontFamily="SairaExtraCondensed-SemiBold" TextColor="{DynamicResource OnRideModePanel}" HorizontalOptions="Center" VerticalOptions="End" FontSize="16" Margin="0,0,0,6" />
                     -->
 
-                    <views:ExpanderArrowView x:Name="ExpanderArrow" HorizontalOptions="End" Margin="17,13" />
+                    <views:ExpanderArrowView x:Name="ExpanderArrow" ArrowColor="{DynamicResource OnRideModePanel}" HorizontalOptions="End" Margin="17,13" />
 
                 </Grid>
             </toolkit:Expander.Header>
@@ -46,7 +46,7 @@
                 -->
 
                 <!--
-                <CollectionView x:Name="RideModesCollectionView" HorizontalScrollBarVisibility="Never" ItemsLayout="HorizontalList" Grid.Row="1" HeightRequest="76" BackgroundColor="White">
+                <CollectionView x:Name="RideModesCollectionView" HorizontalScrollBarVisibility="Never" ItemsLayout="HorizontalList" Grid.Row="1" HeightRequest="76" BackgroundColor="{DynamicResource SurfaceColor}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="views:RideModeButton">
                             <Grid>
@@ -59,8 +59,8 @@
                 </CollectionView>
                 -->
 
-                <ScrollView Grid.Row="1" HeightRequest="76" BackgroundColor="White" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never" Orientation="Horizontal">
-                    <StackLayout  x:Name="RideModesStackLayout" BindableLayout.ItemsSource="{Binding User.TopFollowers}" Grid.Row="1" HeightRequest="76" BackgroundColor="White" Orientation="Horizontal">
+                <ScrollView Grid.Row="1" HeightRequest="76" BackgroundColor="{DynamicResource SurfaceColor}" HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never" Orientation="Horizontal">
+                    <StackLayout  x:Name="RideModesStackLayout" BindableLayout.ItemsSource="{Binding User.TopFollowers}" Grid.Row="1" HeightRequest="76" BackgroundColor="{DynamicResource SurfaceColor}" Orientation="Horizontal">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="views:RideModeButton">
                                 <Button Text="{Binding Name}" Clicked="RideModeButton_Clicked" Style="{Binding IsSelected, Converter={StaticResource SelectedButtonConverter}}" HorizontalOptions="Center">
@@ -73,30 +73,30 @@
                
 
                 <!-- Custom shaping. Only shown when the board supports it and is in Custom ride mode. -->
-                <VerticalStackLayout x:Name="CustomShapingPanel" Grid.Row="2" IsVisible="False" Padding="20,16,20,20" Spacing="14" BackgroundColor="White">
-                    <Label x:Name="CustomShapingStatusLabel" FontFamily="SairaExtraCondensed-SemiBold" TextColor="#7F7F7F" FontSize="16" />
+                <VerticalStackLayout x:Name="CustomShapingPanel" Grid.Row="2" IsVisible="False" Padding="20,16,20,20" Spacing="14" BackgroundColor="{DynamicResource SurfaceColor}">
+                    <Label x:Name="CustomShapingStatusLabel" FontFamily="SairaExtraCondensed-SemiBold" TextColor="{DynamicResource MutedTextColor}" FontSize="16" />
 
                     <VerticalStackLayout x:Name="CustomShapingSliders" Spacing="12">
                     <VerticalStackLayout Spacing="0">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Aggressiveness" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
-                            <Label x:Name="AggressivenessValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
+                            <Label Text="Aggressiveness" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
+                            <Label x:Name="AggressivenessValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
                         </Grid>
-                        <views:ThickSlider x:Name="AggressivenessSlider" Minimum="0" Maximum="10" MinimumTrackColor="Black" MaximumTrackColor="#D0D0D0" ThumbColor="Black" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
+                        <views:ThickSlider x:Name="AggressivenessSlider" Minimum="0" Maximum="10" MinimumTrackColor="{DynamicResource SliderActiveColor}" MaximumTrackColor="{DynamicResource SliderInactiveColor}" ThumbColor="{DynamicResource SliderActiveColor}" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="0">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Turn compensation" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
-                            <Label x:Name="TurnCompensationValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
+                            <Label Text="Turn compensation" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
+                            <Label x:Name="TurnCompensationValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
                         </Grid>
-                        <views:ThickSlider x:Name="TurnCompensationSlider" Minimum="0" Maximum="10" MinimumTrackColor="Black" MaximumTrackColor="#D0D0D0" ThumbColor="Black" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
+                        <views:ThickSlider x:Name="TurnCompensationSlider" Minimum="0" Maximum="10" MinimumTrackColor="{DynamicResource SliderActiveColor}" MaximumTrackColor="{DynamicResource SliderInactiveColor}" ThumbColor="{DynamicResource SliderActiveColor}" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Spacing="0">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Angle offset" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
-                            <Label x:Name="AngleOffsetValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="Black" FontSize="18" CharacterSpacing="0.26" />
+                            <Label Text="Angle offset" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
+                            <Label x:Name="AngleOffsetValueLabel" Grid.Column="1" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" CharacterSpacing="0.26" />
                         </Grid>
-                        <views:ThickSlider x:Name="AngleOffsetSlider" Minimum="-3" Maximum="1.5" MinimumTrackColor="Black" MaximumTrackColor="#D0D0D0" ThumbColor="Black" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
+                        <views:ThickSlider x:Name="AngleOffsetSlider" Minimum="-3" Maximum="1.5" MinimumTrackColor="{DynamicResource SliderActiveColor}" MaximumTrackColor="{DynamicResource SliderInactiveColor}" ThumbColor="{DynamicResource SliderActiveColor}" ValueChanged="Slider_ValueChanged" DragCompleted="Slider_DragCompleted" />
                     </VerticalStackLayout>
                     </VerticalStackLayout>
                 </VerticalStackLayout>

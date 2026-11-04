@@ -7,10 +7,10 @@
     x:Class="OWCE.Pages.AboutPage"
     x:DataType="pages:AboutPage"
     Title="About"
-    BackgroundColor="White">
+    BackgroundColor="{DynamicResource SurfaceColor}">
     <pages:BaseContentPage.Resources>
         <Style TargetType="Label">
-            <Setter Property="TextColor" Value="Black" />
+            <Setter Property="TextColor" Value="{DynamicResource OnSurfaceColor}" />
         </Style>
     </pages:BaseContentPage.Resources>
 

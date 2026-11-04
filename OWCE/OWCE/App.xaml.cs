@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OWCE.DependencyInterfaces;
 using OWCE.Pages;
+using OWCE.Themes;
 
 namespace OWCE
 {
@@ -54,6 +55,9 @@ namespace OWCE
             Database.Init();
 
             InitializeComponent();
+
+            // The colours and panel/button styles come from the theme, so it has to be applied before any page is created.
+            ThemeManager.Apply(ThemeManager.SavedId);
         }
 
         protected override Window CreateWindow(IActivationState activationState)

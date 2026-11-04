@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="OWCE.Views.AngleView" HeightRequest="140">
-    <Border x:Name="MainView" BackgroundColor="#0000FF" Style="{StaticResource BoardDetailBlockBaseStyle}" >
+    <Border x:Name="MainView" BackgroundColor="#0000FF" Style="{DynamicResource BoardDetailBlockBaseStyle}" >
         <AbsoluteLayout>
 
             <BoxView AbsoluteLayout.LayoutFlags="XProportional" AbsoluteLayout.LayoutBounds="0.5,70,500,200" AnchorX="0.5" AnchorY="0" x:Name="PitchView" Opacity="0.2" BackgroundColor="Black"  />

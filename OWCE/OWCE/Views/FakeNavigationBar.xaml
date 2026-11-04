@@ -8,7 +8,7 @@
 
     <Grid.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="{StaticResource BackgroundGradientStart}" Offset="0"/>
+            <GradientStop Color="{DynamicResource BackgroundGradientStart}" Offset="0"/>
             <GradientStop Color="Transparent" Offset="1"/>
         </LinearGradientBrush>
     </Grid.Background>

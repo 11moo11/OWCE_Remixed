@@ -80,8 +80,8 @@ namespace OWCE.Pages
 
 			// The custom navigation bar below fills the top of the page, so the page itself takes the navigation bar colour.
 			// This is what shows behind the status bar / notch (the page content is laid out inside the safe area).
-			var navigationBarColor = App.Current.Resources.TryGetValue("BackgroundGradientStart", out var navigationBarColorResource) && navigationBarColorResource is Color color ? color : Colors.White;
-			BackgroundColor = navigationBarColor;
+			// The colour comes from the theme, so it follows theme changes.
+			SetDynamicResource(BackgroundColorProperty, "BackgroundGradientStart");
 
 			_mainGrid = new Grid()
 			{
@@ -96,8 +96,8 @@ namespace OWCE.Pages
 
 			_navBackgroundView = new BoxView()
 			{
-				BackgroundColor = navigationBarColor,
 			};
+			_navBackgroundView.SetDynamicResource(VisualElement.BackgroundColorProperty, "BackgroundGradientStart");
 			Grid.SetRow(_navBackgroundView, 0);
 			_mainGrid.Children.Add(_navBackgroundView);
 
@@ -109,10 +109,10 @@ namespace OWCE.Pages
 			{
 				FontAttributes = FontAttributes.Bold,
 				FontSize = 18,
-				TextColor = Colors.Black,
 				VerticalOptions = LayoutOptions.Center,
 				HorizontalOptions = LayoutOptions.Center,
 			};
+			_titleLabel.SetDynamicResource(Label.TextColorProperty, "OnBackgroundColor");
 
             Grid.SetRow(_titleLabel, 0);
 			_mainGrid.Children.Add(_titleLabel);

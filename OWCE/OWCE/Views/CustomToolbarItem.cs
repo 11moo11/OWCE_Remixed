@@ -158,10 +158,10 @@ namespace OWCE.Views
                 _label = new Label()
                 {
                     FontSize = 18,
-                    TextColor = Colors.Black,
                     VerticalOptions = LayoutOptions.Center,
                     HorizontalOptions = LayoutOptions.Center,
                 };
+                _label.SetDynamicResource(Label.TextColorProperty, "OnBackgroundColor");
                 Content = _label;
             }
             _label.Text = Text;

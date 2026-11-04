@@ -21,7 +21,7 @@
                     <Label Text="{Binding Uuid, Converter={StaticResource UUIDToNameConverter}}" HorizontalOptions="Start" FontAttributes="Bold" Padding="8,0,0,0" />
                     <Label Text="{Binding Data, Converter={StaticResource ByteToHexConverter}}" HorizontalOptions="End" Padding="0,0,8,0" />
 
-                    <BoxView Grid.Row="1" HeightRequest="1" HorizontalOptions="Fill" BackgroundColor="LightGray" />
+                    <BoxView Grid.Row="1" HeightRequest="1" HorizontalOptions="Fill" BackgroundColor="{DynamicResource DividerColor}" />
                 </Grid>
             </DataTemplate>
         </CollectionView.ItemTemplate>

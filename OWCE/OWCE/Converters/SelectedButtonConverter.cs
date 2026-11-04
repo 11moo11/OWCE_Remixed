@@ -11,11 +11,11 @@ namespace OWCE.Converters
             {
                 if (isSelected)
                 {
-                    return (Style)Application.Current.Resources["SelectedRoundButtonStyle"];
+                    return OWCE.Themes.ThemeManager.GetStyle("SelectedRoundButtonStyle");
                 }
             }
 
-            return (Style)Application.Current.Resources["RoundButtonStyle"];
+            return OWCE.Themes.ThemeManager.GetStyle("RoundButtonStyle");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

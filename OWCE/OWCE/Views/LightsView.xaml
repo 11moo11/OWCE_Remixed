@@ -3,15 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="OWCE.Views.LightsView">
 
-    <Border BackgroundColor="#FF8C00" Style="{StaticResource BoardDetailBlockBaseStyle}">
-        <Grid BackgroundColor="#FF8C00" RowDefinitions="121">
+    <Border BackgroundColor="{DynamicResource LightsPanel}" Style="{DynamicResource BoardDetailBlockBaseStyle}">
+        <Grid BackgroundColor="{DynamicResource LightsPanel}" RowDefinitions="121">
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnTapped" />
             </Grid.GestureRecognizers>
 
-            <Label Text="LIGHTS" FontFamily="SairaExtraCondensed-Bold" TextColor="White" CharacterSpacing="0.26" FontSize="16" Margin="20,6,0,0" />
+            <Label Text="LIGHTS" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnLights}" CharacterSpacing="0.26" FontSize="16" Margin="20,6,0,0" />
 
-            <Label Text="OFF" FontFamily="SairaExtraCondensed-Black" TextColor="White" FontSize="80" HorizontalOptions="Center" VerticalOptions="Start">
+            <Label Text="OFF" FontFamily="SairaExtraCondensed-Black" TextColor="{DynamicResource OnLights}" FontSize="80" HorizontalOptions="Center" VerticalOptions="Start">
                 <Label.Triggers>
                     <DataTrigger TargetType="Label" Binding="{Binding LightMode}" Value="True">
                         <Setter Property="Text" Value="ON" />
@@ -19,7 +19,7 @@
                 </Label.Triggers>
             </Label>
 
-            <Label Text="Tap to turn on or off" FontFamily="SairaExtraCondensed-Light" TextColor="White" FontSize="16" VerticalOptions="End" Margin="20,0" />
+            <Label Text="Tap to turn on or off" FontFamily="SairaExtraCondensed-Light" TextColor="{DynamicResource OnLights}" FontSize="16" VerticalOptions="End" Margin="20,0" />
         </Grid>
     </Border>
 

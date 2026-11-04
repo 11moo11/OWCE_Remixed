@@ -22,11 +22,11 @@
                     </SwipeView.RightItems>
 
                     
-                    <Grid BackgroundColor="White" RowDefinitions="Auto,Auto,1">
+                    <Grid BackgroundColor="{DynamicResource SurfaceColor}" RowDefinitions="Auto,Auto,1">
 <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type pages:BaseContentPage}}, Path=RideSelectedCommand}" CommandParameter="{Binding .}" /></Grid.GestureRecognizers>
-                        <Label Grid.Row="0" Text="{Binding Name}" Padding="8,8,8,0" FontSize="22" FontAttributes="Bold" TextColor="Black" />
-                        <Label Grid.Row="1" Text="{Binding StartTime}" Padding="8,0,0,8" FontSize="16" TextColor="DarkGray" />
-                        <BoxView Grid.Row="2" BackgroundColor="LightGray" />
+                        <Label Grid.Row="0" Text="{Binding Name}" Padding="8,8,8,0" FontSize="22" FontAttributes="Bold" TextColor="{DynamicResource OnSurfaceColor}" />
+                        <Label Grid.Row="1" Text="{Binding StartTime}" Padding="8,0,0,8" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
+                        <BoxView Grid.Row="2" BackgroundColor="{DynamicResource DividerColor}" />
                     </Grid>
 
                 </SwipeView>
@@ -36,7 +36,7 @@
         <CollectionView.EmptyViewTemplate>
             <DataTemplate>
                 <Grid HorizontalOptions="Fill" VerticalOptions="Fill">
-                    <Label Text="No past rides found" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black" />
+                    <Label Text="No past rides found" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource OnBackgroundColor}" />
                 </Grid>
             </DataTemplate>
         </CollectionView.EmptyViewTemplate>

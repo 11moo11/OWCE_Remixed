@@ -26,7 +26,7 @@
 
     <Grid
           x:Name="MainGrid"
-          BackgroundColor="White"
+          BackgroundColor="{DynamicResource SurfaceColor}"
           HorizontalOptions="Fill"
           MaximumWidthRequest="500"
           ColumnSpacing="0"
@@ -35,7 +35,7 @@
           Margin="0,0,40,0"
           RowDefinitions="Auto,1,*,1,Auto,Auto">
 
-        <Label Grid.Row="0" Text="{Binding Title}" TextColor="Black" FontAttributes="Bold" FontSize="24" Padding="16,0,16,0" />
+        <Label Grid.Row="0" Text="{Binding Title}" TextColor="{DynamicResource OnSurfaceColor}" FontAttributes="Bold" FontSize="24" Padding="16,0,16,0" />
 
 
 
@@ -46,29 +46,29 @@
             </Grid.GestureRecognizers>
             <Image Source="menu_cancel" WidthRequest="16" HeightRequest="16" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True">
                 <Image.Behaviors>
-                    <toolkit:IconTintColorBehavior TintColor="Black" />
+                    <toolkit:IconTintColorBehavior TintColor="{DynamicResource OnSurfaceColor}" />
                 </Image.Behaviors>
             </Image>
         </Grid>
 
-        <BoxView Grid.Row="1" Background="#E4E4E4" HeightRequest="1" />
+        <BoxView Grid.Row="1" BackgroundColor="{DynamicResource DividerColor}" HeightRequest="1" />
 
         <!-- Grid.Row 2 is for page specific menu -->
 
-        <BoxView Grid.Row="3" Background="#E4E4E4" HeightRequest="1" />
+        <BoxView Grid.Row="3" BackgroundColor="{DynamicResource DividerColor}" HeightRequest="1" />
 
         <Grid x:Name="SettingsRow" Grid.Row="4" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0">
 <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding SettingsCommand}" CommandParameter="{x:Reference SettingsRow}" /></Grid.GestureRecognizers>
             <Image Grid.Row="0" Grid.Column="0" Source="menu_settings" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
-<Image.Behaviors><toolkit:IconTintColorBehavior TintColor="Black" /></Image.Behaviors>
+<Image.Behaviors><toolkit:IconTintColorBehavior TintColor="{DynamicResource OnSurfaceColor}" /></Image.Behaviors>
 </Image>
-            <Label Grid.Row="0" Grid.Column="1" Text="Settings" TextColor="Black" FontSize="18" />
+            <Label Grid.Row="0" Grid.Column="1" Text="Settings" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" />
         </Grid>
 
         <Grid x:Name="AboutRow" Grid.Row="5" RowDefinitions="Auto" ColumnDefinitions="60,*" ColumnSpacing="0">
 <Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding AboutCommand}" CommandParameter="{x:Reference AboutRow}" /></Grid.GestureRecognizers>
             <Image Grid.Row="0" Grid.Column="0" Source="settings_info" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center"/>
-            <Label Grid.Row="0" Grid.Column="1" Text="About this app" TextColor="Black" FontSize="18" />
+            <Label Grid.Row="0" Grid.Column="1" Text="About this app" TextColor="{DynamicResource OnSurfaceColor}" FontSize="18" />
         </Grid>
 
 

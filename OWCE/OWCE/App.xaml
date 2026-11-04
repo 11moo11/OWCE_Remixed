@@ -9,34 +9,25 @@
     <Application.Resources>
         <ResourceDictionary>
 
-            
-            <Color x:Key="BackgroundGradientStart">#E6E6E6</Color>
-            <Color x:Key="BackgroundGradientEnd">#EEEEEE</Color>
-            <Color x:Key="BrightYellow">#ECEC00</Color>
-            <Color x:Key="ButtonBoarder">#DBDBDF</Color>
-          
-
+            <!--
+            Colours and the panel and button styles live in the theme files (Themes/*.xaml), which ThemeManager merges in
+            at startup. Use DynamicResource for anything that comes from a theme so it follows theme changes.
+            -->
 
             <Color x:Key="lightBackgroundColor">#23354d</Color>
             <Color x:Key="darkBackgroundColor">#1C2D41</Color>
             <Color x:Key="textColor">White</Color>
 
-            <!--
-            <Style TargetType="Label">
-                <Setter Property="TextColor" Value="{DynamicResource textColor}" />
-            </Style>
-            -->
-
             <Style TargetType="NavigationPage">
-                <Setter Property="BarTextColor" Value="Black" />
-                <Setter Property="BackgroundColor" Value="{StaticResource BackgroundGradientStart}" />
-                <Setter Property="BarBackgroundColor" Value="{StaticResource BackgroundGradientStart}" />
+                <Setter Property="BarTextColor" Value="{DynamicResource OnBackgroundColor}" />
+                <Setter Property="BackgroundColor" Value="{DynamicResource BackgroundGradientStart}" />
+                <Setter Property="BarBackgroundColor" Value="{DynamicResource BackgroundGradientStart}" />
             </Style>
 
             <Style TargetType="ContentPage">
-                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceColor}" />
             </Style>
-            
+
             <Style TargetType="ScrollView">
                 <Setter Property="BackgroundColor" Value="Transparent" />
             </Style>
@@ -44,21 +35,34 @@
             <Style TargetType="RefreshView">
                 <Setter Property="BackgroundColor" Value="Transparent" />
             </Style>
-            
+
             <Style TargetType="StackLayout">
                 <Setter Property="BackgroundColor" Value="Transparent" />
             </Style>
-            
+
             <Style TargetType="CollectionView">
                 <Setter Property="BackgroundColor" Value="Transparent" />
             </Style>
 
-            <!--
-            <Style TargetType="Button">
-                <Setter Property="TextColor" Value="{StaticResource textColor}" />
-                <Setter Property="BackgroundColor" Value="Transparent" />
+            <!-- Text that does not set its own colour sits on the page, so it uses the page's text colour. -->
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{DynamicResource OnBackgroundColor}" />
             </Style>
-            -->
+
+            <Style TargetType="Entry">
+                <Setter Property="TextColor" Value="{DynamicResource OnBackgroundColor}" />
+                <Setter Property="PlaceholderColor" Value="{DynamicResource MutedTextColor}" />
+            </Style>
+
+            <Style TargetType="Editor">
+                <Setter Property="TextColor" Value="{DynamicResource OnBackgroundColor}" />
+                <Setter Property="PlaceholderColor" Value="{DynamicResource MutedTextColor}" />
+            </Style>
+
+            <Style TargetType="Picker">
+                <Setter Property="TextColor" Value="{DynamicResource OnBackgroundColor}" />
+                <Setter Property="TitleColor" Value="{DynamicResource MutedTextColor}" />
+            </Style>
 
             <converters:DivideByTwo x:Key="divideByTwo" />
 
@@ -67,53 +71,6 @@
                 <Setter Property="FontAttributes" Value="Bold" />
             </Style>
 
-             <Style x:Key="RoundButtonStyle" TargetType="Button">
-                <Setter Property="BackgroundColor" Value="White" />
-                <Setter Property="TextColor" Value="Black" />
-                <Setter Property="HorizontalOptions" Value="Center" />
-                <Setter Property="VerticalOptions" Value="Center" />
-                <Setter Property="CornerRadius" Value="20" />
-                <Setter Property="Margin" Value="10,0,0,0" />
-                <Setter Property="Padding" Value="15,0" />
-                <Setter Property="FontSize" Value="18" />
-                <Setter Property="FontFamily" Value="SairaExtraCondensed-Bold" />
-                <Setter Property="BorderWidth" Value="1" />
-                <Setter Property="BorderColor" Value="{StaticResource ButtonBoarder}" />
-                <Setter Property="HeightRequest" Value="40" />
-                <Setter Property="CharacterSpacing" Value="0.29" />
-            </Style>
-
-            <!-- BasedOn style isn't working here, so we duplicated the entire style -->
-            <!-- BasedOn="{StaticResource RoundButtonStyle}" -->
-            <Style x:Key="SelectedRoundButtonStyle" TargetType="Button">
-                <Setter Property="BackgroundColor" Value="Black" />               
-                <Setter Property="TextColor" Value="White" />
-                <Setter Property="HorizontalOptions" Value="Center" />
-                <Setter Property="VerticalOptions" Value="Center" />
-                <Setter Property="CornerRadius" Value="20" />
-                <Setter Property="Margin" Value="10,0,0,0" />
-                <Setter Property="Padding" Value="15,0" />
-                <Setter Property="FontSize" Value="18" />
-                <Setter Property="FontFamily" Value="SairaExtraCondensed-Bold" />
-                <Setter Property="BorderWidth" Value="1" />
-                <Setter Property="BorderColor" Value="{StaticResource ButtonBoarder}" />
-                <Setter Property="HeightRequest" Value="40" />
-                <Setter Property="CharacterSpacing" Value="0.29" />
-            </Style>
-
-             <Style x:Key="BoardDetailBlockBaseStyle" TargetType="Border">
-                <Setter Property="Margin" Value="16,0" />
-                <Setter Property="Padding" Value="0" />
-                <Setter Property="StrokeShape">
-                    <RoundRectangle CornerRadius="11" />
-                </Setter>
-                <Setter Property="Shadow">
-                    <Shadow Brush="#000000" Opacity="0.14" Offset="0,1" Radius="9" />
-                </Setter>
-            </Style>
-            
-            
-            
         </ResourceDictionary>
     </Application.Resources>
 </Application>
