@@ -96,25 +96,31 @@ out the same modern way:
   are round and soft, Codec and Devil Trigger are sharp.
 
 
-## Colours and light / dark mode
+## The five colours
 
-Every theme (not just Material) can be switched between **Light** and **Dark** and given three colours, under
-**Settings > Appearance**:
+Every theme, preset or your own, is made from five colours, the way [Realtime Colors](https://www.realtimecolors.com/docs/selecting-colors)
+describes a palette: neutral **text** and **background** colours, one **primary** colour, a less highlighted **secondary**
+colour, and an **accent** colour "used for highlights, checkmarks, boxes, links, etc." (Realtime Colors' docs only define the
+roles at that level; they do not publish how shades are made, so the shades below are my own.)
 
-* **Primary:** highlights, selected items, sliders and headings, and the speed and battery panels. It also tints the greys of the page.
-* **Secondary:** supporting surfaces: cards, buttons and the lights panel.
-* **Accent:** the power and temperature panels.
+| Colour | Used for |
+|---|---|
+| Background | The page, and (a touch lighter or darker) the cards, bars and dividers on it. |
+| Text | Text and icons on the page. Quiet text and dividers are mixes of text and background. |
+| Primary | The main colour: the speed and battery panels, the board cards, selected buttons. |
+| Secondary | The quieter colour: the lights and ride mode panels and soft buttons. |
+| Accent | Highlights: the selected tab, sliders, switches, headings, links, the edge light glow, and the power and temperature panels. |
 
-This follows how Material 3 builds a scheme: each colour becomes a ladder of tones (like Material's tonal palettes, but done
-in HSL, not the exact colour science), and the scheme picks tones from the ladders: light mode uses the mid tones for
-colour and very light tones for surfaces, dark mode the reverse. So any three colours give a balanced result.
-[MaterialPalette](../OWCE/OWCE/Themes/MaterialPalette.cs) does this, and every text colour is checked against what it sits
-on and adjusted until it is readable (4.5 : 1). I checked it with the presets' colours and 150 random sets of three
-colours in both modes (8,050 text and background pairs, none below 4.5 : 1).
+[ColorScheme](../OWCE/OWCE/Themes/ColorScheme.cs) turns the five into all the colours the app uses. The picked colours are used
+as they are (a panel is exactly the colour you picked, with a slightly darker or lighter shade of it for bars and tracks).
+Only text is adjusted: text on a panel is black or white, whichever reads better, and the page text, quiet text and the
+accent are nudged lighter or darker where needed so they stay readable on the page (4.5 : 1). I checked this with every preset
+and about 2,000 random sets of five colours whose text and background contrast reasonably (3,000 pairs, none below 4.5 : 1).
+If you pick a text colour that is close to the background, readability can't be guaranteed, since you chose it.
 
-Each preset has its own mode and three starting colours. While you change nothing, its hand made palette is used exactly
-as it was. As soon as you change the mode or any colour, the whole scheme is generated from the three colours (so a
-preset's special neon or phosphor look turns into a tonal version of those colours). **Reset colours** goes back.
+**Light** and **Dark** are shortcuts: they set the background and text to the usual dark or light page colours, lightly tinted
+with the primary colour (so a dark theme from a green is dark green, not grey). You can then change either colour.
+Each preset is just a starting set of five colours (plus corners, effect and font), and **Reset colours** goes back to them.
 
 ## The theme builder
 
@@ -124,12 +130,12 @@ plus a few simple settings:
 * **Panel corners:** Very round, Round or Sharp (28, 14 or 2 units).
 * **Panel effect:** None, Drop shadow, or Edge light (a thin accent outline with a glow).
 * **Font:** the system font or one of the bundled Google Fonts, see [Fonts.md](Fonts.md).
-* **Mode and colours:** light or dark, and the primary, secondary and accent colours (see above).
+* **The five colours** (see above), with Light and Dark as shortcuts.
 
-The presets are specs too (each with its own default corners and effect; all use the system font). Change any setting under
+The presets are specs too (each with its own five colours, default corners and effect; all use the system font). Because every colour is generated from the five, the presets are no longer hand tuned palettes: they are tonal and flat compared with the old neon versions. Change any setting under
 **Settings > Appearance** and it applies straight away. **Save as a new style** keeps your version, which then appears
 next to the presets; **Save changes** updates it and **Delete** removes it. Saved styles and the theme in use are kept
 in preferences (`theme_user_styles`, `theme_current`). A preset whose corners and effect are left alone keeps its hand
-made panel style exactly; changing either builds the panel style from the settings.
+made panel style; changing either builds the panel style from the settings.
 
 Corners and effect apply to the dashboard panels. The settings cards, buttons and the bottom bar keep their own shapes.

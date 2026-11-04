@@ -55,7 +55,13 @@ namespace OWCE.Views
             ModeControl.SetItems("Light", "Dark");
             CornersControl.SetItems("Very round", "Round", "Sharp");
             DepthControl.SetItems("None", "Drop shadow", "Edge light");
-            ModeControl.SelectionChanged += index => Change(spec => spec.Dark = index == 1);
+            ModeControl.SelectionChanged += index => Change(spec =>
+            {
+                // Light and dark are the usual page colours for the primary colour.
+                var (background, text) = ColorScheme.DefaultNeutrals(Color.FromArgb(spec.Primary), index == 1);
+                spec.Background = background.ToRgbaHex();
+                spec.Text = text.ToRgbaHex();
+            });
             CornersControl.SelectionChanged += index => Change(spec => spec.Corners = (CornerStyle)index);
             DepthControl.SelectionChanged += index => Change(spec => spec.Depth = (DepthStyle)index);
 
@@ -74,36 +80,42 @@ namespace OWCE.Views
 
         // ---- Theme builder ----
 
-        static readonly string[] RoleNames = { "Primary", "Secondary", "Accent" };
+        // The five colours, in the order Realtime Colors lists them.
+        static readonly string[] RoleNames = { "Text", "Background", "Primary", "Secondary", "Accent" };
         static readonly string[] RoleHints =
         {
-            "Primary: highlights, selected items, and the speed and battery panels.",
-            "Secondary: cards, buttons and the lights panel.",
-            "Accent: the power and temperature panels.",
+            "Text: the colour of text and icons on the page.",
+            "Background: the page behind everything.",
+            "Primary: the main colour: the speed and battery panels, cards and selected buttons.",
+            "Secondary: a quieter colour: the lights and ride mode panels and soft buttons.",
+            "Accent: highlights: the selected tab, sliders, headings and links, and the power and temperature panels.",
         };
 
-        readonly List<Border> _seedSwatches = new List<Border>();
-        readonly List<string> _seedHexes = new List<string>();
         readonly List<Border> _roleCircles = new List<Border>();
         readonly List<Border> _roleChips = new List<Border>();
-        int _role = 0;
+        readonly List<Border> _swatchViews = new List<Border>();
+        readonly bool[] _customOpen = new bool[5];
+        int _role = 2;
         DateTime _lastColourApply = DateTime.MinValue;
 
-        static string GetRole(ThemeSpec spec, int role) => role == 0 ? spec.Primary : role == 1 ? spec.Secondary : spec.Accent;
+        static string GetRole(ThemeSpec spec, int role) => role switch
+        {
+            0 => spec.Text,
+            1 => spec.Background,
+            2 => spec.Primary,
+            3 => spec.Secondary,
+            _ => spec.Accent,
+        };
 
         static void SetRole(ThemeSpec spec, int role, string hex)
         {
-            if (role == 0)
+            switch (role)
             {
-                spec.Primary = hex;
-            }
-            else if (role == 1)
-            {
-                spec.Secondary = hex;
-            }
-            else
-            {
-                spec.Accent = hex;
+                case 0: spec.Text = hex; break;
+                case 1: spec.Background = hex; break;
+                case 2: spec.Primary = hex; break;
+                case 3: spec.Secondary = hex; break;
+                default: spec.Accent = hex; break;
             }
         }
 
@@ -220,28 +232,28 @@ namespace OWCE.Views
         // Three buttons, each with a circle of its current colour. The tapped one is the colour the swatches and sliders edit.
         void BuildRoleChips()
         {
-            for (var i = 0; i < 3; ++i)
+            for (var i = 0; i < 5; ++i)
             {
                 var role = i;
 
                 var circle = new Border()
                 {
-                    WidthRequest = 32,
-                    HeightRequest = 32,
+                    WidthRequest = 28,
+                    HeightRequest = 28,
                     StrokeThickness = 1,
                     Stroke = new SolidColorBrush(Colors.Gray),
                     HorizontalOptions = LayoutOptions.Center,
-                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 16 },
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 14 },
                     InputTransparent = true,
                 };
-                var label = new Label() { Text = RoleNames[i], FontSize = 14, HorizontalOptions = LayoutOptions.Center, InputTransparent = true };
+                var label = new Label() { Text = RoleNames[i], FontSize = 11, LineBreakMode = LineBreakMode.NoWrap, HorizontalOptions = LayoutOptions.Center, InputTransparent = true };
                 label.SetDynamicResource(Label.TextColorProperty, "OnSurfaceColor");
 
                 var chip = new Border()
                 {
-                    Padding = new Thickness(6, 10),
+                    Padding = new Thickness(2, 10),
                     StrokeThickness = 1.5,
-                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 18 },
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 16 },
                     Content = new VerticalStackLayout() { Spacing = 6, Children = { circle, label }, InputTransparent = true },
                 };
                 chip.GestureRecognizers.Add(new TapGestureRecognizer()
@@ -289,48 +301,116 @@ namespace OWCE.Views
             HueBar.Background = rainbow;
         }
 
-        // Ready made colours for the colour being edited. The first one is the colour the theme started with.
+        // The swatches for the colour being edited: a custom one (a plus), the colour the theme started with, and the ready made ones.
+        // They are laid out six to a row across the whole width.
         void RebuildSwatches()
         {
-            SeedSwatches.Children.Clear();
-            _seedSwatches.Clear();
-            _seedHexes.Clear();
+            SwatchGrid.Children.Clear();
+            SwatchGrid.RowDefinitions.Clear();
+            _swatchViews.Clear();
 
             var preset = ThemeManager.Find(ThemeManager.Current.BaseId);
-            var start = _role == 0 ? preset.Primary : _role == 1 ? preset.Secondary : preset.Accent;
-            var choices = new[] { start }.Concat(MaterialPalette.SeedChoices).ToList();
-            var current = Color.FromArgb(GetRole(ThemeManager.Current, _role)).ToRgbaHex();
+            var start = _role switch { 0 => preset.Text, 1 => preset.Background, 2 => preset.Primary, 3 => preset.Secondary, _ => preset.Accent };
+            var choices = new[] { start }.Concat(ColorScheme.SeedChoices).Select(x => Color.FromArgb(x).ToRgbaHex()).Distinct().ToList();
+            var current = Color.FromArgb(GetRole(ThemeManager.Current, _role));
+
+            // Custom is selected when it was tapped, or when the colour is not one of the ready made ones.
+            var customSelected = _customOpen[_role] || choices.Contains(current.ToRgbaHex()) == false;
+            CustomControls.IsVisible = customSelected;
+
+            var role = _role;
+            var index = 0;
+
+            Border MakeCircle(Color fill)
+            {
+                var circle = new Border()
+                {
+                    StrokeThickness = 3,
+                    Stroke = Brush.Transparent,
+                    BackgroundColor = fill,
+                    HorizontalOptions = LayoutOptions.Center,
+                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 100 },
+                };
+                _swatchViews.Add(circle);
+
+                var row = index / 6;
+                if (SwatchGrid.RowDefinitions.Count <= row)
+                {
+                    SwatchGrid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+                }
+                SwatchGrid.Add(circle, index % 6, row);
+                index++;
+                return circle;
+            }
+
+            // The custom swatch: an empty circle with a plus, which fills with the custom colour once it is selected.
+            var custom = MakeCircle(customSelected ? current : Colors.Transparent);
+            if (customSelected)
+            {
+                custom.SetDynamicResource(Border.StrokeProperty, "OnBackgroundBrush");
+            }
+            else
+            {
+                custom.SetDynamicResource(Border.StrokeProperty, "MutedTextBrush");
+                var plus = new Label() { Text = "+", FontSize = 26, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center, InputTransparent = true };
+                plus.SetDynamicResource(Label.TextColorProperty, "MutedTextColor");
+                custom.Content = plus;
+            }
+            custom.GestureRecognizers.Add(new TapGestureRecognizer()
+            {
+                Command = new Command(() =>
+                {
+                    Motion.Tick();
+                    _ = Motion.SquishAsync(custom, 0.8);
+                    _customOpen[role] = true;
+                    LoadFromCurrent();
+                }),
+            });
 
             foreach (var hex in choices)
             {
                 var color = Color.FromArgb(hex);
-                var swatch = new Border()
-                {
-                    WidthRequest = 44,
-                    HeightRequest = 44,
-                    Margin = new Thickness(0, 0, 10, 10),
-                    BackgroundColor = color,
-                    StrokeThickness = 3,
-                    Stroke = Brush.Transparent,
-                    StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 22 },
-                };
-                if (color.ToRgbaHex() == current)
+                var swatch = MakeCircle(color);
+                if (customSelected == false && hex == current.ToRgbaHex())
                 {
                     swatch.SetDynamicResource(Border.StrokeProperty, "OnBackgroundBrush");
                 }
+                else
+                {
+                    // A thin edge so black or white swatches can be seen against a page of the same colour.
+                    swatch.SetDynamicResource(Border.StrokeProperty, "DividerBrush");
+                }
 
-                var role = _role;
                 swatch.GestureRecognizers.Add(new TapGestureRecognizer()
                 {
                     Command = new Command(() =>
                     {
                         Motion.Tick();
                         _ = Motion.SquishAsync(swatch, 0.8);
+                        _customOpen[role] = false;
                         Change(spec => SetRole(spec, role, color.ToRgbaHex()));
                     }),
                 });
-                _seedSwatches.Add(swatch);
-                SeedSwatches.Children.Add(swatch);
+            }
+
+            ResizeSwatches();
+        }
+
+        void SwatchGrid_SizeChanged(object sender, EventArgs e) => ResizeSwatches();
+
+        // Makes the circles as big as the width allows, so every row fills the panel.
+        void ResizeSwatches()
+        {
+            if (SwatchGrid.Width <= 0)
+            {
+                return;
+            }
+
+            var size = Math.Max(24, SwatchGrid.Width / 6 - 8);
+            foreach (var circle in _swatchViews)
+            {
+                circle.WidthRequest = size;
+                circle.HeightRequest = size;
             }
         }
 
@@ -371,10 +451,12 @@ namespace OWCE.Views
 
         void ResetColours_Clicked(object sender, EventArgs e)
         {
+            Array.Clear(_customOpen);
             Change(spec =>
             {
                 var preset = ThemeManager.Find(spec.BaseId);
-                spec.Dark = preset.Dark;
+                spec.Background = preset.Background;
+                spec.Text = preset.Text;
                 spec.Primary = preset.Primary;
                 spec.Secondary = preset.Secondary;
                 spec.Accent = preset.Accent;

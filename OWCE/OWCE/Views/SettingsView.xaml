@@ -26,10 +26,12 @@
 
                         <Label Text="Colours" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" Margin="0,10,0,0" />
                         <!-- Which of the three colours is being edited. Each shows its current colour. -->
-                        <Grid x:Name="RoleRow" ColumnDefinitions="*,*,*" ColumnSpacing="8" />
+                        <Grid x:Name="RoleRow" ColumnDefinitions="*,*,*,*,*" ColumnSpacing="4" />
                         <Label x:Name="RoleHintLabel" FontSize="13" TextColor="{DynamicResource MutedTextColor}" />
-                        <FlexLayout x:Name="SeedSwatches" Wrap="Wrap" JustifyContent="Start" Margin="0,4,0,0" />
+                        <Grid x:Name="SwatchGrid" ColumnDefinitions="*,*,*,*,*,*" RowSpacing="6" Margin="0,4,0,0" SizeChanged="SwatchGrid_SizeChanged" />
 
+                        <!-- Only shown while the custom colour is the one selected. -->
+                        <VerticalStackLayout x:Name="CustomControls" IsVisible="False" Spacing="6">
                         <!-- A rainbow bar with a see-through slider on top, for any other colour. -->
                         <Grid HeightRequest="44">
                             <Border x:Name="HueBar" StrokeThickness="0" HeightRequest="14" VerticalOptions="Center" Margin="12,0">
@@ -40,6 +42,7 @@
                             <Slider x:Name="HueSlider" Minimum="0" Maximum="360" MinimumTrackColor="Transparent" MaximumTrackColor="Transparent" ThumbColor="White" VerticalOptions="Center" ValueChanged="HueSlider_ValueChanged" DragCompleted="HueSlider_DragCompleted" />
                         </Grid>
                         <Slider x:Name="ShadeSlider" Minimum="0.15" Maximum="0.95" MinimumTrackColor="{DynamicResource AccentColor}" MaximumTrackColor="{DynamicResource DividerColor}" ThumbColor="{DynamicResource AccentColor}" ValueChanged="ShadeSlider_ValueChanged" DragCompleted="ShadeSlider_DragCompleted" />
+                        </VerticalStackLayout>
                         <Button x:Name="ResetColoursButton" Text="Reset colours" Style="{StaticResource DialogButtonStyle}" Clicked="ResetColours_Clicked" IsVisible="False" />
 
                         <Label Text="Panel corners" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" Margin="0,10,0,0" />

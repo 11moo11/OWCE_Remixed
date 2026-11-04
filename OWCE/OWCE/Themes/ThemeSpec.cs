@@ -40,17 +40,25 @@ namespace OWCE.Themes
         /// <summary>The font family (see <see cref="FontCatalog"/>). Empty is the system font.</summary>
         public string Font { get; set; } = string.Empty;
 
-        /// <summary>Light or dark. (A preset has its own: most are dark.)</summary>
-        public bool Dark { get; set; }
+        // The five colours (hex), see ColorScheme.
 
-        /// <summary>The highlight colour (hex): selected items, sliders, headings, the speed and battery panels.</summary>
-        public string Primary { get; set; } = MaterialPalette.DefaultSeed;
+        /// <summary>The page.</summary>
+        public string Background { get; set; } = "#FEF7FF";
 
-        /// <summary>The supporting colour (hex): cards, buttons, the lights panel.</summary>
+        /// <summary>Text and icons on the page.</summary>
+        public string Text { get; set; } = "#1D1B20";
+
+        /// <summary>The main colour: the speed and battery panels, cards, selected buttons.</summary>
+        public string Primary { get; set; } = ColorScheme.DefaultSeed;
+
+        /// <summary>A less highlighted colour: the lights and ride mode panels, soft buttons.</summary>
         public string Secondary { get; set; } = "#625B71";
 
-        /// <summary>The extra colour (hex): the power and temperature panels.</summary>
+        /// <summary>Highlights: selected tab, sliders, headings, links, and the power and temperature panels.</summary>
         public string Accent { get; set; } = "#7D5260";
+
+        /// <summary>True if the background is darker than the text.</summary>
+        public bool Dark => ColorScheme.IsDark(Color.FromArgb(Background), Color.FromArgb(Text));
 
         public ThemeSpec Clone() => (ThemeSpec)MemberwiseClone();
 
@@ -62,10 +70,11 @@ namespace OWCE.Themes
             ["corners"] = Corners.ToString(),
             ["depth"] = Depth.ToString(),
             ["font"] = Font,
+            ["background"] = Background,
+            ["text"] = Text,
             ["primary"] = Primary,
             ["secondary"] = Secondary,
             ["accent"] = Accent,
-            ["dark"] = Dark ? "1" : "0",
         };
 
         public static ThemeSpec FromMap(IDictionary<string, string> map)
@@ -78,10 +87,11 @@ namespace OWCE.Themes
                 Name = Get("name", "Style"),
                 BaseId = Get("base", ThemeManager.DefaultThemeId),
                 Font = Get("font", string.Empty),
-                Primary = Get("primary", Get("seed", MaterialPalette.DefaultSeed)),
+                Background = Get("background", "#FEF7FF"),
+                Text = Get("text", "#1D1B20"),
+                Primary = Get("primary", ColorScheme.DefaultSeed),
                 Secondary = Get("secondary", "#625B71"),
                 Accent = Get("accent", "#7D5260"),
-                Dark = Get("dark", "0") == "1",
             };
 
             spec.Corners = Enum.TryParse<CornerStyle>(Get("corners", ""), out var corners) ? corners : CornerStyle.VeryRound;
