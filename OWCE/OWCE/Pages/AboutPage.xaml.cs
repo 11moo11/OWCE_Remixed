@@ -44,7 +44,7 @@ namespace OWCE.Pages
             CustomToolbarItems.Add(new Views.CustomToolbarItem()
             {
                 Position = CustomToolbarItemPosition.Left,
-                Text = "Cancel",
+                IconPathData = Icons.ArrowBack,
                 Command = new AsyncRelayCommand(async () =>
                 {
                     await Navigation.PopModalAsync();

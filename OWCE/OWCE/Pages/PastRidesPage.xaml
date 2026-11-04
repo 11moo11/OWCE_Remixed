@@ -7,13 +7,14 @@
     x:Class="OWCE.Pages.PastRidesPage"
     x:DataType="pages:PastRidesPage"
     Title="Past Rides"
+    UseLargeTitle="True"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
 
     <!-- SelectionChangedCommand="{Binding RideSelectedCommand}" SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}}"-->
     <CollectionView ItemsSource="{Binding Rides}" SelectionMode="None">
         <CollectionView.ItemTemplate>
             <DataTemplate x:DataType="owce:Ride">
-                <SwipeView>
+                <SwipeView Margin="16,4">
                     <SwipeView.RightItems>
                         <SwipeItems>
                             <SwipeItem Text="Delete" IconImageSource="swipe_delete" BackgroundColor="Red" Command="{Binding Source={RelativeSource AncestorType={x:Type pages:BaseContentPage}}, Path=DeleteRideCommand}" CommandParameter="{Binding .}" />
@@ -21,14 +22,18 @@
                         </SwipeItems>
                     </SwipeView.RightItems>
 
-                    
-                    <Grid BackgroundColor="{DynamicResource SurfaceColor}" RowDefinitions="Auto,Auto,1">
-<Grid.GestureRecognizers><TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type pages:BaseContentPage}}, Path=RideSelectedCommand}" CommandParameter="{Binding .}" /></Grid.GestureRecognizers>
-                        <Label Grid.Row="0" Text="{Binding Name}" Padding="8,8,8,0" FontSize="22" FontAttributes="Bold" TextColor="{DynamicResource OnSurfaceColor}" />
-                        <Label Grid.Row="1" Text="{Binding StartTime}" Padding="8,0,0,8" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
-                        <BoxView Grid.Row="2" BackgroundColor="{DynamicResource DividerColor}" />
-                    </Grid>
-
+                    <Border StrokeThickness="0" Padding="20,14" BackgroundColor="{DynamicResource CardSurfaceColor}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="20" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type pages:BaseContentPage}}, Path=RideSelectedCommand}" CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding Name}" FontSize="18" TextColor="{DynamicResource OnSurfaceColor}" />
+                            <Label Text="{Binding StartTime}" FontSize="14" TextColor="{DynamicResource MutedTextColor}" />
+                        </VerticalStackLayout>
+                    </Border>
                 </SwipeView>
 
             </DataTemplate>

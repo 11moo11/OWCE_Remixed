@@ -7,7 +7,8 @@
     xmlns:protobuf="clr-namespace:OWCE.Protobuf"
     xmlns:converters="clr-namespace:OWCE.Converters"
     x:DataType="pages:ViewRawRideDataModel"
-    Title="Raw Data">
+    Title="Raw Data"
+    UseLargeTitle="True">
 
     <pages:BaseContentPage.Resources>
         <converters:UUIDToNameConverter x:Key="UUIDToNameConverter" />

@@ -15,7 +15,6 @@ namespace OWCE.Pages
         // Themes are previewed as soon as one is picked. If the page is left without saving, the old theme comes back.
         readonly string _originalThemeId = ThemeManager.CurrentId;
         bool _saved = false;
-        bool _isLoadingThemes = true;
 
         public AppSettingsPage()
         {
@@ -24,15 +23,14 @@ namespace OWCE.Pages
             MetricDisplay = App.Current.MetricDisplay;
             AutoRideRecording = Preferences.Get("auto_ride_recording", false);
 
-            ThemePicker.ItemsSource = ThemeManager.Themes.Select(x => x.Name).ToList();
-            ThemePicker.SelectedIndex = ThemeManager.Themes.ToList().FindIndex(x => x.Id == _originalThemeId);
+            ThemePicker.Select(_originalThemeId);
             ThemeDescriptionLabel.Text = ThemeManager.Find(_originalThemeId).Description;
-            _isLoadingThemes = false;
+            ThemePicker.ThemeSelected += ThemePicker_ThemeSelected;
 
             CustomToolbarItems.Add(new CustomToolbarItem()
             {
                 Position = CustomToolbarItemPosition.Left,
-                Text = "Cancel",
+                IconPathData = Icons.ArrowBack,
                 Command = new AsyncRelayCommand(async () =>
                 {
                     // Leaving the page puts the old theme back (see OnDisappearing).
@@ -52,10 +50,9 @@ namespace OWCE.Pages
                     Preferences.Set("metric_display", MetricDisplay);
                     Preferences.Set("auto_ride_recording", AutoRideRecording);
 
-                    var selectedIndex = ThemePicker.SelectedIndex;
-                    if (selectedIndex >= 0)
+                    if (ThemePicker.SelectedThemeId != null)
                     {
-                        ThemeManager.Save(ThemeManager.Themes[selectedIndex].Id);
+                        ThemeManager.Save(ThemePicker.SelectedThemeId);
                     }
                     _saved = true;
 
@@ -69,16 +66,10 @@ namespace OWCE.Pages
 
         }
 
-        void ThemePicker_SelectedIndexChanged(object sender, EventArgs e)
+        void ThemePicker_ThemeSelected(string themeId)
         {
-            if (_isLoadingThemes || ThemePicker.SelectedIndex < 0)
-            {
-                return;
-            }
-
-            var theme = ThemeManager.Themes[ThemePicker.SelectedIndex];
-            ThemeDescriptionLabel.Text = theme.Description;
-            ThemeManager.Apply(theme.Id);
+            ThemeDescriptionLabel.Text = ThemeManager.Find(themeId).Description;
+            ThemeManager.Apply(themeId);
         }
 
         protected override void OnDisappearing()

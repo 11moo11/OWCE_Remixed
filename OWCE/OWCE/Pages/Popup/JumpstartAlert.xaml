@@ -23,28 +23,29 @@
             HasBackgroundAnimation="True"/>
     </pages:PopupPage.Animation>
     
-        <Border Margin="16,0" VerticalOptions="Center" StrokeShape="RoundRectangle 11" BackgroundColor="{DynamicResource CardColor}">
-            <Grid RowDefinitions="Auto,Auto,76" ColumnSpacing="0" RowSpacing="0">
-                <Label Grid.Row="0" FontFamily="SairaExtraCondensed-Black" Margin="0,20,0,0" TextColor="{DynamicResource OnCardColor}" LineHeight="0.7" FontSize="36" HorizontalTextAlignment="Center">
+        <Border Margin="20,0" VerticalOptions="Center" StrokeThickness="0" BackgroundColor="{DynamicResource SurfaceColor}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="28" />
+            </Border.StrokeShape>
+            <Grid RowDefinitions="Auto,Auto,Auto" ColumnSpacing="0" RowSpacing="0">
+                <Label Grid.Row="0" FontFamily="SairaExtraCondensed-Black" Margin="0,20,0,0" TextColor="{DynamicResource OnSurfaceColor}" LineHeight="0.7" FontSize="36" HorizontalTextAlignment="Center">
                     <Label.Text>OWCE needs help to
 connect to your board</Label.Text>
                 </Label>
                 <Grid Grid.Row="1" Padding="20,10" RowSpacing="10" ColumnSpacing="20" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*">
-                    <Label Grid.Row="0" Grid.Column="0" VerticalOptions="Start" VerticalTextAlignment="Start" Text="1" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnCardColor}" FontSize="24" CharacterSpacing="0.26" />
-                    <Label Grid.Row="1" Grid.Column="0" VerticalOptions="Start" VerticalTextAlignment="Start" Text="2" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnCardColor}" FontSize="24" CharacterSpacing="0.26" />
-                    <Label Grid.Row="2" Grid.Column="0" VerticalOptions="Start" VerticalTextAlignment="Start" Text="3" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnCardColor}" FontSize="24" CharacterSpacing="0.26" />
+                    <Label Grid.Row="0" Grid.Column="0" VerticalOptions="Start" VerticalTextAlignment="Start" Text="1" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="24" CharacterSpacing="0.26" />
+                    <Label Grid.Row="1" Grid.Column="0" VerticalOptions="Start" VerticalTextAlignment="Start" Text="2" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="24" CharacterSpacing="0.26" />
+                    <Label Grid.Row="2" Grid.Column="0" VerticalOptions="Start" VerticalTextAlignment="Start" Text="3" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="24" CharacterSpacing="0.26" />
 
                     
-                    <Label Grid.Row="0" Grid.Column="1" VerticalOptions="Start" Text="Quit OWCE, and open the official Onewheel app" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnCardColor}" FontSize="24" CharacterSpacing="0.26" />
-                    <Label Grid.Row="1" Grid.Column="1" VerticalOptions="Start" Text="Connect to your board, wait for the ride mode to show up" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnCardColor}" FontSize="24" CharacterSpacing="0.26" />
-                    <Label Grid.Row="2" Grid.Column="1" VerticalOptions="Start" Text="Force quit the app, and come back to OWCE" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnCardColor}" FontSize="24" CharacterSpacing="0.26" />
+                    <Label Grid.Row="0" Grid.Column="1" VerticalOptions="Start" Text="Quit OWCE, and open the official Onewheel app" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="24" CharacterSpacing="0.26" />
+                    <Label Grid.Row="1" Grid.Column="1" VerticalOptions="Start" Text="Connect to your board, wait for the ride mode to show up" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="24" CharacterSpacing="0.26" />
+                    <Label Grid.Row="2" Grid.Column="1" VerticalOptions="Start" Text="Force quit the app, and come back to OWCE" LineHeight="0.75" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnSurfaceColor}" FontSize="24" CharacterSpacing="0.26" />
 
                 </Grid>
 
-                <Grid Grid.Row="2" BackgroundColor="{DynamicResource SurfaceColor}" HeightRequest="76">
-                    <!--<Button Text="View Instructions" FontFamily="SairaExtraCondensed-Bold" CharacterSpacing="0.29" TextColor="{DynamicResource OnCardColor}" FontSize="18" VerticalOptions="Center" HorizontalOptions="Center" CornerRadius="20" HeightRequest="40" WidthRequest="112" BorderWidth="1" BorderColor="{StaticResource ButtonBoarder}" Command="{Binding InstructionsButtonCommand}" />
-                    -->
-                    <Button Text="Ok" Style="{DynamicResource RoundButtonStyle}" HorizontalOptions="Center" WidthRequest="112" Command="{Binding ActionButtonCommand}" />
+                <Grid Grid.Row="2" Padding="0,4,12,12">
+                    <Button Text="Ok" Style="{StaticResource DialogButtonStyle}" Command="{Binding ActionButtonCommand}" />
                 </Grid>
             </Grid>
         </Border>

@@ -140,12 +140,73 @@ namespace OWCE.Pages
 
 			if (BaseContentProperty.PropertyName.Equals(propertyName))
 			{
-				Grid.SetRow(BaseContent, 1);
+				Grid.SetRow(BaseContent, _useLargeTitle ? 2 : 1);
 				_mainGrid.Children.Add(BaseContent);
 			}
 			else if (TitleProperty.PropertyName.Equals(propertyName))
             {
 				_titleLabel.Text = Title;
+			}
+		}
+
+		bool _useLargeTitle = false;
+
+		/// <summary>
+		/// Settings style header: a small bar with the back button and actions, and the title below it in large type, left aligned.
+		/// The normal header has the title centred in the bar.
+		/// </summary>
+		public bool UseLargeTitle
+		{
+			get { return _useLargeTitle; }
+			set
+			{
+				if (_useLargeTitle == value)
+				{
+					return;
+				}
+
+				_useLargeTitle = value;
+				ApplyTitleStyle();
+			}
+		}
+
+		void ApplyTitleStyle()
+		{
+			if (_useLargeTitle)
+			{
+				_mainGrid.RowDefinitions = new RowDefinitionCollection()
+				{
+					new RowDefinition() { Height = new GridLength(56, GridUnitType.Absolute) },
+					new RowDefinition() { Height = GridLength.Auto },
+					new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) },
+				};
+
+				Grid.SetRow(_titleLabel, 1);
+				_titleLabel.HorizontalOptions = LayoutOptions.Start;
+				_titleLabel.VerticalOptions = LayoutOptions.Center;
+				_titleLabel.FontAttributes = FontAttributes.None;
+				_titleLabel.FontSize = 34;
+				_titleLabel.Margin = new Thickness(20, 4, 20, 20);
+			}
+			else
+			{
+				_mainGrid.RowDefinitions = new RowDefinitionCollection()
+				{
+					new RowDefinition() { Height = new GridLength(NavigationBarHeight, GridUnitType.Absolute) },
+					new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) },
+				};
+
+				Grid.SetRow(_titleLabel, 0);
+				_titleLabel.HorizontalOptions = LayoutOptions.Center;
+				_titleLabel.VerticalOptions = LayoutOptions.Center;
+				_titleLabel.FontAttributes = FontAttributes.Bold;
+				_titleLabel.FontSize = 18;
+				_titleLabel.Margin = new Thickness(0);
+			}
+
+			if (BaseContent != null)
+			{
+				Grid.SetRow(BaseContent, _useLargeTitle ? 2 : 1);
 			}
 		}
 

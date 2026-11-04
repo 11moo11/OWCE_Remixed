@@ -5,7 +5,8 @@
     x:Class="OWCE.Pages.SubmitRidePage"
     xmlns:pages="clr-namespace:OWCE.Pages"
     x:DataType="pages:SubmitRideModel"
-    Title="Additional Info">
+    Title="Additional Info"
+    UseLargeTitle="True">
 
     <ScrollView>
         <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto" Padding="16">

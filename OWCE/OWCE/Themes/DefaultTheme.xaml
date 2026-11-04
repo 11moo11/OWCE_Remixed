@@ -11,6 +11,7 @@
     <Color x:Key="SurfaceColor">#FFFFFF</Color>
     <Color x:Key="OnSurfaceColor">#000000</Color>
     <Color x:Key="MutedTextColor">#7F7F7F</Color>
+    <SolidColorBrush x:Key="MutedTextBrush" Color="#7F7F7F" />
     <Color x:Key="DividerColor">#E4E4E4</Color>
     <!-- A brush version of DividerColor, for properties such as Border.Stroke that need a brush. -->
     <SolidColorBrush x:Key="DividerBrush" Color="#E4E4E4" />
@@ -44,6 +45,10 @@
     <Color x:Key="OnLights">#000000</Color>
     <Color x:Key="MenuButtonColor">#0000FF</Color>
     <Color x:Key="OnMenuButtonColor">#FFFFFF</Color>
+    <Color x:Key="CardSurfaceColor">#FFFFFF</Color>
+    <Color x:Key="AccentColor">#1F4FD8</Color>
+    <SolidColorBrush x:Key="AccentBrush" Color="#1F4FD8" />
+    <Color x:Key="OnAccentColor">#FFFFFF</Color>
 
     <!-- The panels on the board screen. -->
     <Style x:Key="BoardDetailBlockBaseStyle" TargetType="Border">

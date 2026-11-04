@@ -3,10 +3,12 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:OWCE.Pages"
+    xmlns:views="clr-namespace:OWCE.Views"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     x:Class="OWCE.Pages.AppSettingsPage"
     x:DataType="pages:AppSettingsPage"
-    Title="Settings">
+    Title="Settings"
+    UseLargeTitle="True">
 
     <pages:BaseContentPage.Resources>
          <ResourceDictionary>
@@ -14,25 +16,35 @@
         </ResourceDictionary>
     </pages:BaseContentPage.Resources>
 
-
     <ScrollView>
-        <Grid Padding="16" RowDefinitions="Auto,Auto,Auto,Auto,*" ColumnDefinitions="*,Auto" RowSpacing="16">
+        <VerticalStackLayout Padding="16,0,16,40">
 
-            <Label Grid.Row="0" Grid.Column="0" VerticalOptions="Center" TextColor="{DynamicResource OnBackgroundColor}" Text="Imperial units (mph, °F)" />
-            <Switch Grid.Row="0" Grid.Column="1" HorizontalOptions="End" IsToggled="{Binding MetricDisplay, Converter={StaticResource InvertedBoolConverter}}" />
-             
-            <Label Grid.Row="1" Grid.Column="0" VerticalOptions="Center" TextColor="{DynamicResource OnBackgroundColor}" Text="Auto ride recording" />
-            <Switch Grid.Row="1" Grid.Column="1" HorizontalOptions="End" IsToggled="{Binding AutoRideRecording}" />
-                        
-            <Label Grid.Row="2" Grid.Column="0" VerticalOptions="Center" TextColor="{DynamicResource OnBackgroundColor}" Text="Theme" />
-            <Picker x:Name="ThemePicker" Grid.Row="2" Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" WidthRequest="180" HorizontalTextAlignment="End" Title="Theme" SelectedIndexChanged="ThemePicker_SelectedIndexChanged" />
-            <Label x:Name="ThemeDescriptionLabel" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" FontSize="14" TextColor="{DynamicResource MutedTextColor}" />
+            <Label Text="Appearance" Style="{StaticResource SectionHeaderStyle}" Margin="20,0,20,10" />
+            <Border StrokeThickness="0" Padding="12,20,12,16" BackgroundColor="{DynamicResource CardSurfaceColor}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="24" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="18">
+                    <views:ThemePicker x:Name="ThemePicker" />
+                    <Label x:Name="ThemeDescriptionLabel" FontSize="14" HorizontalTextAlignment="Center" TextColor="{DynamicResource MutedTextColor}" />
+                </VerticalStackLayout>
+            </Border>
 
-        </Grid>
+            <Label Text="Units" Style="{StaticResource SectionHeaderStyle}" />
+            <views:SettingsGroup>
+                <views:SettingsItem Title="Imperial units" Subtitle="Show speed in mph and temperature in °F">
+                    <Switch OnColor="{DynamicResource AccentColor}" IsToggled="{Binding MetricDisplay, Converter={StaticResource InvertedBoolConverter}}" />
+                </views:SettingsItem>
+            </views:SettingsGroup>
 
+            <Label Text="Rides" Style="{StaticResource SectionHeaderStyle}" />
+            <views:SettingsGroup>
+                <views:SettingsItem Title="Auto ride recording" Subtitle="Start recording a ride as soon as you connect to a board">
+                    <Switch OnColor="{DynamicResource AccentColor}" IsToggled="{Binding AutoRideRecording}" />
+                </views:SettingsItem>
+            </views:SettingsGroup>
+
+        </VerticalStackLayout>
     </ScrollView>
 
-
-
 </pages:BaseContentPage>
-

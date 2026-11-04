@@ -74,6 +74,30 @@ namespace OWCE.Views
             set { SetValue(IconBackgroundKeyProperty, value); }
         }
 
+        // A vector icon (see Icons) instead of an image, drawn with a theme brush such as "OnBackgroundBrush".
+        public static readonly BindableProperty IconPathDataProperty = BindableProperty.Create(
+            propertyName: nameof(IconPathData),
+            returnType: typeof(string),
+            declaringType: typeof(CustomToolbarItem));
+
+        public string IconPathData
+        {
+            get { return (string)GetValue(IconPathDataProperty); }
+            set { SetValue(IconPathDataProperty, value); }
+        }
+
+        public static readonly BindableProperty IconPathBrushKeyProperty = BindableProperty.Create(
+            propertyName: nameof(IconPathBrushKey),
+            returnType: typeof(string),
+            declaringType: typeof(CustomToolbarItem),
+            defaultValue: "OnBackgroundBrush");
+
+        public string IconPathBrushKey
+        {
+            get { return (string)GetValue(IconPathBrushKeyProperty); }
+            set { SetValue(IconPathBrushKeyProperty, value); }
+        }
+
         public static readonly BindableProperty TextProperty = BindableProperty.Create(
             propertyName: nameof(Text),
             returnType: typeof(string),
@@ -143,6 +167,10 @@ namespace OWCE.Views
                     UpdateIconImage();
                 }
             }
+            else if (IconPathDataProperty.PropertyName.Equals(propertyName) || IconPathBrushKeyProperty.PropertyName.Equals(propertyName))
+            {
+                UpdateIconPath();
+            }
             else if (TextProperty.PropertyName.Equals(propertyName))
             {
                 UpdateText();
@@ -202,6 +230,25 @@ namespace OWCE.Views
             }
         }
 
+        void UpdateIconPath()
+        {
+            if (string.IsNullOrEmpty(IconPathData))
+            {
+                return;
+            }
+
+            _label = null;
+            _image = null;
+
+            // A bigger touch area than the 24 unit icon.
+            Content = new Grid()
+            {
+                WidthRequest = 48,
+                HeightRequest = 48,
+                Children = { Icons.Create(IconPathData, IconPathBrushKey, 24) },
+            };
+        }
+
         void UpdateText()
         {
             // If image exists lets nuke it.
@@ -218,7 +265,17 @@ namespace OWCE.Views
                     VerticalOptions = LayoutOptions.Center,
                     HorizontalOptions = LayoutOptions.Center,
                 };
-                _label.SetDynamicResource(Label.TextColorProperty, "OnBackgroundColor");
+                // Actions on the right ("Save") are drawn in the accent colour, like text buttons.
+                if (Position == CustomToolbarItemPosition.Right)
+                {
+                    _label.SetDynamicResource(Label.TextColorProperty, "AccentColor");
+                    _label.FontAttributes = FontAttributes.Bold;
+                    _label.FontSize = 16;
+                }
+                else
+                {
+                    _label.SetDynamicResource(Label.TextColorProperty, "OnBackgroundColor");
+                }
                 Content = _label;
             }
             _label.Text = Text;

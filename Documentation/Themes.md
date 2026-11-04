@@ -30,7 +30,8 @@ A theme is a `ResourceDictionary` in [OWCE/OWCE/Themes](../OWCE/OWCE/Themes). Ev
   `OnSelectedButtonColor`, `SliderActiveColor`, `SliderInactiveColor`
 * each panel: `SpeedPanel`, `BatteryPanel`/`BatteryHeader`/`BatteryBar`, `PowerPanel`/`PowerBar`,
   `TempPanel`/`TempTrack`/`TempBar`, `RideModePanel`, `LightsPanel`, each with an `On...` text colour
-* brush versions of some colours, for properties that need a brush: `DividerBrush`, `OnBackgroundBrush`, `ButtonBorderBrush`
+* the settings style look: `CardSurfaceColor` (a row's background), `AccentColor` (headings, buttons, selection) and `OnAccentColor`
+* brush versions of some colours, for properties that need a brush: `DividerBrush`, `OnBackgroundBrush`, `ButtonBorderBrush`, `MutedTextBrush`, `AccentBrush`
 * the burger menu button: `MenuButtonColor` (the circle) and `OnMenuButtonColor` (the lines)
 * styles: `BoardDetailBlockBaseStyle` (the panels' shape, outline and shadow), `RoundButtonStyle`, `SelectedRoundButtonStyle`
 
@@ -62,3 +63,26 @@ Icons are black images. To make one follow the theme, tint it with `ThemedIconTi
 The unused angle and footpad views, and system pop-ups such as the list that opens from the theme picker, keep their own
 colours. The battery cell grid fades from the theme's battery bar colour towards white instead of magenta, with black or
 white text depending on which is easier to read.
+
+## The settings style look
+
+The Settings, About, Past rides, Submit ride and Raw data screens use a Material Design 3 style layout:
+
+* A **large title** under a small bar with a back arrow (`UseLargeTitle="True"` on the page). Actions on the right, like
+  Save, are accent coloured text.
+* Content in **rounded groups**: put `SettingsItem`s inside a `SettingsGroup`. Only the group's outer corners are very
+  round, the corners between items are only slightly round, and there is a small gap between items.
+* Small accent coloured headings above each group (`Style="{StaticResource SectionHeaderStyle}"`).
+* The theme picker shows a small picture of each theme.
+* Dialogs are neutral rounded surfaces with a text button (`DialogButtonStyle`). The side menu is a rounded drawer.
+
+```xml
+<views:SettingsGroup>
+    <views:SettingsItem Title="Imperial units" Subtitle="Show speed in mph">
+        <Switch IsToggled="{Binding Imperial}" />
+    </views:SettingsItem>
+    <views:SettingsItem Title="Version" ShowChevron="True" Command="{Binding OpenCommand}" />
+</views:SettingsGroup>
+```
+
+The board screen's panels keep their own bold look (and the Saira font), which is part of the app's character.

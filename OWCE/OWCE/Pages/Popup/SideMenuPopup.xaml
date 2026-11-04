@@ -25,15 +25,20 @@
             HasBackgroundAnimation="True"/>
     </rgpopup:PopupPage.Animation>
 
+    <!-- A navigation drawer: rounded on the side that meets the screen. -->
+    <Border StrokeThickness="0"
+            BackgroundColor="{DynamicResource SurfaceColor}"
+            HorizontalOptions="Fill"
+            MaximumWidthRequest="500"
+            Margin="0,0,56,0">
+    <Border.StrokeShape>
+        <RoundRectangle CornerRadius="0,28,0,28" />
+    </Border.StrokeShape>
     <Grid
           x:Name="MainGrid"
-          BackgroundColor="{DynamicResource SurfaceColor}"
-          HorizontalOptions="Fill"
-          MaximumWidthRequest="500"
           ColumnSpacing="0"
           RowSpacing="12"
-          Padding="0,16,0,16"
-          Margin="0,0,40,0"
+          Padding="0,24,0,16"
           RowDefinitions="Auto,1,*,1,Auto,Auto">
 
         <Label Grid.Row="0" Text="{Binding Title}" TextColor="{DynamicResource OnSurfaceColor}" FontAttributes="Bold" FontSize="24" Padding="16,0,16,0" />
@@ -78,5 +83,6 @@
 
 
     </Grid>
+    </Border>
 
 </rgpopup:PopupPage>

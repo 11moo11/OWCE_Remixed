@@ -4,9 +4,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:Mopups.Pages;assembly=Mopups"
     xmlns:animations="clr-namespace:Mopups.Animations;assembly=Mopups"
+    xmlns:converters="clr-namespace:OWCE.Converters"
     x:Class="OWCE.Pages.Popup.Alert"
     CloseWhenBackgroundIsClicked="true"
     BackgroundColor="{DynamicResource ScrimColor}">
+
+    <pages:PopupPage.Resources>
+        <converters:StringIsNotEmptyConverter x:Key="NotEmpty" />
+    </pages:PopupPage.Resources>
 
     <pages:PopupPage.Animation>
         <animations:ScaleAnimation 
@@ -21,14 +26,15 @@
             HasBackgroundAnimation="True"/>
     </pages:PopupPage.Animation>
     
-        <Border Margin="16,0" VerticalOptions="Center" StrokeShape="RoundRectangle 11" BackgroundColor="{DynamicResource CardColor}">
-            <Grid RowDefinitions="Auto,Auto,Auto,76" ColumnSpacing="0" RowSpacing="0">
-                <Label Grid.Row="0" Text="{Binding SuperTitleText}" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnCardColor}" FontSize="16" CharacterSpacing="-0.26" Margin="22,5,22,0" VerticalOptions="Start" />
-                <Label Grid.Row="1" Text="{Binding TitleText}" FontFamily="SairaExtraCondensed-Black" TextColor="{DynamicResource OnCardColor}" FontSize="28" HorizontalTextAlignment="Center" />
-                <Label Grid.Row="2" Text="{Binding MessageText}" HorizontalTextAlignment="Center" FontFamily="SairaExtraCondensed-Bold" TextColor="{DynamicResource OnCardColor}" FontSize="16" CharacterSpacing="0.26" Margin="22,0,22,26" />
-                <Grid Grid.Row="3" BackgroundColor="{DynamicResource SurfaceColor}" HeightRequest="76">
-                    <Button Text="{Binding ButtonText}" Style="{DynamicResource RoundButtonStyle}" HorizontalOptions="Center" WidthRequest="112" Command="{Binding ActionButtonCommand}" CommandParameter="{Binding .}" />
-                </Grid>
-            </Grid>
+        <Border Margin="28,0" MaximumWidthRequest="420" VerticalOptions="Center" HorizontalOptions="Fill" StrokeThickness="0" Padding="24,24,24,12" BackgroundColor="{DynamicResource SurfaceColor}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="28" />
+            </Border.StrokeShape>
+            <VerticalStackLayout Spacing="14">
+                <Label Text="{Binding SuperTitleText}" IsVisible="{Binding SuperTitleText, Converter={StaticResource NotEmpty}}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource AccentColor}" />
+                <Label Text="{Binding TitleText}" FontSize="24" TextColor="{DynamicResource OnSurfaceColor}" />
+                <Label Text="{Binding MessageText}" FontSize="15" TextColor="{DynamicResource OnSurfaceColor}" />
+                <Button Text="{Binding ButtonText}" Style="{StaticResource DialogButtonStyle}" Command="{Binding ActionButtonCommand}" CommandParameter="{Binding .}" />
+            </VerticalStackLayout>
         </Border>
 </pages:PopupPage>

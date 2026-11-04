@@ -28,7 +28,7 @@ namespace OWCE.Pages
             CustomToolbarItems.Add(new Views.CustomToolbarItem()
             {
                 Position = CustomToolbarItemPosition.Left,
-                Text = "Close",
+                IconPathData = Icons.ArrowBack,
                 Command = new AsyncRelayCommand(async () =>
                 {
                     await Navigation.PopAsync();

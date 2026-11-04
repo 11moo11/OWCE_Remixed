@@ -2,56 +2,49 @@
 <pages:BaseContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:pages="clr-namespace:OWCE.Pages"    
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:pages="clr-namespace:OWCE.Pages"
+    xmlns:views="clr-namespace:OWCE.Views"
     x:Class="OWCE.Pages.AboutPage"
     x:DataType="pages:AboutPage"
     Title="About"
-    BackgroundColor="{DynamicResource SurfaceColor}">
-    <pages:BaseContentPage.Resources>
-        <Style TargetType="Label">
-            <Setter Property="TextColor" Value="{DynamicResource OnSurfaceColor}" />
-        </Style>
-    </pages:BaseContentPage.Resources>
+    UseLargeTitle="True">
 
-    <Grid Margin="16" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
-        <Label Grid.Row="0" Text="This is a third party app made by the community, for the community. Its aim is to bring additional safety features &amp; better data reporting to its users." />
-        <Label Grid.Row="1" Text="This is not the official Onewheel app. It is not supported, endorsed or affiliated with Future Motion in any way." />
-        <Label Grid.Row="2">
-             <Label.FormattedText>
-                <FormattedString>
-                    <Span Text="Version: " FontAttributes="Bold" />
-                    <Span Text="{Binding VersionString}" />
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
+    <ScrollView>
+        <VerticalStackLayout Padding="16,0,16,40">
 
-        <Label Grid.Row="3" Text="Links:" FontAttributes="Bold" />
-        <Grid Grid.Row="4" RowSpacing="5" Margin="16,0,0,0" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
-            <Label Grid.Row="0" Text="OWCE FAQ" TextDecorations="Underline">
-<Label.GestureRecognizers><TapGestureRecognizer Command="{Binding FAQCommand}" /></Label.GestureRecognizers>
-</Label>
-            <Label Grid.Row="1" Text="GitHub (Source code)" TextDecorations="Underline">
-<Label.GestureRecognizers><TapGestureRecognizer Command="{Binding SourceCodeCommand}" /></Label.GestureRecognizers>
-</Label>
-            <Label Grid.Row="2" Text="Report a problem" TextDecorations="Underline">
-<Label.GestureRecognizers><TapGestureRecognizer Command="{Binding ReportProblemCommand}" /></Label.GestureRecognizers>
-</Label>
-            <Label Grid.Row="3" Text="Request a feature" TextDecorations="Underline">
-<Label.GestureRecognizers><TapGestureRecognizer Command="{Binding RequestFeatureCommand}" /></Label.GestureRecognizers>
-</Label>
-            <Label Grid.Row="4" Text="Reddit" TextDecorations="Underline">
-<Label.GestureRecognizers><TapGestureRecognizer Command="{Binding RedditCommand}" /></Label.GestureRecognizers>
-</Label>
-            <Label Grid.Row="5" Text="Twitter" TextDecorations="Underline">
-<Label.GestureRecognizers><TapGestureRecognizer Command="{Binding TwitterCommand}" /></Label.GestureRecognizers>
-</Label>
-            <Label Grid.Row="6" Text="Facebook page (for news)" TextDecorations="Underline">
-<Label.GestureRecognizers><TapGestureRecognizer Command="{Binding FacebookPageCommand}" /></Label.GestureRecognizers>
-</Label>
-            <Label Grid.Row="7" Text="Facebook group (for discussions)" TextDecorations="Underline">
-<Label.GestureRecognizers><TapGestureRecognizer Command="{Binding FacebookGroupCommand}" /></Label.GestureRecognizers>
-</Label>
-        </Grid>
-    </Grid>
+            <Border StrokeThickness="0" Padding="20,18" BackgroundColor="{DynamicResource CardSurfaceColor}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="24" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" Text="This is a third party app made by the community, for the community. Its aim is to bring additional safety features &amp; better data reporting to its users." />
+                    <Label FontSize="14" TextColor="{DynamicResource MutedTextColor}" Text="This is not the official Onewheel app. It is not supported, endorsed or affiliated with Future Motion in any way." />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="App" Style="{StaticResource SectionHeaderStyle}" />
+            <views:SettingsGroup>
+                <views:SettingsItem Title="Version">
+                    <Label Text="{Binding VersionString}" FontSize="16" TextColor="{DynamicResource MutedTextColor}" />
+                </views:SettingsItem>
+            </views:SettingsGroup>
+
+            <Label Text="Help" Style="{StaticResource SectionHeaderStyle}" />
+            <views:SettingsGroup>
+                <views:SettingsItem Title="OWCE FAQ" ShowChevron="True" Command="{Binding FAQCommand}" />
+                <views:SettingsItem Title="Report a problem" ShowChevron="True" Command="{Binding ReportProblemCommand}" />
+                <views:SettingsItem Title="Request a feature" ShowChevron="True" Command="{Binding RequestFeatureCommand}" />
+            </views:SettingsGroup>
+
+            <Label Text="Community" Style="{StaticResource SectionHeaderStyle}" />
+            <views:SettingsGroup>
+                <views:SettingsItem Title="GitHub" Subtitle="Source code" ShowChevron="True" Command="{Binding SourceCodeCommand}" />
+                <views:SettingsItem Title="Reddit" ShowChevron="True" Command="{Binding RedditCommand}" />
+                <views:SettingsItem Title="Twitter" ShowChevron="True" Command="{Binding TwitterCommand}" />
+                <views:SettingsItem Title="Facebook page" Subtitle="For news" ShowChevron="True" Command="{Binding FacebookPageCommand}" />
+                <views:SettingsItem Title="Facebook group" Subtitle="For discussions" ShowChevron="True" Command="{Binding FacebookGroupCommand}" />
+            </views:SettingsGroup>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </pages:BaseContentPage>

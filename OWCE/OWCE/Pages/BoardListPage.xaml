@@ -58,7 +58,7 @@
                     <DataTemplate x:DataType="owce:OWBaseBoard">
                         <ContentView Padding="16,10,16,15">
                            
-                            <Border HeightRequest="121" StrokeShape="RoundRectangle 11" BackgroundColor="{DynamicResource CardColor}">
+                            <Border HeightRequest="121" StrokeShape="RoundRectangle 20" BackgroundColor="{DynamicResource CardColor}">
 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding Source={x:Reference MainCollectionView}, Path=BindingContext.BoardSelectedCommand}" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
 
                                 
