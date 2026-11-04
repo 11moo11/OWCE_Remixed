@@ -1,5 +1,4 @@
 using OWCE.Themes;
-using ObjCRuntime;
 using UIKit;
 
 namespace OWCE.iOS
@@ -20,7 +19,7 @@ namespace OWCE.iOS
                 return;
             }
 
-            set(current.WithSize((nfloat)(font.Size * scale)));
+            set(current.WithSize((float)(font.Size * scale)));
         }
     }
 }
