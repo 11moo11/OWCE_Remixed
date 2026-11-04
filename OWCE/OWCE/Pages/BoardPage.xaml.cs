@@ -76,7 +76,9 @@ namespace OWCE.Pages
             Nav.AddItem("Dashboard", Icons.Dashboard);
             Nav.AddItem("Settings", Icons.Settings);
             Nav.ItemTapped += index => ShowTab(index);
-            ShowTab(1);
+            Nav.SelectedIndex = 1;
+            _tab = 1;
+            Pager.Select(1);
             ActionsView.BindingContext = this;
 
         }
@@ -218,9 +220,7 @@ namespace OWCE.Pages
         void ShowTab(int tab)
         {
             _tab = tab;
-            ActionsView.IsVisible = tab == 0;
-            DashboardView.IsVisible = tab == 1;
-            SettingsTab.IsVisible = tab == 2;
+            _ = Pager.SelectAsync(tab);
             Nav.SelectedIndex = tab;
         }
 

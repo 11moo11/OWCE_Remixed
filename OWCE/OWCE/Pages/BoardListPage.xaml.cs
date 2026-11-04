@@ -81,10 +81,6 @@ namespace OWCE.Pages
         //IOWScanner _owScanner;
         //public IOWScanner OWScanner => _owScanner;
 
-        //PastRidesCommand
-        AsyncRelayCommand _pastRidesCommand;
-        public AsyncRelayCommand PastRidesCommand => _pastRidesCommand ??= new AsyncRelayCommand(PastRidesCommand_Clicked);
-
         Grid _scanningView;
 
         public BoardListPage() : base()
@@ -142,16 +138,15 @@ namespace OWCE.Pages
             Nav.AddItem("Boards", Icons.Bluetooth);
             Nav.AddItem("Settings", Icons.Settings);
             Nav.SelectedIndex = 1;
+            Pager.Select(1);
             Nav.ItemTapped += async index =>
             {
                 if (index == 0)
                 {
-                    await PastRidesCommand_Clicked();
+                    PastRidesTab.Refresh();
                 }
-                else if (index == 2)
-                {
-                    await App.Current.RootPage.Navigation.PushModalAsync(new NavigationPage(new AppSettingsPage()));
-                }
+                Nav.SelectedIndex = index;
+                await Pager.SelectAsync(index);
             };
 
             /*
@@ -388,11 +383,6 @@ namespace OWCE.Pages
                 var alert = new Pages.Popup.Alert("Error", $"{baseBoard.Name} is not available.");
                 await MopupService.Instance.PushAsync(alert, true);
             }
-        }
-
-        async Task PastRidesCommand_Clicked()
-        {
-            await Navigation.PushAsync(new PastRidesPage());
         }
 
     }

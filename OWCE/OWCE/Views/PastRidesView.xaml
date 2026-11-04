@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:OWCE.Views"
+    xmlns:owce="clr-namespace:OWCE"
+    x:Class="OWCE.Views.PastRidesView"
+    x:DataType="views:PastRidesView">
+
+    <Grid RowDefinitions="Auto,*">
+        <Label Grid.Row="0" Text="Past rides" FontSize="34" TextColor="{DynamicResource OnBackgroundColor}" Margin="20,12,20,12" />
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Rides}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="owce:Ride">
+                    <SwipeView Margin="16,4">
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Delete" IconImageSource="swipe_delete" BackgroundColor="Red" Command="{Binding Source={RelativeSource AncestorType={x:Type views:PastRidesView}}, Path=DeleteRideCommand}" CommandParameter="{Binding .}" />
+                                <SwipeItem Text="Rename" IconImageSource="swipe_rename" BackgroundColor="Orange" Command="{Binding Source={RelativeSource AncestorType={x:Type views:PastRidesView}}, Path=RenameRideCommand}" CommandParameter="{Binding .}" />
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+
+                        <Border StrokeThickness="0" Padding="20,14" BackgroundColor="{DynamicResource CardSurfaceColor}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="20" />
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type views:PastRidesView}}, Path=RideSelectedCommand}" CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding Name}" FontSize="18" TextColor="{DynamicResource OnSurfaceColor}" />
+                                <Label Text="{Binding StartTime}" FontSize="14" TextColor="{DynamicResource MutedTextColor}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyViewTemplate>
+                <DataTemplate>
+                    <Grid HorizontalOptions="Fill" VerticalOptions="Fill">
+                        <Label Text="No past rides found" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{DynamicResource OnBackgroundColor}" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.EmptyViewTemplate>
+        </CollectionView>
+    </Grid>
+</ContentView>

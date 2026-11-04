@@ -26,7 +26,13 @@
         </Grid.Background>
               
         
-        <Image x:Name="BackgroundLogoImage" Grid.Row="0" HorizontalOptions="Center" VerticalOptions="Center" Source="splash_image.png" Opacity="0.1" />
+        <!-- The three tabs slide sideways into each other. Left: past rides. Middle: boards. Right: settings. -->
+        <views:TabPager x:Name="Pager" Grid.Row="0">
+
+        <views:PastRidesView x:Name="PastRidesTab" />
+
+        <Grid>
+        <Image x:Name="BackgroundLogoImage" HorizontalOptions="Center" VerticalOptions="Center" Source="splash_image.png" Opacity="0.1" />
         <!--
         <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="0" Opacity="0.1">
             <Image Source="logo_a.png" />
@@ -35,7 +41,7 @@
         </StackLayout>
             -->
 
-        <RefreshView x:Name="MainRefreshView" Grid.Row="0" Command="{Binding RefreshCommand}" >
+        <RefreshView x:Name="MainRefreshView" Command="{Binding RefreshCommand}" >
             <CollectionView x:Name="MainCollectionView" ItemsSource="{Binding Boards}" Margin="0,0,0,0" SelectionMode="None"> 
                 <CollectionView.ItemsLayout>
                     <GridItemsLayout Orientation="Vertical" Span="1" VerticalItemSpacing="0" />
@@ -66,6 +72,11 @@
 
             </CollectionView>
         </RefreshView>
+        </Grid>
+
+        <views:SettingsView x:Name="SettingsTab" />
+
+        </views:TabPager>
 
         <views:NavPill x:Name="Nav" Grid.Row="1" Margin="16,8,16,12" />
 
