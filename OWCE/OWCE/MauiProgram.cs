@@ -36,6 +36,24 @@ namespace OWCE
             SliderHandler.Mapper.AppendToMapping(nameof(ISlider.MinimumTrackColor), applyThickTrack);
             SliderHandler.Mapper.AppendToMapping(nameof(ISlider.MaximumTrackColor), applyThickTrack);
 
+            // Text in the theme builder's fonts is scaled so that every font looks about the same size.
+            LabelHandler.Mapper.AppendToMapping(nameof(ITextStyle.Font), (handler, view) =>
+            {
+#if ANDROID
+                OWCE.Droid.FontScaleStyle.Apply(handler.PlatformView, view);
+#elif IOS
+                OWCE.iOS.FontScaleStyle.Apply(handler.PlatformView.Font, view, font => handler.PlatformView.Font = font);
+#endif
+            });
+            ButtonHandler.Mapper.AppendToMapping(nameof(ITextStyle.Font), (handler, view) =>
+            {
+#if ANDROID
+                OWCE.Droid.FontScaleStyle.Apply(handler.PlatformView, (ITextStyle)view);
+#elif IOS
+                OWCE.iOS.FontScaleStyle.Apply(handler.PlatformView.TitleLabel?.Font, (ITextStyle)view, font => handler.PlatformView.TitleLabel.Font = font);
+#endif
+            });
+
             // Platform specific implementations of the interfaces in OWCE.DependencyInterfaces.
 #if ANDROID
             builder.Services.AddSingleton<IOWBLE, OWCE.Droid.DependencyImplementations.OWBLE>();

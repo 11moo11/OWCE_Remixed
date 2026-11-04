@@ -53,12 +53,12 @@
                                 </MultiBinding>
                             </VerticalStackLayout.IsVisible>
                             <Label FontAttributes="Bold" Text="{Binding BatteryVoltage, StringFormat='{0:F2}V'}" TextColor="{DynamicResource OnBattery}" FontSize="16" />
-                            <Label TextColor="{DynamicResource OnBattery}">
+                            <Label TextColor="{DynamicResource OnBattery}" FontSize="14">
                                 <Label.FormattedText>
                                     <FormattedString>
-                                        <Span FontAttributes="Bold" Text="{Binding BatteryCells.LowestCellVoltage, StringFormat='{0:F2}-'}" FontSize="14" />
-                                        <Span FontAttributes="Bold" Text="{Binding BatteryCells.HighestCellVoltage, StringFormat='{0:F2}V'}" FontSize="14" />
-                                        <Span Text=" cells" FontSize="14" />
+                                        <Span FontAttributes="Bold" Text="{Binding BatteryCells.LowestCellVoltage, StringFormat='{0:F2}-'}" />
+                                        <Span FontAttributes="Bold" Text="{Binding BatteryCells.HighestCellVoltage, StringFormat='{0:F2}V'}" />
+                                        <Span Text=" cells" />
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
@@ -76,19 +76,19 @@
                         </Grid>
 
                         <VerticalStackLayout Margin="20,10,8,0" Spacing="0">
-                            <Label TextColor="{DynamicResource OnPower}">
+                            <Label TextColor="{DynamicResource OnPower}" FontSize="16">
                                 <Label.FormattedText>
                                     <FormattedString>
-                                        <Span FontAttributes="Bold" Text="{Binding TripAmpHours, StringFormat='{0:F2} Ah'}" FontSize="16" />
-                                        <Span Text=" trip" FontSize="16" />
+                                        <Span FontAttributes="Bold" Text="{Binding TripAmpHours, StringFormat='{0:F2} Ah'}" />
+                                        <Span Text=" trip" />
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label TextColor="{DynamicResource OnPower}">
+                            <Label TextColor="{DynamicResource OnPower}" FontSize="14">
                                 <Label.FormattedText>
                                     <FormattedString>
-                                        <Span FontAttributes="Bold" Text="{Binding TripRegenAmpHours, StringFormat='{0:F2} Ah'}" FontSize="14" />
-                                        <Span Text=" regen" FontSize="14" />
+                                        <Span FontAttributes="Bold" Text="{Binding TripRegenAmpHours, StringFormat='{0:F2} Ah'}" />
+                                        <Span Text=" regen" />
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>

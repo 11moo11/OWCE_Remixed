@@ -30,22 +30,22 @@
                     <views:SpeedArcView Grid.Row="0" HorizontalOptions="Fill" VerticalOptions="Start" CurrentRPM="{Binding RPM}" MaxRPM="1000" MinRPM="0" />
 
 
-                    <Label Grid.Row="1" VerticalOptions="Center" Margin="20,8,20,18" TextColor="{DynamicResource OnSpeedPanel}">
+                    <Label Grid.Row="1" VerticalOptions="Center" Margin="20,8,20,18" TextColor="{DynamicResource OnSpeedPanel}" FontSize="16">
                         <Label.FormattedText>
                             <FormattedString>
-                                <Span FontAttributes="Bold" Text="{Binding TripOdometer, Converter={StaticResource rotationsToDistanceConverter}}" FontSize="16"  />
-                                <Span Text=" ride" FontSize="16"  />
+                                <Span FontAttributes="Bold" Text="{Binding TripOdometer, Converter={StaticResource rotationsToDistanceConverter}}"  />
+                                <Span Text=" ride"  />
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
 
 
-                    <Label Grid.Row="1" HorizontalTextAlignment="End" HorizontalOptions="Fill" VerticalOptions="Center" Margin="20,8,20,18" TextColor="{DynamicResource OnSpeedPanel}">
+                    <Label Grid.Row="1" HorizontalTextAlignment="End" HorizontalOptions="Fill" VerticalOptions="Center" Margin="20,8,20,18" TextColor="{DynamicResource OnSpeedPanel}" FontSize="16">
                         <Label.FormattedText>
                             <FormattedString>
-                                <Span Text="lifetime "  FontSize="16" />
+                                <Span Text="lifetime " />
 
-                                <Span FontAttributes="Bold" Text="{Binding LifetimeOdometer, Converter={StaticResource distanceConverter}, ConverterParameter='N0'}"  FontSize="16" />
+                                <Span FontAttributes="Bold" Text="{Binding LifetimeOdometer, Converter={StaticResource distanceConverter}, ConverterParameter='N0'}" />
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>

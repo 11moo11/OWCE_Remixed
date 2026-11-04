@@ -86,7 +86,6 @@ namespace OWCE.Views
         readonly List<string> _seedHexes = new List<string>();
         readonly List<Border> _roleCircles = new List<Border>();
         readonly List<Border> _roleChips = new List<Border>();
-        readonly List<(Border Chip, Label Label, string Family)> _fontChips = new List<(Border, Label, string)>();
         int _role = 0;
         DateTime _lastColourApply = DateTime.MinValue;
 
@@ -137,7 +136,6 @@ namespace OWCE.Views
             _loading = true;
 
             ThemePicker.Select(spec.Id);
-            ThemeDescriptionLabel.Text = ThemeManager.IsUserStyle(spec.Id) ? $"Your style, based on {ThemeManager.Find(spec.BaseId).Name}." : ThemeManager.Find(spec.Id).Description;
 
             ModeControl.SelectedIndex = spec.Dark ? 1 : 0;
             CornersControl.SelectedIndex = (int)spec.Corners;
@@ -161,11 +159,17 @@ namespace OWCE.Views
             _loading = wasLoading;
         }
 
+        readonly List<(BoxView Fill, Label Label, string Family)> _fontChips = new List<(BoxView, Label, string)>();
+
         void BuildFontChips()
         {
             foreach (var font in FontCatalog.Fonts)
             {
                 var family = font.Family;
+
+                // The chip is filled by its own layer (like the other options), shown when the font is selected.
+                var fill = new BoxView() { CornerRadius = 20, InputTransparent = true };
+                fill.SetDynamicResource(VisualElement.BackgroundColorProperty, "AccentColor");
 
                 // Each name is written in its own font.
                 var label = new Label()
@@ -173,17 +177,20 @@ namespace OWCE.Views
                     Text = font.Name,
                     FontFamily = family,
                     FontSize = 16,
+                    Margin = new Thickness(16, 10),
                     InputTransparent = true,
                     VerticalOptions = LayoutOptions.Center,
                 };
                 var chip = new Border()
                 {
                     Margin = new Thickness(0, 0, 8, 8),
-                    Padding = new Thickness(16, 10),
+                    Padding = new Thickness(0),
                     StrokeThickness = 1.5,
+                    BackgroundColor = Colors.Transparent,
                     StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle() { CornerRadius = 20 },
-                    Content = label,
+                    Content = new Grid() { Children = { fill, label } },
                 };
+                chip.SetDynamicResource(Border.StrokeProperty, "DividerBrush");
                 chip.GestureRecognizers.Add(new TapGestureRecognizer()
                 {
                     Command = new Command(() =>
@@ -194,7 +201,7 @@ namespace OWCE.Views
                     }),
                 });
 
-                _fontChips.Add((chip, label, family));
+                _fontChips.Add((fill, label, family));
                 FontChips.Children.Add(chip);
             }
         }
@@ -202,23 +209,11 @@ namespace OWCE.Views
         void MarkSelectedFont()
         {
             var selected = ThemeManager.Current.Font ?? string.Empty;
-            foreach (var (chip, label, family) in _fontChips)
+            foreach (var (fill, label, family) in _fontChips)
             {
                 var on = family == selected;
-                chip.RemoveDynamicResource(VisualElement.BackgroundColorProperty);
-                chip.RemoveDynamicResource(Border.StrokeProperty);
-                if (on)
-                {
-                    chip.SetDynamicResource(VisualElement.BackgroundColorProperty, "AccentColor");
-                    chip.SetDynamicResource(Border.StrokeProperty, "AccentBrush");
-                    label.SetDynamicResource(Label.TextColorProperty, "OnAccentColor");
-                }
-                else
-                {
-                    chip.BackgroundColor = Colors.Transparent;
-                    chip.SetDynamicResource(Border.StrokeProperty, "DividerBrush");
-                    label.SetDynamicResource(Label.TextColorProperty, "OnSurfaceColor");
-                }
+                fill.Opacity = on ? 1 : 0;
+                label.SetDynamicResource(Label.TextColorProperty, on ? "OnAccentColor" : "OnSurfaceColor");
             }
         }
 

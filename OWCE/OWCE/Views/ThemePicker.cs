@@ -140,7 +140,7 @@ namespace OWCE.Views
                 ColumnDefinitions = new ColumnDefinitionCollection() { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) },
                 RowSpacing = 4,
                 ColumnSpacing = 4,
-                Padding = new Thickness(8),
+                Padding = new Thickness(6),
             };
             panels.Add(Block("SpeedPanel"), 0, 0);
             panels.Add(Block("BatteryHeader"), 1, 0);
@@ -150,8 +150,8 @@ namespace OWCE.Views
             var preview = new Border()
             {
                 Content = panels,
-                WidthRequest = 112,
-                HeightRequest = 88,
+                WidthRequest = 104,
+                HeightRequest = 64,
                 BackgroundColor = Colour("BackgroundGradientStart"),
                 StrokeThickness = 3,
                 Stroke = new SolidColorBrush(Colors.Transparent),

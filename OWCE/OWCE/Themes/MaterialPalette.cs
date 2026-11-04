@@ -44,14 +44,22 @@ namespace OWCE.Themes
         {
             var hue = primary.GetHue();
             var chroma = Math.Clamp(primary.GetSaturation(), 0.3f, 0.9f);
+            var primarySat = Math.Clamp(primary.GetSaturation(), 0.35f, 1f);
             var secondaryHue = secondary.GetHue();
             var secondaryChroma = Math.Clamp(secondary.GetSaturation(), 0.08f, 0.8f);
+            var secondarySat = Math.Clamp(secondary.GetSaturation(), 0.08f, 1f);
             var accentHue = accent.GetHue();
             var accentChroma = Math.Clamp(accent.GetSaturation() * 0.8f, 0.2f, 0.85f);
+            var accentSat = Math.Clamp(accent.GetSaturation(), 0.35f, 1f);
 
             Color P(double tone) => Tone(hue, chroma, tone);
             Color S(double tone) => Tone(secondaryHue, secondaryChroma, tone);
             Color T(double tone) => Tone(accentHue, accentChroma, tone);
+            // Panels are vivid: the colour at its full strength and a chosen lightness. (Material's own tones are pale or dark and
+            // washed out, which turns a strong colour into grey; panels should look like the colour that was picked.)
+            Color Vp(double l) => Color.FromHsla(hue, primarySat, (float)l);
+            Color Vs(double l) => Color.FromHsla(secondaryHue, secondarySat, (float)l);
+            Color Vt(double l) => Color.FromHsla(accentHue, accentSat, (float)l);
             Color N(double tone) => Tone(hue, 0.07f, tone);
             Color V(double tone) => Tone(hue, 0.12f, tone);
 
@@ -66,26 +74,26 @@ namespace OWCE.Themes
                 c["OnSurfaceColor"] = N(10);
                 c["MutedTextColor"] = V(30);
                 c["DividerColor"] = V(80);
-                c["CardColor"] = S(90);
-                c["ButtonColor"] = S(90);
+                c["CardColor"] = Vs(.80);
+                c["ButtonColor"] = Vs(.88);
                 c["ButtonBorderColor"] = V(50);
-                c["SelectedButtonColor"] = P(40);
-                c["SliderActiveColor"] = P(40);
+                c["SelectedButtonColor"] = Vp(.42);
+                c["SliderActiveColor"] = Vp(.42);
                 c["SliderInactiveColor"] = V(90);
-                c["SpeedPanel"] = P(90);
-                c["BatteryPanel"] = S(90);
-                c["BatteryHeader"] = P(30);
-                c["BatteryBar"] = P(40);
-                c["PowerPanel"] = T(40);
-                c["PowerBar"] = T(30);
-                c["TempPanel"] = T(90);
-                c["TempTrack"] = T(85);
-                c["TempBar"] = T(80);
+                c["SpeedPanel"] = Vp(.62);
+                c["BatteryPanel"] = Vs(.72);
+                c["BatteryHeader"] = Vp(.38);
+                c["BatteryBar"] = Vp(.50);
+                c["PowerPanel"] = Vt(.45);
+                c["PowerBar"] = Vt(.35);
+                c["TempPanel"] = Vt(.70);
+                c["TempTrack"] = Vt(.64);
+                c["TempBar"] = Vt(.58);
                 c["RideModePanel"] = N(20);
-                c["LightsPanel"] = S(40);
-                c["MenuButtonColor"] = P(40);
+                c["LightsPanel"] = Vs(.50);
+                c["MenuButtonColor"] = Vp(.42);
                 c["CardSurfaceColor"] = N(95);
-                c["AccentColor"] = P(40);
+                c["AccentColor"] = Vp(.42);
             }
             else
             {
@@ -96,26 +104,26 @@ namespace OWCE.Themes
                 c["OnSurfaceColor"] = N(90);
                 c["MutedTextColor"] = V(80);
                 c["DividerColor"] = V(30);
-                c["CardColor"] = S(30);
-                c["ButtonColor"] = S(30);
+                c["CardColor"] = Vs(.28);
+                c["ButtonColor"] = Vs(.30);
                 c["ButtonBorderColor"] = V(60);
-                c["SelectedButtonColor"] = P(80);
-                c["SliderActiveColor"] = P(80);
+                c["SelectedButtonColor"] = Vp(.62);
+                c["SliderActiveColor"] = Vp(.62);
                 c["SliderInactiveColor"] = V(30);
-                c["SpeedPanel"] = P(30);
-                c["BatteryPanel"] = S(30);
-                c["BatteryHeader"] = P(25);
-                c["BatteryBar"] = P(40);
-                c["PowerPanel"] = T(30);
-                c["PowerBar"] = T(20);
-                c["TempPanel"] = T(25);
-                c["TempTrack"] = T(35);
-                c["TempBar"] = T(45);
+                c["SpeedPanel"] = Vp(.42);
+                c["BatteryPanel"] = Vs(.34);
+                c["BatteryHeader"] = Vp(.30);
+                c["BatteryBar"] = Vp(.42);
+                c["PowerPanel"] = Vt(.40);
+                c["PowerBar"] = Vt(.30);
+                c["TempPanel"] = Vt(.30);
+                c["TempTrack"] = Vt(.38);
+                c["TempBar"] = Vt(.48);
                 c["RideModePanel"] = N(20);
-                c["LightsPanel"] = S(30);
-                c["MenuButtonColor"] = P(80);
+                c["LightsPanel"] = Vs(.38);
+                c["MenuButtonColor"] = Vp(.62);
                 c["CardSurfaceColor"] = N(17);
-                c["AccentColor"] = P(80);
+                c["AccentColor"] = Vp(.62);
             }
 
             // Text on top of the colours above: the tone Material would use if it is readable, otherwise black or white.

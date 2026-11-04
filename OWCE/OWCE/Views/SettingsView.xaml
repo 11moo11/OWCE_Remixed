@@ -17,10 +17,10 @@
                     <RoundRectangle CornerRadius="24" />
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
+                    <Label Text="Presets" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" Margin="8,0,8,0" />
                     <views:ThemePicker x:Name="ThemePicker" />
-                    <Label x:Name="ThemeDescriptionLabel" FontSize="14" HorizontalTextAlignment="Center" TextColor="{DynamicResource MutedTextColor}" Margin="8,0,8,10" />
 
-                    <VerticalStackLayout Spacing="10" Margin="8,0">
+                    <VerticalStackLayout Spacing="10" Margin="8,10,8,0">
                         <Label Text="Mode" FontAttributes="Bold" FontSize="16" TextColor="{DynamicResource OnSurfaceColor}" />
                         <views:SegmentedControl x:Name="ModeControl" />
 
