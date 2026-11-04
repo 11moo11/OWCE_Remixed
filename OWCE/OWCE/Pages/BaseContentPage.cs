@@ -341,6 +341,15 @@ namespace OWCE.Pages
 			_navigationBarGrid.Children.Add(_rightNavStackLayout);
 		}
 
+		/// <summary>Puts a view in the middle of the navigation bar (where the title is).</summary>
+		protected void SetCenterContent(View view)
+		{
+			view.HorizontalOptions = LayoutOptions.Center;
+			view.VerticalOptions = LayoutOptions.Center;
+			Grid.SetRow(view, 0);
+			_mainGrid.Children.Add(view);
+		}
+
 		protected Label GetTitleLabel()
 		{
 			return _titleLabel;

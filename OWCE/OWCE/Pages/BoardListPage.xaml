@@ -72,6 +72,12 @@
 
             </CollectionView>
         </RefreshView>
+
+        <!-- Shown when no boards have been found and nothing is being searched for. Touches go through to the list below. -->
+        <VerticalStackLayout x:Name="EmptyHint" IsVisible="False" InputTransparent="True" VerticalOptions="Start" HorizontalOptions="Center" Margin="32,36,32,0" Spacing="10">
+            <Label Text="Swipe down to search for wheels" FontSize="18" HorizontalTextAlignment="Center" TextColor="{DynamicResource MutedTextColor}" />
+            <ContentView x:Name="EmptyHintArrow" HorizontalOptions="Center" />
+        </VerticalStackLayout>
         </Grid>
 
         <views:SettingsView x:Name="SettingsTab" />

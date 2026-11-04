@@ -129,9 +129,20 @@ namespace OWCE.Pages
             _scanningView.Children.Add(scanningLabel);
             _scanningView.Children.Add(scanningActivityIndicator);
 
-            var scanningToolbarItem = new CustomToolbarItem();
-            scanningToolbarItem.Content = _scanningView;
-            CustomToolbarItems.Add(scanningToolbarItem);
+            // The "swipe down" hint: an arrow that bobs downwards.
+            EmptyHintArrow.Content = Icons.Create(Icons.ArrowDown, "MutedTextBrush", 32);
+            Boards.CollectionChanged += (sender, e) => UpdateEmptyHint();
+            if (App.Current.OWBLE is System.ComponentModel.INotifyPropertyChanged scanner)
+            {
+                scanner.PropertyChanged += (sender, e) => MainThread.BeginInvokeOnMainThread(UpdateEmptyHint);
+            }
+            Loaded += (sender, e) => UpdateEmptyHint();
+            Unloaded += (sender, e) => EmptyHintArrow.AbortAnimation("HintBob");
+
+            // "Scanning..." sits in the middle of the navigation bar.
+            _scanningView.HorizontalOptions = LayoutOptions.Center;
+            scanningLabel.HorizontalOptions = LayoutOptions.Center;
+            SetCenterContent(_scanningView);
 
             // The bottom bar: past rides on the left, the boards (this page) in the middle, settings on the right.
             Nav.AddItem("Past rides", Icons.History, NavPopStyle.SpinBack);
@@ -237,6 +248,29 @@ namespace OWCE.Pages
             if (await App.Current.OWBLE.ReadyToScan())
             {
                 await StartScanning();
+            }
+        }
+
+        // Shows the hint when there is nothing to see: no boards, and not searching.
+        void UpdateEmptyHint()
+        {
+            var show = Boards.Count == 0 && App.Current.OWBLE.IsScanning == false;
+            if (show == EmptyHint.IsVisible)
+            {
+                return;
+            }
+
+            EmptyHint.IsVisible = show;
+            EmptyHintArrow.AbortAnimation("HintBob");
+            EmptyHintArrow.TranslationY = 0;
+
+            if (show)
+            {
+                var bob = new Animation();
+                bob.Add(0, 0.5, new Animation(v => EmptyHintArrow.TranslationY = v, 0, 14, Easing.SinInOut));
+                bob.Add(0.5, 1, new Animation(v => EmptyHintArrow.TranslationY = v, 14, 0, Easing.SinInOut));
+                bob.Commit(EmptyHintArrow, "HintBob", 16, 1100, repeat: () => true);
+                _ = EmptyHint.FadeToAsync(1, 300);
             }
         }
 
