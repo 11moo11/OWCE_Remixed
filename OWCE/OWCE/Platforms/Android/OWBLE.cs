@@ -357,11 +357,43 @@ namespace OWCE.Droid.DependencyImplementations
                     break;
 
                 case OWBLE_QueueItemOperationType.Write:
+                    // Some characteristics (eg the lights) only accept writes without a response. Use whatever the
+                    // characteristic says it supports, otherwise the board rejects the write.
+                    var properties = item.Characteristic.Properties;
+                    if (properties.HasFlag(GattProperty.Write) == false && properties.HasFlag(GattProperty.WriteNoResponse))
+                    {
+                        item.Characteristic.WriteType = GattWriteType.NoResponse;
+                    }
+                    else
+                    {
+                        item.Characteristic.WriteType = GattWriteType.Default;
+                    }
+
                     bool didSetValue = item.Characteristic.SetValue(item.Data);
                     bool didWrite = _bluetoothGatt.WriteCharacteristic(item.Characteristic);
                     if (didWrite == false)
                     {
                         Debug.WriteLine($"ERROR {queueNumber}: Unable to write {item.Characteristic.Uuid}");
+
+                        // No callback will come for a write that never started. Finish the request and keep the queue moving,
+                        // otherwise nothing else could be read or written again.
+                        var failedUuid = item.Characteristic.Uuid.ToString().ToLower();
+                        var failedRequest = _writeQueue.FirstOrDefault(t => t.CharacteristicId.Equals(failedUuid));
+                        if (failedRequest != null)
+                        {
+                            _writeQueue.Remove(failedRequest);
+                            if (failedRequest.ThrowOnFailure)
+                            {
+                                failedRequest.CompletionSource.TrySetException(new InvalidOperationException("The write could not be started."));
+                            }
+                            else
+                            {
+                                failedRequest.CompletionSource.TrySetResult(null);
+                            }
+                        }
+
+                        _gattOperationQueueProcessing = false;
+                        ProcessQueue();
                     }
                     break;
 
@@ -444,7 +476,19 @@ namespace OWCE.Droid.DependencyImplementations
                     }
                 }
 
-                writeCharacteristicValueRequest.CompletionSource.SetResult(dataBytes);
+                if (status != GattStatus.Success)
+                {
+                    Debug.WriteLine($"ERROR: Write of {uuid} was rejected with status {status}");
+                }
+
+                if (status != GattStatus.Success && writeCharacteristicValueRequest.ThrowOnFailure)
+                {
+                    writeCharacteristicValueRequest.CompletionSource.TrySetException(new InvalidOperationException($"The board rejected the write ({status})."));
+                }
+                else
+                {
+                    writeCharacteristicValueRequest.CompletionSource.TrySetResult(dataBytes);
+                }
             }
 
             _gattOperationQueueProcessing = false;
@@ -719,7 +763,7 @@ namespace OWCE.Droid.DependencyImplementations
             return taskCompletionSource.Task;
         }
 
-        public Task<byte[]> WriteValue(string characteristicGuid, byte[] data, bool overrideExistingQueue = false)
+        public Task<byte[]> WriteValue(string characteristicGuid, byte[] data, bool overrideExistingQueue = false, bool throwOnFailure = false)
         {
             Debug.WriteLine($"WriteValue: {characteristicGuid}");
             if (_bluetoothGatt == null)
@@ -750,7 +794,7 @@ namespace OWCE.Droid.DependencyImplementations
 
             var taskCompletionSource = new TaskCompletionSource<byte[]>();
 
-            CharacteristicValueRequest characteristicValueRequest = new CharacteristicValueRequest(uuid, taskCompletionSource, data);
+            CharacteristicValueRequest characteristicValueRequest = new CharacteristicValueRequest(uuid, taskCompletionSource, data) { ThrowOnFailure = throwOnFailure };
 
 
             if (overrideExistingQueue)

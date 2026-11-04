@@ -96,6 +96,8 @@
                 </Grid>
                 <views:ThickSlider x:Name="BrightnessSlider" Minimum="10" Maximum="100" Value="60" MinimumTrackColor="Black" MaximumTrackColor="#D0D0D0" ThumbColor="Black" ValueChanged="Slider_ValueChanged"  />
             </VerticalStackLayout>
+
+                <Button Text="Reset to default lights" Style="{StaticResource RoundButtonStyle}" HorizontalOptions="Center" Margin="0,8,0,0" Clicked="ResetButton_Clicked" />
             </VerticalStackLayout>
         </VerticalStackLayout>
     </Border>

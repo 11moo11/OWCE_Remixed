@@ -28,7 +28,11 @@ namespace OWCE.DependencyInterfaces
 
 
         Task<byte[]> ReadValue(string characteristicGuid, bool important = false);
-        Task<byte[]> WriteValue(string characteristicGuid, byte[] data, bool overrideExistingQueue = false);
+        /// <summary>
+        /// Writes a value. When <paramref name="throwOnFailure"/> is true the returned task faults if the board rejects the write
+        /// (by default a rejected write is ignored, as it always has been).
+        /// </summary>
+        Task<byte[]> WriteValue(string characteristicGuid, byte[] data, bool overrideExistingQueue = false, bool throwOnFailure = false);
         Task SubscribeValue(string characteristicGuid, bool important = false);
         Task UnsubscribeValue(string characteristicGuid, bool important = false);
     }

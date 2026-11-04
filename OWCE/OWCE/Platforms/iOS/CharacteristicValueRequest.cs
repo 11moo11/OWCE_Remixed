@@ -16,6 +16,7 @@ namespace OWCE.MacOS
         public CBUUID CharacteristicId { get; private set; }
         public TaskCompletionSource<byte[]> CompletionSource { get; private set; }
         public NSData Data { get; private set; }
+        public bool ThrowOnFailure { get; set; }
 
         public CharacteristicValueRequest(CBUUID characteristicId, TaskCompletionSource<byte[]> completionSource, NSData data)
         {

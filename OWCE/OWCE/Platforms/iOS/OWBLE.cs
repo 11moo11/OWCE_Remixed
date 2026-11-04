@@ -355,7 +355,15 @@ namespace OWCE.iOS.DependencyImplementations
             }
 
             _writeQueue.Remove(writeCharacteristicValueRequest);
-            writeCharacteristicValueRequest.CompletionSource.SetResult(dataBytes);
+
+            if (error != null && writeCharacteristicValueRequest.ThrowOnFailure)
+            {
+                writeCharacteristicValueRequest.CompletionSource.TrySetException(new InvalidOperationException("The board rejected the write: " + error.LocalizedDescription));
+            }
+            else
+            {
+                writeCharacteristicValueRequest.CompletionSource.TrySetResult(dataBytes);
+            }
         }
 #endregion
 
@@ -580,7 +588,7 @@ namespace OWCE.iOS.DependencyImplementations
             return taskCompletionSource.Task;
         }
 
-        public Task<byte[]> WriteValue(string characteristicGuid, byte[] data, bool overrideExistingQueue = false)
+        public Task<byte[]> WriteValue(string characteristicGuid, byte[] data, bool overrideExistingQueue = false, bool throwOnFailure = false)
         {
             var cbuuid = CBUUID.FromString(characteristicGuid);
 
@@ -613,7 +621,7 @@ namespace OWCE.iOS.DependencyImplementations
 
             var taskCompletionSource = new TaskCompletionSource<byte[]>();
 
-            CharacteristicValueRequest characteristicValueRequest = new CharacteristicValueRequest(cbuuid, taskCompletionSource, nsData);
+            CharacteristicValueRequest characteristicValueRequest = new CharacteristicValueRequest(cbuuid, taskCompletionSource, nsData) { ThrowOnFailure = throwOnFailure };
 
 
             if (overrideExistingQueue)
@@ -622,7 +630,19 @@ namespace OWCE.iOS.DependencyImplementations
             }
             _writeQueue.Add(characteristicValueRequest);
 
-            _peripheral.WriteValue(nsData, characteristic, CBCharacteristicWriteType.WithResponse);
+            // Some characteristics (eg the lights) only accept writes without a response.
+            if (characteristic.Properties.HasFlag(CBCharacteristicProperties.Write) == false && characteristic.Properties.HasFlag(CBCharacteristicProperties.WriteWithoutResponse))
+            {
+                _peripheral.WriteValue(nsData, characteristic, CBCharacteristicWriteType.WithoutResponse);
+
+                // iOS does not call back for writes without a response, so the write is finished as soon as it is sent.
+                _writeQueue.Remove(characteristicValueRequest);
+                taskCompletionSource.TrySetResult(null);
+            }
+            else
+            {
+                _peripheral.WriteValue(nsData, characteristic, CBCharacteristicWriteType.WithResponse);
+            }
 
             return taskCompletionSource.Task;
         }

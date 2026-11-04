@@ -623,37 +623,26 @@ namespace OWCE
         }
 
         /// <summary>
-        /// Turns the board's lights on (default lights) or off. After writing, the mode is read back so
-        /// <see cref="LightMode"/> reflects what the board did. Returns null on success, or a message on failure.
+        /// Turns the board's lights on (default lights) or off. Returns false if the board could not be written to.
+        /// The state is taken from the write succeeding, not read back: the board can take a moment to report a new
+        /// value, which made a successful change look like a failure.
         /// </summary>
-        public async Task<string> SetLightsAsync(bool on)
+        public async Task<bool> SetLightsAsync(bool on)
         {
             try
             {
-                await _owble.WriteValue(LightModeUUID, BitConverter.GetBytes(on ? LightProtocol.ModeDefault : LightProtocol.ModeOff), true);
+                var mode = on ? LightProtocol.ModeDefault : LightProtocol.ModeOff;
+                await _owble.WriteValue(LightModeUUID, BitConverter.GetBytes(mode), true, true);
 
-                var data = await _owble.ReadValue(LightModeUUID, true);
-                if (data != null)
-                {
-                    SetValue(LightModeUUID, data);
-                }
-                else
-                {
-                    LightMode = on;
-                }
+                LightModeValue = mode;
+                LightMode = on;
+                return true;
             }
             catch (Exception err)
             {
                 Debug.WriteLine("SetLightsAsync: " + err.Message);
-                return "Could not change the lights.";
+                return false;
             }
-
-            if (LightMode != on)
-            {
-                return on ? "The board did not turn its lights on." : "The board did not turn its lights off.";
-            }
-
-            return null;
         }
 
         public LightLevels FrontLightLevels => LightProtocol.FromValue((ushort)_frontLightMode);
@@ -667,30 +656,15 @@ namespace OWCE
                 return;
             }
 
-            await _owble.WriteValue(LightModeUUID, BitConverter.GetBytes(LightProtocol.ModeManual), true);
-
-            // Check the board really switched, otherwise the levels we write next would silently do nothing.
-            var data = await _owble.ReadValue(LightModeUUID, true);
-            if (data != null)
-            {
-                SetValue(LightModeUUID, data);
-            }
-            else
-            {
-                LightModeValue = LightProtocol.ModeManual;
-                LightMode = true;
-            }
-
-            if (LightModeValue != LightProtocol.ModeManual)
-            {
-                throw new InvalidOperationException("The board did not switch to custom light mode.");
-            }
+            await _owble.WriteValue(LightModeUUID, BitConverter.GetBytes(LightProtocol.ModeManual), true, true);
+            LightModeValue = LightProtocol.ModeManual;
+            LightMode = true;
         }
 
-        /// <summary>Sets the light mode back (used when an effect stops). Does not read back.</summary>
+        /// <summary>Sets the light mode back (used when an effect stops).</summary>
         public async Task RestoreLightModeAsync(ushort mode)
         {
-            await _owble.WriteValue(LightModeUUID, BitConverter.GetBytes(mode), true);
+            await _owble.WriteValue(LightModeUUID, BitConverter.GetBytes(mode), true, true);
             LightModeValue = mode;
             LightMode = (mode == LightProtocol.ModeDefault || mode == LightProtocol.ModeManual);
         }
@@ -701,32 +675,48 @@ namespace OWCE
             front = front.Clamped();
             back = back.Clamped();
 
-            await _owble.WriteValue(LightsFrontUUID, LightProtocol.Encode(front), true);
-            await _owble.WriteValue(LightsBackUUID, LightProtocol.Encode(back), true);
+            await _owble.WriteValue(LightsFrontUUID, LightProtocol.Encode(front), true, true);
+            await _owble.WriteValue(LightsBackUUID, LightProtocol.Encode(back), true, true);
 
             FrontLightMode = LightProtocol.ToValue(front);
             RearLightMode = LightProtocol.ToValue(back);
         }
 
-        /// <summary>Sets custom front and back levels (switching to manual mode if needed). Returns null on success.</summary>
-        public async Task<string> SetCustomLightsAsync(LightLevels front, LightLevels back)
+        /// <summary>Sets custom front and back levels (switching to manual mode if needed). Returns false if it failed.</summary>
+        public async Task<bool> SetCustomLightsAsync(LightLevels front, LightLevels back)
         {
             try
             {
                 await EnsureManualLightsAsync();
                 await WriteLightLevelsAsync(front, back);
-            }
-            catch (InvalidOperationException err)
-            {
-                return err.Message;
+                return true;
             }
             catch (Exception err)
             {
                 Debug.WriteLine("SetCustomLightsAsync: " + err.Message);
-                return "Could not change the lights.";
+                return false;
             }
+        }
 
-            return null;
+        /// <summary>The look of the board's default lights, used to show something sensible after a reset.</summary>
+        public static readonly LightLevels DefaultFrontLights = new LightLevels(LightLevels.Max, 0);
+        public static readonly LightLevels DefaultRearLights = new LightLevels(0, LightLevels.Max);
+
+        /// <summary>Puts the lights back to the board's default behaviour (default light mode).</summary>
+        public async Task<bool> ResetLightsAsync()
+        {
+            try
+            {
+                await RestoreLightModeAsync(LightProtocol.ModeDefault);
+                FrontLightMode = LightProtocol.ToValue(DefaultFrontLights);
+                RearLightMode = LightProtocol.ToValue(DefaultRearLights);
+                return true;
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine("ResetLightsAsync: " + err.Message);
+                return false;
+            }
         }
 
         private int _frontLightMode = 0;

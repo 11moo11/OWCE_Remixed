@@ -90,11 +90,8 @@ namespace OWCE.Views
                 // An effect would keep overwriting the lights, so end it first.
                 await StopEffectAsync(restoreLights: false);
 
-                var error = await _board.SetLightsAsync(!_board.LightMode);
-                if (error != null)
-                {
-                    await App.Current.RootPage.DisplayAlertAsync("Lights", error, "OK");
-                }
+                // If the board does not take it, nothing changes and nothing is shown.
+                await _board.SetLightsAsync(!_board.LightMode);
             }
             finally
             {
@@ -195,10 +192,31 @@ namespace OWCE.Views
             var front = LightLevels.FromPercent(FrontWhiteSlider.Value, FrontRedSlider.Value);
             var back = LightLevels.FromPercent(BackWhiteSlider.Value, BackRedSlider.Value);
 
-            var error = await _board.SetCustomLightsAsync(front, back);
-            if (error != null)
+            // If the board does not take it, nothing changes and nothing is shown.
+            await _board.SetCustomLightsAsync(front, back);
+        }
+
+        // Back to the board's own lights.
+        async void ResetButton_Clicked(object sender, EventArgs e)
+        {
+            if (_board == null || _isBusy)
             {
-                await App.Current.RootPage.DisplayAlertAsync("Lights", error, "OK");
+                return;
+            }
+
+            _isBusy = true;
+            try
+            {
+                await StopEffectAsync(restoreLights: false);
+
+                if (await _board.ResetLightsAsync())
+                {
+                    RefreshMixerFromBoard();
+                }
+            }
+            finally
+            {
+                _isBusy = false;
             }
         }
 
@@ -234,18 +252,10 @@ namespace OWCE.Views
             UpdateEffectButtons();
         }
 
-        void Runner_Faulted(string message)
+        // The effect stopped because the board stopped accepting writes. Just show that it is no longer running.
+        void Runner_Faulted()
         {
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                UpdateEffectButtons();
-
-                // If the view is gone (the board was disconnected) there is nobody to tell.
-                if (IsLoaded)
-                {
-                    await App.Current.RootPage.DisplayAlertAsync("Lights", message, "OK");
-                }
-            });
+            MainThread.BeginInvokeOnMainThread(UpdateEffectButtons);
         }
 
         void UpdateEffectButtons()

@@ -25,7 +25,7 @@ namespace OWCE
         public bool IsRunning => _loop != null && _loop.IsCompleted == false;
 
         /// <summary>Raised (on a background thread) if the effect stops because the board could not be written to.</summary>
-        public event Action<string> Faulted;
+        public event Action Faulted;
 
         /// <summary>1 (slowest) to 10 (fastest). Can be changed while running.</summary>
         public double Speed
@@ -139,7 +139,7 @@ namespace OWCE
                 if (token.IsCancellationRequested == false)
                 {
                     Effect = LightEffect.None;
-                    Faulted?.Invoke(err is InvalidOperationException ? err.Message : "Lost contact with the board's lights, so the effect was stopped.");
+                    Faulted?.Invoke();
                 }
             }
         }

@@ -9,6 +9,7 @@ namespace OWCE.Droid
         public string CharacteristicId { get; private set; }
         public TaskCompletionSource<byte[]> CompletionSource { get; private set; }
         public byte[] Data { get; private set; }
+        public bool ThrowOnFailure { get; set; }
 
         public CharacteristicValueRequest(string characteristicId, TaskCompletionSource<byte[]> completionSource, byte[] data)
         {

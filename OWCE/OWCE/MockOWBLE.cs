@@ -228,7 +228,7 @@ namespace OWCE
             await Task.Delay(10);
         }
 
-        public async Task<byte[]> WriteValue(string characteristicGuid, byte[] data, bool overrideExistingQueue = false)
+        public async Task<byte[]> WriteValue(string characteristicGuid, byte[] data, bool overrideExistingQueue = false, bool throwOnFailure = false)
         {
             await Task.Delay(10);
             return null;
