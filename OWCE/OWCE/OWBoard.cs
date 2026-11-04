@@ -614,8 +614,13 @@ namespace OWCE
             set { if (_lightMode != value) { _lightMode = value; OnPropertyChanged(); } }
         }
 
-        public const ushort LightModeOff = 0;
-        public const ushort LightModeOn = 1; // The board's default lights.
+        private ushort _lightModeValue = LightProtocol.ModeOff;
+        /// <summary>The raw light mode: 0 off, 1 default lights, 2 manual (front and back levels are used).</summary>
+        public ushort LightModeValue
+        {
+            get { return _lightModeValue; }
+            private set { if (_lightModeValue != value) { _lightModeValue = value; OnPropertyChanged(); } }
+        }
 
         /// <summary>
         /// Turns the board's lights on (default lights) or off. After writing, the mode is read back so
@@ -625,7 +630,7 @@ namespace OWCE
         {
             try
             {
-                await _owble.WriteValue(LightModeUUID, BitConverter.GetBytes(on ? LightModeOn : LightModeOff), true);
+                await _owble.WriteValue(LightModeUUID, BitConverter.GetBytes(on ? LightProtocol.ModeDefault : LightProtocol.ModeOff), true);
 
                 var data = await _owble.ReadValue(LightModeUUID, true);
                 if (data != null)
@@ -646,6 +651,79 @@ namespace OWCE
             if (LightMode != on)
             {
                 return on ? "The board did not turn its lights on." : "The board did not turn its lights off.";
+            }
+
+            return null;
+        }
+
+        public LightLevels FrontLightLevels => LightProtocol.FromValue((ushort)_frontLightMode);
+        public LightLevels RearLightLevels => LightProtocol.FromValue((ushort)_rearLightMode);
+
+        /// <summary>Switches the board to manual light mode, where the front and back levels are used.</summary>
+        public async Task EnsureManualLightsAsync()
+        {
+            if (LightModeValue == LightProtocol.ModeManual)
+            {
+                return;
+            }
+
+            await _owble.WriteValue(LightModeUUID, BitConverter.GetBytes(LightProtocol.ModeManual), true);
+
+            // Check the board really switched, otherwise the levels we write next would silently do nothing.
+            var data = await _owble.ReadValue(LightModeUUID, true);
+            if (data != null)
+            {
+                SetValue(LightModeUUID, data);
+            }
+            else
+            {
+                LightModeValue = LightProtocol.ModeManual;
+                LightMode = true;
+            }
+
+            if (LightModeValue != LightProtocol.ModeManual)
+            {
+                throw new InvalidOperationException("The board did not switch to custom light mode.");
+            }
+        }
+
+        /// <summary>Sets the light mode back (used when an effect stops). Does not read back.</summary>
+        public async Task RestoreLightModeAsync(ushort mode)
+        {
+            await _owble.WriteValue(LightModeUUID, BitConverter.GetBytes(mode), true);
+            LightModeValue = mode;
+            LightMode = (mode == LightProtocol.ModeDefault || mode == LightProtocol.ModeManual);
+        }
+
+        /// <summary>Writes front and back levels. The board must already be in manual light mode.</summary>
+        public async Task WriteLightLevelsAsync(LightLevels front, LightLevels back)
+        {
+            front = front.Clamped();
+            back = back.Clamped();
+
+            await _owble.WriteValue(LightsFrontUUID, LightProtocol.Encode(front), true);
+            await _owble.WriteValue(LightsBackUUID, LightProtocol.Encode(back), true);
+
+            FrontLightMode = LightProtocol.ToValue(front);
+            RearLightMode = LightProtocol.ToValue(back);
+        }
+
+        /// <summary>Sets custom front and back levels (switching to manual mode if needed). Returns null on success.</summary>
+        public async Task<string> SetCustomLightsAsync(LightLevels front, LightLevels back)
+        {
+            try
+            {
+                await EnsureManualLightsAsync();
+                await WriteLightLevelsAsync(front, back);
+            }
+            catch (InvalidOperationException err)
+            {
+                return err.Message;
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine("SetCustomLightsAsync: " + err.Message);
+                return "Could not change the lights.";
             }
 
             return null;
@@ -1363,7 +1441,9 @@ namespace OWCE
                     }
                     break;
                 case LightModeUUID:
-                    LightMode = (value == 1);
+                    LightModeValue = value;
+                    // Default (1) and manual (2) lights are both lit.
+                    LightMode = (value == LightProtocol.ModeDefault || value == LightProtocol.ModeManual);
                     break;
                 case LightsFrontUUID:
                     FrontLightMode = value;
