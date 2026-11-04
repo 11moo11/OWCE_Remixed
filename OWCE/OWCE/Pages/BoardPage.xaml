@@ -76,7 +76,7 @@
                 <!-- The panels are created here, with their bindings, and then handed to the PanelBoard (see SetupPanels),
                      which lets the user move and resize them. This container is never shown. -->
                 <VerticalStackLayout x:Name="PanelSource" IsVisible="False">
-                    <views:SpeedRangeDistanceView x:Name="SpeedRangeDistanceView" HeightRequest="180" RPM="{Binding RPM}" WheelCircumference="{Binding WheelCircumference}" LifetimeOdometer="{Binding LifetimeOdometer}" TripOdometer="{Binding TripOdometer}" />
+                    <views:SpeedRangeDistanceView x:Name="SpeedRangeDistanceView" RPM="{Binding RPM}" WheelCircumference="{Binding WheelCircumference}" LifetimeOdometer="{Binding LifetimeOdometer}" TripOdometer="{Binding TripOdometer}" />
                     <views:BatteryPowerView x:Name="BatteryPowerPanel" BindingContext="{Binding .}" />
                     <views:TemperatureView x:Name="TemperatureView" BindingContext="{Binding .}" ControllerTemp="{Binding ControllerTemperature}" MotorTemp="{Binding MotorTemperature}" BatteryTemp="{Binding BatteryTemperature}" />
                     <views:RideModeView x:Name="RideModePanel" BindingContext="{Binding .}" BoardType="{Binding BoardType}" SimpleStopEnabled="{Binding SimpleStopEnabled}" />

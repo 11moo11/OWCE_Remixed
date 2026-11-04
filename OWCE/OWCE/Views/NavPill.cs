@@ -81,6 +81,8 @@ namespace OWCE.Views
             // One clear layer over the whole bar takes every touch, so a slide can start anywhere (including on the selected
             // tab) and a tap is turned into the tab under the finger.
             _items.InputTransparent = true;
+            _indicator.VerticalOptions = LayoutOptions.Center;
+            _indicator.HeightRequest = 56;
             var touch = new BoxView() { Color = Colors.Transparent };
             var tap = new TapGestureRecognizer();
             tap.Tapped += async (sender, e) =>
@@ -168,6 +170,8 @@ namespace OWCE.Views
         /// <summary>Puts the pill at a fractional item number. Called by the pager as it moves.</summary>
         public void SetPosition(double position)
         {
+            // The screen may spring past its end; the pill stays inside the bar.
+            position = Math.Clamp(position, 0, Math.Max(_list.Count - 1, 0));
             _position = position;
             if (_cell <= 0)
             {
@@ -190,8 +194,7 @@ namespace OWCE.Views
                 var closeness = Math.Clamp(1 - Math.Abs(i - position), 0, 1);
 
                 // The item under the pill grows and lifts a little.
-                item.Wrapper.Scale = 1 + 0.12 * closeness;
-                item.Wrapper.TranslationY = -2 * closeness;
+                item.Wrapper.Scale = 1 + 0.04 * closeness;
 
                 var selected = i == nearest;
                 if (selected != item.Selected)
@@ -275,7 +278,7 @@ namespace OWCE.Views
                     _lastTime = DateTime.UtcNow;
                     _velocity = 0;
                     _lastTick = (int)Math.Round(_dragStart);
-                    _ = _indicator.ScaleToAsync(1.06, 120, Easing.CubicOut);
+                    _ = _indicator.ScaleToAsync(1.02, 120, Easing.CubicOut);
                     break;
 
                 case GestureStatus.Running:

@@ -22,15 +22,15 @@
 
             <toolkit:Expander.Header>
 
-                <Grid x:Name="GridThing" ColumnSpacing="0" RowSpacing="0" >
+                <Grid x:Name="GridThing" ColumnSpacing="0" RowSpacing="0" RowDefinitions="Auto,Auto">
 
                     <!--
             726.4854811913 is 40km/h converted to rpm with a 917.66mm circumference wheel.
             -->
-                    <views:SpeedArcView HorizontalOptions="Fill" VerticalOptions="Fill" CurrentRPM="{Binding RPM}" MaxRPM="1000" MinRPM="0" />
+                    <views:SpeedArcView Grid.Row="0" HorizontalOptions="Fill" VerticalOptions="Start" CurrentRPM="{Binding RPM}" MaxRPM="1000" MinRPM="0" />
 
 
-                    <Label VerticalOptions="End" Margin="20,0" TextColor="{DynamicResource OnSpeedPanel}">
+                    <Label Grid.Row="1" VerticalOptions="Center" Margin="20,8,20,18" TextColor="{DynamicResource OnSpeedPanel}">
                         <Label.FormattedText>
                             <FormattedString>
                                 <Span FontAttributes="Bold" Text="{Binding TripOdometer, Converter={StaticResource rotationsToDistanceConverter}}" FontSize="16"  />
@@ -40,7 +40,7 @@
                     </Label>
 
 
-                    <Label HorizontalTextAlignment="End" HorizontalOptions="Fill" VerticalOptions="End" Margin="20,0" TextColor="{DynamicResource OnSpeedPanel}">
+                    <Label Grid.Row="1" HorizontalTextAlignment="End" HorizontalOptions="Fill" VerticalOptions="Center" Margin="20,8,20,18" TextColor="{DynamicResource OnSpeedPanel}">
                         <Label.FormattedText>
                             <FormattedString>
                                 <Span Text="lifetime "  FontSize="16" />
@@ -50,10 +50,10 @@
                         </Label.FormattedText>
                     </Label>
 
-                    <Label Text="SPEED" Style="{StaticResource PanelCaptionStyle}" TextColor="{DynamicResource OnSpeedPanel}" />
-                    <Label FontAttributes="Bold" Text="{Binding RPM, Converter={StaticResource rpmToSpeedConverter}, ConverterParameter={Binding WheelCircumference}, StringFormat='{0:F0}'}"  TextColor="{DynamicResource OnSpeedPanel}"  FontSize="100" HorizontalOptions="Center" VerticalOptions="Start"  />
+                    <Label Grid.Row="0" Text="SPEED" Style="{StaticResource PanelCaptionStyle}" TextColor="{DynamicResource OnSpeedPanel}" />
+                    <Label FontAttributes="Bold" Text="{Binding RPM, Converter={StaticResource rpmToSpeedConverter}, ConverterParameter={Binding WheelCircumference}, StringFormat='{0:F0}'}"  TextColor="{DynamicResource OnSpeedPanel}"  FontSize="100" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,18,0,0" />
 
-                    <Label FontAttributes="Bold" TextColor="{DynamicResource OnSpeedPanel}" FontSize="22" CharacterSpacing="0.5" HorizontalOptions="Center" VerticalOptions="End" VerticalTextAlignment="End">
+                    <Label FontAttributes="Bold" TextColor="{DynamicResource OnSpeedPanel}" FontSize="22" CharacterSpacing="0.5" HorizontalOptions="Center" VerticalOptions="End" VerticalTextAlignment="End" Margin="0,0,0,6">
                         <Label.Triggers>
                             <DataTrigger TargetType="Label" Binding="{Binding Source={x:Static Application.Current}, Path=MetricDisplay}" Value="true">
                               <Setter Property="Text" Value="km/h" />
